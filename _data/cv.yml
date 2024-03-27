@@ -2,11 +2,11 @@
   type: map
   contents:
     - name: Full Name
-      value: Albert Einstein
+      value: Semyeong Yu
     - name: Date of Birth
-      value: 14th March 1879
+      value: 1st February 2001
     - name: Languages
-      value: English, German
+      value: Korean, English
 
 - title: Education
   type: time_table
