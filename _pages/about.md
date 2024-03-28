@@ -6,7 +6,7 @@ subtitle: Do Your Best #<a href='#'>Affiliations</a>. Address. Contacts. Moto. E
 
 profile:
   align: right
-  image: Venice.jpg
+  image: NileRiver.jpg
   image_circular: false # crops the image to make it circular
   more_info: >
     <p> </p>
