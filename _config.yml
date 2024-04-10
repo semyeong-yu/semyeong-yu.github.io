@@ -290,7 +290,7 @@ jekyll-archives:
     category: "/blog/category/:name/"
 
 display_tags: [] # these tags will be displayed on the front page of your blog
-display_categories: ["CV_Tasks", "3D View Synthesis", "Depth Estimation", "Super Resolution", "Frame Interpolation", "Quantum Computing"] # these categories will be displayed on the front page of your blog
+display_categories: ["CV Tasks", "3D View Synthesis", "Depth Estimation", "Super Resolution", "Frame Interpolation", "Quantum Computing"] # these categories will be displayed on the front page of your blog
 
 # -----------------------------------------------------------------------------
 # Jekyll Scholar
