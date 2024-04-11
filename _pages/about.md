@@ -24,7 +24,6 @@ I am interested in Computer Vision : Deep-Learning applications within the realm
 My work aims to contribute to meaningful innovations that enhance visual clarity and improve dynamic scene understanding. Each project is for bridging the gap between human and computer vision.  
 Thank you for visiting my page.
 
-
 <!-- Write your biography here. Tell the world about yourself. Link to your favorite [subreddit](http://reddit.com). You can put a picture in, too. The code is already in, just name your picture `prof_pic.jpg` and put it in the `img/` folder.
 
 Put your address / P.O. box / other info right below your picture. You can also disable any of these elements by editing `profile` property of the YAML header of your `_pages/about.md`. Edit `_bibliography/papers.bib` and Jekyll will render your [publications page](/al-folio/publications/) automatically.
