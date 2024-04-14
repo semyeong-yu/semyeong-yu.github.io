@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://semyeong-yu.github.io/sitemap.xml
+Sitemap: https://semyeong-yu.github.iosemyeong-yu.github.io/sitemap.xml
