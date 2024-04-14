@@ -5,7 +5,7 @@ title: blog
 nav: true
 nav_order: 1
 pagination:
-  enabled: true
+  enabled: false
   collection: posts
   permalink: /page/:num/
   per_page: 5
@@ -104,7 +104,7 @@ pagination:
   <ul class="post-list">
 
     {% if page.pagination.enabled %}
-      {% assign postlist = site.posts %}
+      {% assign postlist = paginator.posts %}
     {% else %}
       {% assign postlist = site.posts %}
     {% endif %}
