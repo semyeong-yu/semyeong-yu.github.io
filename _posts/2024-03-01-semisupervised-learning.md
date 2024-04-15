@@ -10,6 +10,9 @@ related_posts: true
 toc:
   beginning: true
   sidebar: right
+images:
+  compare: true
+  slider: true
 ---
 
 뮌헨공대 (Technical University of Munich)에서 공부한  
@@ -18,7 +21,7 @@ toc:
 
 ### Semi-supervised Learning
 
->  아이디
+>  아이디어  
 
 use both labelled and unlabelled data  
 
