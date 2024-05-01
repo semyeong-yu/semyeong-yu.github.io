@@ -822,7 +822,8 @@ nme graph
 - red : training nme before quantization  
 - blue : test nme after quantization  
 
-left : lr = 1e-10                                            right : lr = 1e-8
+left : lr = 1e-10  
+right : lr = 1e-8
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
@@ -852,8 +853,7 @@ nme graph
     </div>
 </div>
 
-### Exp 3. QAT - The effect of observer 
-                     to calibrate the quantization parameters
+### Exp 3. QAT - The effect of observer to calibrate the quantization parameters
 
 MovingAverageMinMaxObserver with U8S8 calibrated the quantization parameters(scale factor and zero-point integer) better than the default observer as shown in the graph below.
 
@@ -947,34 +947,20 @@ INT8 Quantization follows the link below.
 
 This table shows how I quantized each ONNX model adjusting combination of some parameters.
 
-| IN8 Quantization | freezed layer | per
-channel | reduce
-range | CalibTensor
-Range
-Symmetric | Calib
-Moving
-Average | Smooth
-Quant |
-| --- | --- | --- | --- | --- | --- | --- |
+| IN8 Quantization | freezed layer | per channel | reduce range | CalibTensor Range Symmetric | Calib Moving Average | Smooth Quant |
+| :------ | :--- | :--- | :--- | :--- | :--- | :--- |
 | Pre-processed Model |  |  |  |  |  |  |
 | Quantized Model 1 |  | T | F | T | T | T |
 | Quantized Model 2 |  | F | F | T | T | T |
 | Quantized Model 3 |  | T | F | F | T | T |
 | Quantized Model 4 |  | T | F | F | F | F |
 | Quantized Model 5 | fc layer | T | F | F | T | T |
-| Quantized Model 6 | ReLU 
-& Add | T | F | F | T | T |
-| Quantized Model 7 | layer 4
-& fc layer | T | F | F | T | T |
-| Quantized Model 8 | layer 4
-& fc layer | T | T | F | T | T |
-| Quantized Model 9 | layer 4
-& fc layer | T | T | F | T | T |
-| Quantized Model 10 | layer 4
-& fc layer | T | T | F | T | T |
-| Quantized Model 11 | layer 1 
-& layer 4
-& fc layer | T | T | F | T | T |
+| Quantized Model 6 | ReLU & Add | T | F | F | T | T |
+| Quantized Model 7 | layer 4 & fc layer | T | F | F | T | T |
+| Quantized Model 8 | layer 4 & fc layer | T | T | F | T | T |
+| Quantized Model 9 | layer 4 & fc layer | T | T | F | T | T |
+| Quantized Model 10 | layer 4 & fc layer | T | T | F | T | T |
+| Quantized Model 11 | layer 1  & layer 4 & fc layer | T | T | F | T | T |
 
 | INT8 Quantization | model size [MB] | inference time [s] | loss | ocualr_nme [%] | pupil_nme [%] |
 | :------ | :--- | :--- | :--- | :--- | :--- |
@@ -1072,9 +1058,9 @@ By using the above functions, you can figure out which node has the significant 
 
 SQNR of each node by debugging
 
-In my case, SQNR value for weight matrix of each node was in the range of [23, 37], which means that the value of $$\left| w1 \right| \over \left| w1-w2 \right|$$ is in the range of [14, 70].
+In my case, SQNR value for weight matrix of each node was in the range of [23, 37], which means that the value of $$\frac{\vert w1 \vert}{\vert w1-w2 \vert}$$ is in the range of [14, 70].
 
-Also, SQNR value for bias vector of each node was in the range of [46, 71], which means that the value of $$\left| w1 \right| \over \left| w1-w2 \right|$$ is in the range of [199, 3548].
+Also, SQNR value for bias vector of each node was in the range of [46, 71], which means that the value of $$\frac{\vert w1 \vert}{\vert w1-w2 \vert}$$ is in the range of [199, 3548].
 
 ### FP16 Conversion of ONNX Runtime
 
