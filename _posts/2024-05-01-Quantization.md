@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Quantization
-date: 2024-03-01 14:00:00
+date: 2024-05-01 14:00:00
 description: Quantization in Pytorch and ONNX
 tags: quantization
 categories: quantization
