@@ -107,7 +107,7 @@ one-stage detector는 그렇지 않아서 class imbalance 문제 발생
 
 대안 :  
 - hard negative mining : FP 오류 줄이기 위해 어려웠던 sample들 추가  
-- focal loss = $-(1-p)^r$ * $log(p)$ : 많이 존재하는 easy example(p ~ 1)은 $(1-p)^r$로 영향 작게 만들고, 적게 존재하는 hard example(p ~ 0)에 가중을 둠  
+- focal loss = $$-(1-p)^r * log(p)$$ : 많이 존재하는 easy example(p ~ 1)은 $$(1-p)^r$$로 영향 작게 만들고, 적게 존재하는 hard example(p ~ 0)에 가중을 둠  
 
 > RetinaNet : 기존 1-stage 방법 + multi-scale(FPN) + focal loss  
 

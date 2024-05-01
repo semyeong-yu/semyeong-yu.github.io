@@ -5,6 +5,7 @@ date: 2024-05-01 14:00:00
 description: Quantization in Pytorch and ONNX
 tags: quantization
 categories: quantization
+thumbnail: assets/img/2024-05-01-Quantization/Untitled1.png
 giscus_comments: true
 related_posts: true
 toc:
@@ -13,6 +14,7 @@ toc:
 images:
   compare: true
   slider: true
+featured: true
 ---
 
 # **Introduction**
@@ -71,22 +73,12 @@ Here, **s** is a scale factor which determines the range mapping and **z** is a 
 
 When we quantize weights or activations of a model by the above equation in the case of INT8 quantization, we have to map the range of FP32 precision into the range of INT8 precision as shown in the picture below.
 
-<div class="row mt-3">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled.png" class="img-fluid rounded z-depth-1" zoomable=true %}
-    </div>
-</div>
+<swiper-container keyboard="true" navigation="true" pagination="true" pagination-clickable="true" pagination-dynamic-bullets="true" rewind="true">
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled1.png" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled.png" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+</swiper-container>
 <div class="caption">
-    Scale Quantization (Symmetric) from FP32 to IN8
-</div>
-
-<div class="row mt-3">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
-    </div>
-</div>
-<div class="caption">
-    Affine Quantization (Asymmetric) from FP32 to INT8
+    Scale Quantization (Symmetric) from FP32 to IN8 vs Affine Quantization (Asymmetric) from FP32 to INT8
 </div>
 
 There are two types of range-mapping techniques in quantization according to the way of choosing scale factor **s** and zero-point integer **z.**
@@ -120,20 +112,10 @@ To quantize each layer by MinMax, we need to know the value of $$\alpha,\ \beta$
 
 The above equations are based on MinMax observer, but there are also many other observers in Pytorch framework as shown in the picture below.
 
-<div class="row mt-3">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
-    </div>
-</div>
-<div class="caption">
-    Different observers to determine scale factor and zero-point integer
-</div>
-
-<div class="row mt-3">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled3.png" class="img-fluid rounded z-depth-1" zoomable=true %}
-    </div>
-</div>
+<swiper-container keyboard="true" navigation="true" pagination="true" pagination-clickable="true" pagination-dynamic-bullets="true" rewind="true">
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled2.png" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled3.png" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+</swiper-container>
 <div class="caption">
     Different observers to determine scale factor and zero-point integer
 </div>
@@ -224,22 +206,12 @@ quantized_model = torch.ao.quantization.quantize_dynamic(
 
 If the clipping range of activation is determined before inference, it is called static quantization. Both weights and activations of a trained model are quantized before inference. Here, by calibration, observers observe the range of stored values to determine quantization parameters.
 
-<div class="row mt-3">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled5.png" class="img-fluid rounded z-depth-1" zoomable=true %}
-    </div>
-</div>
+<swiper-container keyboard="true" navigation="true" pagination="true" pagination-clickable="true" pagination-dynamic-bullets="true" rewind="true">
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled5.png" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled6.png" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+</swiper-container>
 <div class="caption">
-    Post-Training Static Quantization - calibrate
-</div>
-
-<div class="row mt-3">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled6.png" class="img-fluid rounded z-depth-1" zoomable=true %}
-    </div>
-</div>
-<div class="caption">
-    Post-Training Static Quantization - quantize
+    Post-Training Static Quantization - calibrate & quantize
 </div>
 
 - advantage :
@@ -806,30 +778,19 @@ python debug.py --float_model preprocess_2.onnx --qdq_model quantized_2.onnx
 
 ### Experiment
 
-- dataset : calibration : batch_size = 32, iteration = 32
-
-                     inference : batch_size = 128, iteration = 61
+- dataset :  
+calibration : batch_size = 32, iteration = 32  
+inference : batch_size = 128, iteration = 61
 
 - hardware : cpu
 
-|  | model size [MB] | inference time [s] | loss | ocualr_nme [%] | pupil_nme [%] |
-| --- | --- | --- | --- | --- | --- |
-| Original Model
-(partial fuse) | 7.15 | 306.59 | 0.01121577 | 3.51807 | 4.87317 |
-| Original Model
-(all fuse) | 7.01 | 227.92 | 0.01121577 | 3.51807 | 4.87317 |
-| Static PTQ
-calibrated with
-dummy input
-(partial fuse) | 2.19 | 174.01 | 0.04872545 | 15.87943 | 21.99286 |
-| Static PTQ
-calibrated with 
-our input dataset
-(partial fuse) | 2.19 | 173.31 | 0.01834808 | 5.68243 | 7.87280 |
-| Static PTQ
-calibrated with 
-our input dataset
-(all fuse) | 2.01 | 161.74 | 0.01228440 | 3.83984 | 5.31811 |
+| method | model size [MB] | inference time [s] | loss | ocualr_nme [%] | pupil_nme [%] |
+| :------ | :--- | :--- | :--- | :--- | :--- |
+| Original Model (partial fuse) | 7.15 | 306.59 | 0.01121577 | 3.51807 | 4.87317 |
+| Original Model (all fuse) | 7.01 | 227.92 | 0.01121577 | 3.51807 | 4.87317 |
+| Static PTQ calibrated with dummy input (partial fuse) | 2.19 | 174.01 | 0.04872545 | 15.87943 | 21.99286 |
+| Static PTQ calibrated with our input dataset (partial fuse) | 2.19 | 173.31 | 0.01834808 | 5.68243 | 7.87280 |
+| Static PTQ calibrated with our input dataset (all fuse) | 2.01 | 161.74 | 0.01228440 | 3.83984 | 5.31811 |
 
 ### Result
 
@@ -851,17 +812,15 @@ The proper learning rate of fine-tuning is lr = 1e-8 which is 0.1 times the lear
 
 I tested various values of learning rate to find the optimal value. For example, the left graph (lr = 1e-10) below shows underfitting and slow convergence due to small learning rate. However, the right graph (lr = 1e-8) below shows proper convergence.
 
-loss graph - pink : test loss before quantization
+loss graph  
+- pink : test loss before quantization  
+- blue : training loss before quantization  
+- orange : test loss after quantization  
 
-                 - blue : training loss before quantization
-
-                 - orange : test loss after quantization 
-
-nme graph - green : test nme before quantization
-
-                  - red : training nme before quantization
-
-                  - blue : test nme after quantization 
+nme graph  
+- green : test nme before quantization  
+- red : training nme before quantization  
+- blue : test nme after quantization  
 
 left : lr = 1e-10                                            right : lr = 1e-8
 
@@ -871,24 +830,21 @@ left : lr = 1e-10                                            right : lr = 1e-8
     </div>
 </div>
 
-### Exp 2. QAT - The effect of epoch 
-                      to freeze quantization parameters and bn stat
+### Exp 2. QAT - The effect of epoch to freeze quantization parameters and bn stat
 
 There is no significant difference in the effect of epochs on which you will freeze the quantization parameters(observers) and BatchNorm stats.
 
 I tested various values of epoch to freeze the observers and bn stats, but there was no significant difference in the resulting converged value of loss or nme.
 
-loss graph - pink : test loss before quantization
+loss graph  
+- pink : test loss before quantization  
+- blue : training loss before quantization  
+- orange : test loss after quantization  
 
-                 - blue : training loss before quantization
-
-                 - orange : test loss after quantization 
-
-nme graph - green : test nme before quantization
-
-                  - red : training nme before quantization
-
-                  - blue : test nme after quantization 
+nme graph  
+- green : test nme before quantization  
+- red : training nme before quantization  
+- blue : test nme after quantization  
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
@@ -905,19 +861,18 @@ I tested only three kinds of observers : default observer, histogram observer, a
 
 [https://github.com/pytorch/pytorch/blob/main/torch/ao/quantization/observer.py](https://github.com/pytorch/pytorch/blob/main/torch/ao/quantization/observer.py)
 
-loss graph - pink : test loss before quantization
+loss graph  
+- pink : test loss before quantization  
+- blue : training loss before quantization  
+- orange : test loss after quantization  
 
-                 - blue : training loss before quantization
+nme graph  
+- green : test nme before quantization  
+- red : training nme before quantization  
+- blue : test nme after quantization  
 
-                 - orange : test loss after quantization 
-
-nme graph - green : test nme before quantization
-
-                  - red : training nme before quantization
-
-                  - blue : test nme after quantization 
-
-left : default observer             right : MovingAverageMinMaxObserver with U8S8
+left : default observer  
+right : MovingAverageMinMaxObserver with U8S8  
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
@@ -927,27 +882,19 @@ left : default observer             right : MovingAverageMinMaxObserver with U8S
 
 ### Experiment
 
-- dataset : calibration : batch_size = 32, iteration = 32
-
-                     inference : batch_size = 128, iteration = 61
+- dataset :  
+calibration : batch_size = 32, iteration = 32  
+inference : batch_size = 128, iteration = 61  
 
 - hardware : cpu
 - learning rate : 1e-8
 
-|  | model size [MB] | inference time [s] | loss | ocualr_nme [%] | pupil_nme [%] |
-| --- | --- | --- | --- | --- | --- |
+| method | model size [MB] | inference time [s] | loss | ocualr_nme [%] | pupil_nme [%] |
+| :------ | :--- | :--- | :--- | :--- | :--- |
 | Original Model | 44.011 | 76.06 | 0.04312033 | 2.73897 | 3.79658 |
-| Static PTQ
-with
-default observer | 11.121 | 22.30 | 0.07286325 | 4.54174 | 6.29569 |
-| QAT
-with
-default observer | 11.121 | 22.04 | 0.07202724 | 4.48688 | 6.21954 |
-| QAT
-with
-MovingAverage
-MinMaxObserver
-(U8S8) | 11.121 | 21.75 | 0.05595706 | 3.50271 | 4.85493 |
+| Static PTQ with default observer | 11.121 | 22.30 | 0.07286325 | 4.54174 | 6.29569 |
+| QAT with default observer | 11.121 | 22.04 | 0.07202724 | 4.48688 | 6.21954 |
+| QAT with MovingAverage MinMaxObserver (U8S8) | 11.121 | 21.75 | 0.05595706 | 3.50271 | 4.85493 |
 
 ### Result
 
@@ -978,28 +925,13 @@ When the input is a tight face, the inference output of QAT model seems nearly s
 
 ### Visualization of ONNX via netron.app
 
-<div class="row mt-3">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled14.png" class="img-fluid rounded z-depth-1" zoomable=true %}
-    </div>
-</div>
-
-<div class="row mt-3">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled15.png" class="img-fluid rounded z-depth-1" zoomable=true %}
-    </div>
-</div>
+<swiper-container keyboard="true" navigation="true" pagination="true" pagination-clickable="true" pagination-dynamic-bullets="true" rewind="true">
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled14.png" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled15.png" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled16.png" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+</swiper-container>
 <div class="caption">
-    Visualization of ONNX : Fused Model
-</div>
-
-<div class="row mt-3">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled16.png" class="img-fluid rounded z-depth-1" zoomable=true %}
-    </div>
-</div>
-<div class="caption">
-    Visualization of ONNX : Quantized Model (QDQ format)
+    Visualization of ONNX : Fused Model & Quantized Model (QDQ format)
 </div>
 
 ### INT8 Quantization of ONNX Runtime
@@ -1045,64 +977,19 @@ Quant |
 & fc layer | T | T | F | T | T |
 
 | INT8 Quantization | model size [MB] | inference time [s] | loss | ocualr_nme [%] | pupil_nme [%] |
-| --- | --- | --- | --- | --- | --- |
-| Pre-processed Model | 44.044 | 83.05 | 0.00867057 | 2.73897
-   | 3.79658 |
-| Quantized Model 1 | 11.177 | 90.04
-   | 2.04831275
-   | 594.30187
-   | 823.93989
-   |
-| Quantized Model 2 | 11.113 | 91.34
-   | 2.08157768
-   | 603.68516
-   | 836.92611
-   |
-| Quantized Model 3 | 11.177 | 93.21
-   | 0.19241423
-   | 58.71200
-   | 81.41132
-   |
-| Quantized Model 4 | 11.177 | 90.74
-   | 0.20964802
-   | 65.31481
-   | 90.57096
-   |
-| Quantized Model 5 | 11.377 | 94.70
-   | 0.19232825
-   | 58.67378
-   | 81.35814
-   |
-| Quantized Model 6 | 11.226 | 100.37
-   | 0.19220746
-   | 58.66837
-   | 81.35119
-   |
-| Quantized Model 7 | 35.923 | 90.62
-   | 0.12938738
-   | 39.69218
-   | 55.05709
-   |
-| Quantized Model 8 | 35.923 | 87.56
-   | 0.12887142
-   | 39.57574
-   | 54.89788
-   |
-| Quantized Model 9 | 35.923 | 61.08
-   | 0.12887123
-   | 39.57566
-   | 54.89777
-   |
-| Quantized Model 10 | 35.923 | 60.07
-   | 0.12887123
-   | 39.57566
-   | 54.89777
-   |
-| Quantized Model 11 | 36.384 | 65.18
-   | 0.11555405
-   | 35.54718
-   | 49.31533
-   |
+| :------ | :--- | :--- | :--- | :--- | :--- |
+| Pre-processed Model | 44.044 | 83.05 | 0.00867057 | 2.73897 | 3.79658 |
+| Quantized Model 1 | 11.177 | 90.04 | 2.04831275 | 594.30187 | 823.93989 |
+| Quantized Model 2 | 11.113 | 91.34 | 2.08157768 | 603.68516 | 836.92611 |
+| Quantized Model 3 | 11.177 | 93.21 | 0.19241423 | 58.71200 | 81.41132 |
+| Quantized Model 4 | 11.177 | 90.74 | 0.20964802 | 65.31481 | 90.57096 |
+| Quantized Model 5 | 11.377 | 94.70 | 0.19232825 | 58.67378 | 81.35814 |
+| Quantized Model 6 | 11.226 | 100.37 | 0.19220746 | 58.66837 | 81.35119 |
+| Quantized Model 7 | 35.923 | 90.62 | 0.12938738 | 39.69218 | 55.05709 |
+| Quantized Model 8 | 35.923 | 87.56 | 0.12887142 | 39.57574 | 54.89788 |
+| Quantized Model 9 | 35.923 | 61.08 | 0.12887123 | 39.57566 | 54.89777 |
+| Quantized Model 10 | 35.923 | 60.07 | 0.12887123 | 39.57566 | 54.89777 |
+| Quantized Model 11 | 36.384 | 65.18 | 0.11555405 | 35.54718 | 49.31533 |
 
 ### Result
 
@@ -1201,9 +1088,8 @@ ONNX Runtime INT8 Quantization was not successful, so I also tried FP16 Conversi
 
 - hardware : cpu
 
-| FP16
-Conversion | model size [MB] | inference time [s] | loss | ocualr_nme [%] | pupil_nme [%] |
-| --- | --- | --- | --- | --- | --- |
+| FP16 Conversion | model size [MB] | inference time [s] | loss | ocualr_nme [%] | pupil_nme [%] |
+| :------ | :--- | :--- | :--- | :--- | :--- |
 | Original Model | 43.922 | 207.34 | 0.00867057 | 2.73897 | 3.79658 |
 | Converted Model | 21.969 | 190.82 | 0.00867078 | 2.73904 | 3.79668 |
 
@@ -1215,7 +1101,7 @@ Conversion | model size [MB] | inference time [s] | loss | ocualr_nme [%] | pupi
 
 ### Generated landmark
 
-<div class="row mt-3">
+<div class="row mt-3">s
     <div class="col-sm mt-3 mt-md-0">
         {% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled19.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
