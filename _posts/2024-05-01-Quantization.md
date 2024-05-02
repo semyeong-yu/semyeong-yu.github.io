@@ -89,7 +89,7 @@ There are two types of range-mapping techniques in quantization according to the
 
 - Affine Quantization Mapping : INT8 range is from -128 to 127, which is asymmetric.
     
-    $$s = {\left| \beta\ - \alpha \right| \over 2^{bit}-1}, z=-round(\alpha \over s)-2^{bit-1}$$
+    $$s = \frac{\left| \beta\ - \alpha \right|}{2^{bit}-1}, z = - round(\frac{\alpha}{s})-2^{bit-1}$$
     
     $$\alpha, \beta$$ = min, max of original weight/activation values
     
@@ -99,13 +99,11 @@ There are two types of range-mapping techniques in quantization according to the
     - disadvantage : Affine quantization needs extra computations with calibration of zero-point integer and requires hardware-specific tweaks.
 - Scale Quantization Mapping : INT8 range is from -127 to 127, which is symmetric.
     
-    $$
-    s = {\left| \beta \right| \over 2^{bit-1}-1}, z=0
-    $$
+    $$s = {\left| \beta \right| \over 2^{bit-1}-1}, z=0$$
     
-    $$\beta, \beta$$ = min, max of original weight/activation values where $$\left| \alpha \right| <= \left| \beta \right|$$ 
+    $$\beta, \beta$$ = min, max of original weight/activation values where $$\vert \alpha \vert \leq \vert \beta \vert$$ 
     
-    $$\beta_q, \beta_q$$  = min, max of quantized weight/activation values ( $$\beta_q=2^{bit-1}-1$$  )
+    $$\beta_q, \beta_q$$  = min, max of quantized weight/activation values ($$\beta_q = 2^{bit-1}-1$$)
     
     - advantage : Symmetric quantization eliminates the need to calculate zero-point integer and it is simpler than asymmetric quantization. Thus, symmetric quantization is more hardware-friendly and produces higher speedup.
     - disadvantage : For skewed signals like non-negative activations, this can result in bad quantization resolution because the clipping range includes negative values that never show up in the input.
@@ -923,13 +921,13 @@ When the input is a tight face, the inference output of QAT model seems nearly s
 
 <div class="row">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled14.png" class="img-fluid rounded z-depth-1" %}
+        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled14.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled15.png" title="example image" class="img-fluid rounded z-depth-1" %}
+        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled15.png" title="example image" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled16.png" title="example image" class="img-fluid rounded z-depth-1" %}
+        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled16.png" title="example image" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
