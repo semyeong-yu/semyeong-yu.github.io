@@ -73,10 +73,14 @@ Here, **s** is a scale factor which determines the range mapping and **z** is a 
 
 When we quantize weights or activations of a model by the above equation in the case of INT8 quantization, we have to map the range of FP32 precision into the range of INT8 precision as shown in the picture below.
 
-<swiper-container keyboard="true" navigation="true" pagination="true" pagination-clickable="true" pagination-dynamic-bullets="true" rewind="true">
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled1.png" class="img-fluid rounded z-depth-1" %}</swiper-slide>
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled.png" class="img-fluid rounded z-depth-1" %}</swiper-slide>
-</swiper-container>
+<div class="row justify-content-sm-center">
+    <div class="col-sm-8 mt-3 mt-md-0">
+        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled1.png" class="img-fluid rounded z-depth-1" %}
+    </div>
+    <div class="col-sm-4 mt-3 mt-md-0">
+        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled.png" title="example image" class="img-fluid rounded z-depth-1" %}
+    </div>
+</div>
 <div class="caption">
     Scale Quantization (Symmetric) from FP32 to IN8 vs Affine Quantization (Asymmetric) from FP32 to INT8
 </div>
@@ -85,9 +89,7 @@ There are two types of range-mapping techniques in quantization according to the
 
 - Affine Quantization Mapping : INT8 range is from -128 to 127, which is asymmetric.
     
-    $$
-    s = {\left| \beta\ - \alpha \right| \over 2^{bit}-1}, z=-round(\alpha \over s})-2^{bit-1}
-    $$
+    $$s = {\left| \beta\ - \alpha \right| \over 2^{bit}-1}, z=-round(\alpha \over s)-2^{bit-1}$$
     
     $$\alpha, \beta$$ = min, max of original weight/activation values
     
@@ -112,10 +114,14 @@ To quantize each layer by MinMax, we need to know the value of $$\alpha,\ \beta$
 
 The above equations are based on MinMax observer, but there are also many other observers in Pytorch framework as shown in the picture below.
 
-<swiper-container keyboard="true" navigation="true" pagination="true" pagination-clickable="true" pagination-dynamic-bullets="true" rewind="true">
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled2.png" class="img-fluid rounded z-depth-1" %}</swiper-slide>
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled3.png" class="img-fluid rounded z-depth-1" %}</swiper-slide>
-</swiper-container>
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled2.png" class="img-fluid rounded z-depth-1" %}
+    </div>
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled3.png" title="example image" class="img-fluid rounded z-depth-1" %}
+    </div>
+</div>
 <div class="caption">
     Different observers to determine scale factor and zero-point integer
 </div>
@@ -146,21 +152,15 @@ In addition, we usually fuse modules of a model before quantization since it wou
 # torch.ao.quantization.fuse_modules() is used     for PTQ
 # torch.ao.quantization.fuse_modules_qat() is used for QAT
  
-torch.ao.quantization.fuse_modules_qat(model, 
-																			[["conv1", "bn1", "act1"]], 
-																			inplace=True)
+torch.ao.quantization.fuse_modules_qat(model, [["conv1", "bn1", "act1"]], inplace=True)
 
 for name1, module1 in model.named_children():
     if "layer" in name1 and module1 is not None:
         for name2, module2 in module1.named_children():
-            torch.ao.quantization.fuse_modules_qat(module2, 
-																					[["conv1", "bn1"], ["conv2", "bn2"]],
-																				  inplace=True)
+            torch.ao.quantization.fuse_modules_qat(module2, [["conv1", "bn1"], ["conv2", "bn2"]], inplace=True)
             for name3, module3 in module2.named_children():
                 if name3 == "downsample" and module3 is not None:
-                    torch.ao.quantization.fuse_modules_qat(module3, 
-																													[["0", "1"]], 
-																													inplace=True)
+                    torch.ao.quantization.fuse_modules_qat(module3, [["0", "1"]], inplace=True)
 ```
 
 ## Post-Training Dynamic Quantization in Pytorch
@@ -198,18 +198,21 @@ You can specify submodules which will be quantized using “qconfig_spec” argu
 That’s all!
 
 ```python
-quantized_model = torch.ao.quantization.quantize_dynamic(
-									model, qconfig_spec={torch.nn.Linear}, dtype=torch.quint8)
+quantized_model = torch.ao.quantization.quantize_dynamic(model, qconfig_spec={torch.nn.Linear}, dtype=torch.quint8)
 ```
 
 ## Post-Training Static Quantization in Pytorch
 
 If the clipping range of activation is determined before inference, it is called static quantization. Both weights and activations of a trained model are quantized before inference. Here, by calibration, observers observe the range of stored values to determine quantization parameters.
 
-<swiper-container keyboard="true" navigation="true" pagination="true" pagination-clickable="true" pagination-dynamic-bullets="true" rewind="true">
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled5.png" class="img-fluid rounded z-depth-1" %}</swiper-slide>
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled6.png" class="img-fluid rounded z-depth-1" %}</swiper-slide>
-</swiper-container>
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled5.png" class="img-fluid rounded z-depth-1" %}
+    </div>
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled6.png" title="example image" class="img-fluid rounded z-depth-1" %}
+    </div>
+</div>
 <div class="caption">
     Post-Training Static Quantization - calibrate & quantize
 </div>
@@ -234,21 +237,15 @@ Note that inference of a quantized model is still executed on CPU for Pytorch fr
 Fuse modules for less accuracy drop
 
 ```python
-torch.ao.quantization.fuse_modules(model, 
-																	[["conv1", "bn1", "act1"]], 
-																	inplace=True)
+torch.ao.quantization.fuse_modules(model, [["conv1", "bn1", "act1"]], inplace=True)
 
 for name1, module1 in model.named_children():
     if "layer" in name1 and module1 is not None:
         for name2, module2 in module1.named_children():
-            torch.ao.quantization.fuse_modules(module2, 
-																					[["conv1", "bn1"], ["conv2", "bn2"]],
-																				  inplace=True)
+            torch.ao.quantization.fuse_modules(module2, [["conv1", "bn1"], ["conv2", "bn2"]], inplace=True)
             for name3, module3 in module2.named_children():
                 if name3 == "downsample" and module3 is not None:
-                    torch.ao.quantization.fuse_modules(module3, 
-																											[["0", "1"]], 
-																											inplace=True)
+                    torch.ao.quantization.fuse_modules(module3, [["0", "1"]], inplace=True)
 
 # insert torch.ao.quantization.QuantStub() layer 
 #	and torch.ao.quantization.DeQuantStub() layer 
@@ -765,8 +762,7 @@ python preprocess.py --input original.onnx --output preprocess.onnx
 # Step 2. Quantize with optimization
 python quantize.py --input preprocess.onnx --output quantized_2.onnx
 # Step 3. Debug
-python preprocess.py --input original.onnx --output preprocess_2.onnx 
-										 --skip_symbolic_shape True
+python preprocess.py --input original.onnx --output preprocess_2.onnx --skip_symbolic_shape True
 python debug.py --float_model preprocess_2.onnx --qdq_model quantized_2.onnx
 ```
 
@@ -925,11 +921,17 @@ When the input is a tight face, the inference output of QAT model seems nearly s
 
 ### Visualization of ONNX via netron.app
 
-<swiper-container keyboard="true" navigation="true" pagination="true" pagination-clickable="true" pagination-dynamic-bullets="true" rewind="true">
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled14.png" class="img-fluid rounded z-depth-1" %}</swiper-slide>
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled15.png" class="img-fluid rounded z-depth-1" %}</swiper-slide>
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled16.png" class="img-fluid rounded z-depth-1" %}</swiper-slide>
-</swiper-container>
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled14.png" class="img-fluid rounded z-depth-1" %}
+    </div>
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled15.png" title="example image" class="img-fluid rounded z-depth-1" %}
+    </div>
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled16.png" title="example image" class="img-fluid rounded z-depth-1" %}
+    </div>
+</div>
 <div class="caption">
     Visualization of ONNX : Fused Model & Quantized Model (QDQ format)
 </div>
@@ -1087,7 +1089,7 @@ ONNX Runtime INT8 Quantization was not successful, so I also tried FP16 Conversi
 
 ### Generated landmark
 
-<div class="row mt-3">s
+<div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
         {% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled19.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
