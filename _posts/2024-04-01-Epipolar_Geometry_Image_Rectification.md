@@ -67,15 +67,18 @@ real-world의 3D 좌표 (X, Y, Z) 에 있는 물체를 카메라에 투영하기
 
 $$\begin{bmatrix} x \\ y \\ z \end{bmatrix}$$ = $$\begin{bmatrix} f_x & 0 & -W/2 \\ 0 & f_y & -H/2 \\ 0 & 0 & 1 \end{bmatrix}$$ $$[R \vert t]$$ $$\begin{bmatrix} X \\ Y \\ Z \\ 1 \end{bmatrix}$$  
 
-$$ x_L \Leftrightarrow x_R $$ : homography matrix H (projection of 2D point to 2D point) ( $$x_R = H x_L$$ )  
-$$ X \Leftrightarrow x_L $$ : projection matrix $$P_L$$ ( $$x_L = P_LX$$  where  $$P_L = K_L[R \vert t]$$ )
+$$ x_L \Leftrightarrow x_R $$ : homography matrix H (projection of 2D point to 2D point)  
+$$x_R = H x_L$$  
+$$ X \Leftrightarrow x_L $$ : projection matrix $$P_L$$  
+$$x_L = P_LX$$  where  $$P_L = K_L[R \vert t]$$  
 
 ### Fundamental matrix
 
 1. $$x_R = H x_L$$
 2. $$e_R$$과 $$x_R$$은 직선 $$l_R$$ 위에 있으므로 $$e_{R}^{T} l_R = 0$$ and $$x_{R}^{T} l_R = 0$$  
 예를 들어, 직선 2x+y-2z = 0에 대해 $$l_R$$은 (2, 1, -2)이고, $$e_R$$ 및 $$x_R$$은 직선 위에 있는 점 (x, y, z)이다.
-3. 위의 1.과 2.로부터  $$l_R = e_R \circledast x_R = e_R \circledast H x_L = F x_L$$   where  F = fundamental matrix = $$e_R \circledast H$$
+3. 위의 1.과 2.로부터  $$l_R = e_R \circledast x_R = e_R \circledast H x_L = F x_L$$  
+where  F = fundamental matrix = $$e_R \circledast H$$
 4. 위의 2.와 3.으로부터 $$x_{R}^{T} l_R = x_{R}^{T} F x_L = 0$$
 5. 위의 2.와 3.으로부터 $$e_{R}^{T} l_R = e_{R}^{T} F x_L = 0$$ 이고, 모든 $$x_L$$에 대해 $$e_{R}^{T} F = 0$$을 만족하므로 $$e_R$$은 F의 left null vector이다. (유사한 방법으로 $$e_L$$은 F의 right null vector이다.)  
 
@@ -224,12 +227,12 @@ One strategy is to pick a plane parallel to the line where the two original opti
 (`a set of seven or more correspondences로 fundamental matrix, epipole 구해서 rectification 하는 거 이해 못 했음. 추가 공부 필요`)  
 (fundamental matrix와 epipole 알면 image rectification 수행 가능)
 
-> 참고 사이트 : 
+> 참고 사이트 :  
 [https://blog.naver.com/hms4913/220043661788](https://blog.naver.com/hms4913/220043661788)  
 [https://en.wikipedia.org/wiki/Image_rectification#cite_note-HARTLEY2003-9](https://en.wikipedia.org/wiki/Image_rectification#cite_note-HARTLEY2003-9)  
 [https://csm-kr.tistory.com/64](https://csm-kr.tistory.com/64)  
 CSC420: Intro to Image Understanding 수업 내용  
 
-빨간색 글씨로 적은 부분은 아직 이해하지 못해서 남겨놓은 코멘트입니다.  
+중간중간에 있는 질문들은 아직 이해하지 못해서 남겨놓은 코멘트입니다.  
 추후에 다시 읽어보고 이해했다면 업데이트할 예정입니다.  
 혹시 알고 계신 분이 있으면 댓글로 남겨주시면 감사하겠습니다!
