@@ -1,11 +1,11 @@
 ---
 layout: post
 title: Quantization
-date: 2024-05-01 14:00:00
+date: 2024-03-02 14:00:00
 description: Quantization in Pytorch and ONNX
 tags: quantization
 categories: quantization
-thumbnail: assets/img/2024-05-01-Quantization/Untitled1.png
+thumbnail: assets/img/2024-03-02-Quantization/Untitled1.png
 giscus_comments: true
 related_posts: true
 toc:
@@ -75,10 +75,10 @@ When we quantize weights or activations of a model by the above equation in the 
 
 <div class="row justify-content-sm-center">
     <div class="col-sm-8 mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled1.png" class="img-fluid rounded z-depth-1" %}
+        {% include figure.liquid path="assets/img/2024-03-02-Quantization/Untitled1.png" class="img-fluid rounded z-depth-1" %}
     </div>
     <div class="col-sm-4 mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled.png" title="example image" class="img-fluid rounded z-depth-1" %}
+        {% include figure.liquid path="assets/img/2024-0-01-Quantization/Untitled.png" title="example image" class="img-fluid rounded z-depth-1" %}
     </div>
 </div>
 <div class="caption">
@@ -114,10 +114,10 @@ The above equations are based on MinMax observer, but there are also many other 
 
 <div class="row">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled2.png" class="img-fluid rounded z-depth-1" %}
+        {% include figure.liquid path="assets/img/2024-03-02-Quantization/Untitled2.png" class="img-fluid rounded z-depth-1" %}
     </div>
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled3.png" title="example image" class="img-fluid rounded z-depth-1" %}
+        {% include figure.liquid path="assets/img/2024-03-02-Quantization/Untitled3.png" title="example image" class="img-fluid rounded z-depth-1" %}
     </div>
 </div>
 <div class="caption">
@@ -167,7 +167,7 @@ If the clipping range of activation is determined during inference, it is called
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled4.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-03-02-Quantization/Untitled4.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -205,10 +205,10 @@ If the clipping range of activation is determined before inference, it is called
 
 <div class="row">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled5.png" class="img-fluid rounded z-depth-1" %}
+        {% include figure.liquid path="assets/img/2024-03-02-Quantization/Untitled5.png" class="img-fluid rounded z-depth-1" %}
     </div>
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled6.png" title="example image" class="img-fluid rounded z-depth-1" %}
+        {% include figure.liquid path="assets/img/2024-03-02-Quantization/Untitled6.png" title="example image" class="img-fluid rounded z-depth-1" %}
     </div>
 </div>
 <div class="caption">
@@ -485,7 +485,7 @@ Deploying models on specific hardware can be challenging due to the difference i
     
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled7.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-03-02-Quantization/Untitled7.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -533,7 +533,7 @@ Quantization in ONNX Runtime refers to INT8 or UINT8 linear quantization of an O
     
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled8.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-03-02-Quantization/Untitled8.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -821,7 +821,7 @@ right : lr = 1e-8
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled9.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-03-02-Quantization/Untitled9.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -843,7 +843,7 @@ nme graph
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled10.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-03-02-Quantization/Untitled10.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -870,7 +870,7 @@ right : MovingAverageMinMaxObserver with U8S8
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled11.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-03-02-Quantization/Untitled11.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -903,7 +903,7 @@ You can see that the inference output of QAT model is better than that of Static
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled12.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-03-02-Quantization/Untitled12.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -911,7 +911,7 @@ When the input is a tight face, the inference output of QAT model seems nearly s
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled13.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-03-02-Quantization/Untitled13.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -921,13 +921,13 @@ When the input is a tight face, the inference output of QAT model seems nearly s
 
 <div class="row">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled14.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid path="assets/img/2024-03-02-Quantization/Untitled14.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled15.png" title="example image" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid path="assets/img/2024-03-02-Quantization/Untitled15.png" title="example image" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/2024-05-01-Quantization/Untitled16.png" title="example image" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid path="assets/img/2024-03-02-Quantization/Untitled16.png" title="example image" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -1019,7 +1019,7 @@ You can see that accuracy drop of ONNX quantization is significant.
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled17.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-03-02-Quantization/Untitled17.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -1052,7 +1052,7 @@ By using the above functions, you can figure out which node has the significant 
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled18.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-03-02-Quantization/Untitled18.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -1089,7 +1089,7 @@ ONNX Runtime INT8 Quantization was not successful, so I also tried FP16 Conversi
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-01-Quantization/Untitled19.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-03-02-Quantization/Untitled19.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 

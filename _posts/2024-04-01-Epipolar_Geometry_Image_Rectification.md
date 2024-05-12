@@ -92,7 +92,7 @@ where  F = fundamental matrix = $$e_R \circledast H$$
 
 essential matrix는 fundamental matrix의 specialization으로, pixel coordinates이 특별히 `calibrated camera들을 다루는 normalized image coordinates (K = I)인 경우`에 사용된다. 즉, K = I 여서 $$x^{\ast} = PX = K[R \vert t]X = [R \vert t]X$$ 를 만족하는 $$x^{\ast}$$을 normalized coordinates에 있는 image point라 부른다.  
 
-그리고 epipolar constraint란, vector $$x_L O_L$$과 vector $$x_R O_R$$과 vector $$O_L O_R$$이 같은 평면 epipolar plane 위에 있다는 것이다. 이를 normalized coordinates에서 생각하면, `$$x_R^{\ast}$$과 $$Rx_L^{\ast}$$과 t가 같은 평면 epipolar plane 위에 있다`는 뜻이므로 (그 이유는 아래의 Algebraic derivation을 참고하자) 이를 간단하게 수식으로 표현하면 `$$x_R^{\ast T}(t \circledast Rx_L^{\ast}) = 0$$` 이다.  
+그리고 epipolar constraint란, vector $$x_L O_L$$과 vector $$x_R O_R$$과 vector $$O_L O_R$$이 같은 평면 epipolar plane 위에 있다는 것이다. 이를 normalized coordinates에서 생각하면, $$x_R^{\ast}$$과 $$Rx_L^{\ast}$$과 t가 `같은 평면 epipolar plane 위에 있다`는 뜻이므로 (그 이유는 아래의 Algebraic derivation을 참고하자) 이를 간단하게 수식으로 표현하면 $$x_R^{\ast T}(t \circledast Rx_L^{\ast}) = 0$$ 이다.  
 
 즉, essential matrix와 관련된 식을 정리하면
 - `essential matrix` : $$E = t \circledast R$$
