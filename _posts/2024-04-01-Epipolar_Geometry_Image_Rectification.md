@@ -5,7 +5,7 @@ date: 2024-04-01 17:00:00
 description: Epipolar Geometry & Image Rectification
 tags: epipolar fundamental essential image rectification
 categories: depth-estimation
-thumbnail: assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/1.png
+thumbnail: assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/1.JPG
 giscus_comments: true
 related_posts: true
 toc:
@@ -21,7 +21,7 @@ featured: true
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/1.JPG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -51,7 +51,7 @@ $$e_L, e_R$$ : epipole of left and right camera
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/3.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/3.JPG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -199,7 +199,7 @@ Image rectification을 수행하기 위해서는 projective transformation을 �
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/8.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/8.JPG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -208,7 +208,7 @@ Image rectification을 수행하기 위해서는 projective transformation을 �
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/9.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/9.JPG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Monocular Depth Estimation with Left-Right Consistency
+title: Monocular Depth Estimation with Left Right Consistency
 date: 2024-04-05 17:00:00
 description: Unsupervised Monocular Depth Estimation with Left-Right Consistency
 tags: unsupervised monocular depth consistency
@@ -111,7 +111,7 @@ d^ : depth
 b : d^ = b - d : d^ - f 이므로 d^ (b - d) = b (d^ - f) 이고, 이를 정리하면 d^d = bf, 즉 `d^ = bf / d` 이다.  
 만약 disparity $$d = x_{r} - x_{l}$$ 과 depth Z = d^를 얻었다면, 아래의 도식으로 X, Y 값도 얻을 수 있어서 3D point 좌표를 알 수 있다.  
 `(아래의 도식은 뭘 말하는거지?)`  
-$$x = \frac{f \dot X}{Z} + p_x$$  
+$$x = \frac{f \cdot X}{Z} + p_x$$  
 
 #### Depth Estimation Network
 
@@ -223,11 +223,11 @@ Test : on other datasets like Make3D and CamVid
 
 `Post-processing` :  
 original left image로부터 구한 disparity map을 $$d^{l}$$ 라 하고,  
-flipped left image로부터 구한 disparity map을 $$d^{l \dot}$$ 라 하고,  
-이를 다시 flip한 걸 $$d^{l \dot \dot}$$ 라 할 때,  
+flipped left image로부터 구한 disparity map을 $$d^{l \ast}$$ 라 하고,  
+이를 다시 flip한 걸 $$d^{l \ast \ast}$$ 라 할 때,  
 $$d^{l}$$의 경우 stereo disocclusions which create disparity ramps(경사) on both the left side of the image and the left of occluders 가 있을 수 있는데,  
-$$d^{l \dot \dot}$$의 경우 disparity ramps are located on the right side of the image and the right of occluders 이므로  
-`We combine both disparity maps to form the final disparity map` by assigning the first 5% on the left of the image using $$d^{l \dot \dot}$$ and the last 5% on the right to the disparities from $$d^{l}$$. The central part of the final disparity map is the average of $$d^{l \dot \dot}$$ and $$d^{l}$$.  
+$$d^{l \ast \ast}$$의 경우 disparity ramps are located on the right side of the image and the right of occluders 이므로  
+`We combine both disparity maps to form the final disparity map` by assigning the first 5% on the left of the image using $$d^{l \ast \ast}$$ and the last 5% on the right to the disparities from $$d^{l}$$. The central part of the final disparity map is the average of $$d^{l \ast \ast}$$ and $$d^{l}$$.  
 이러한 post-processing을 통해 can reduce the effect of stereo disocclusions, and lead to better accuracy and less visual artifacts,  
 but double the amount of test time  
 (`stereo disocclusions의 영향을 줄이기 위한 post-processing 과정 아직 완벽하게 이해하지는 못했음`)  
