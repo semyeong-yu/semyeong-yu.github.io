@@ -215,6 +215,12 @@ Test : on other datasets like Make3D and CamVid
     </div>
 </div>
 
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/12.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
 `Post-processing` :  
 original left image로부터 구한 disparity map을 $$d^{l}$$ 라 하고,  
 flipped left image로부터 구한 disparity map을 $$d^{l \dot}$$ 라 하고,  
