@@ -14,7 +14,6 @@ toc:
 images:
   compare: true
   slider: true
-featured: true
 ---
 
 # **Introduction**
