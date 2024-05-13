@@ -2,8 +2,8 @@
 layout: post
 title: Reconstruction and Synthesis 3D humans in 3D scenes
 date: 2024-05-13 14:00:00
-description: SoC Colloquium by Siyu Tang (ETH Zurich)
-tags: super-resolution deblur flow dynamic attention
+description: SoC Colloquium lecture by Siyu Tang (ETH Zurich)
+tags: reconstruction synthesis 3D human
 categories: 3d-view-synthesis
 thumbnail: assets/img/2024-05-13-Reconstruction_Synthesis_3D_humans/3.png
 giscus_comments: true
