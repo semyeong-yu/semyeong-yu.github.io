@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: distill
 title: Monocular Depth Estimation with Left Right Consistency
 date: 2024-04-05 17:00:00
 description: Unsupervised Monocular Depth Estimation with Left-Right Consistency
@@ -14,6 +14,21 @@ toc:
 images:
   compare: true
   slider: true
+_styles: >
+  .fake-img {
+    background: #bbb;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 12px;
+  }
+  .fake-img p {
+    font-family: monospace;
+    color: white;
+    text-align: left;
+    margin: 12px 0;
+    text-align: center;
+    font-size: 16px;
+  }
 ---
 
 # Unsupervised Monocular Depth Estimation with Left-Right Consistency
