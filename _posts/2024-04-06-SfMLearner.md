@@ -82,7 +82,7 @@ $$\hat I_{s}(p)$$ : source view warped to target coordinate frame (= reconstruct
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-06-SfMLearner/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-06-SfMLearner/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -143,8 +143,7 @@ $$\rightarrow$$ 해결 2. add `multi-scale` and `smoothness loss` term
     </div>
 </div>
 <div class="caption">
-    s : source view image index  
-    p : target view pixel index
+    s : source view image index  /  p : target view pixel index
 </div>
 
 <div class="row mt-3">
@@ -153,10 +152,8 @@ $$\rightarrow$$ 해결 2. add `multi-scale` and `smoothness loss` term
     </div>
 </div>
 <div class="caption">
-    l : multi-scale  
-    s : source view image index
+    l : multi-scale  /  s : source view image index
 </div>
-
 
 
 #### Network Architecture
@@ -181,21 +178,16 @@ output : 6-DoF relative poses between target view and each source view
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-06-SfMLearner/7.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-06-SfMLearner/7.png" class="img-fluid rounded z-depth-2" zoomable=true %}
     </div>
 </div>
 
-- Network 3. `Explainablity soft mask` (= `reconstruction weight per pixel`) (아래 figure의 빨간 부분)  
+- Network 3. `Explainablity soft mask` (= `reconstruction weight per pixel`) (위의 figure의 빨간 부분)  
 output : multi-scale explainability masks  
 (it estimates `2 channels` for each source view at each prediction layer)  
 
 `weight per pixel인데 왜 2 channels are needed for explainability mask???`  
 
-<div class="row mt-3">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-06-SfMLearner/7.png" class="img-fluid rounded z-depth-1" zoomable=true %}
-    </div>
-</div>
 
 ## Experiments
 
