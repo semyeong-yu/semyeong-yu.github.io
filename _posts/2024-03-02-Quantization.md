@@ -80,14 +80,6 @@ When we quantize weights or activations of a model by the above equation in the 
         {% include figure.liquid path="assets/img/2024-03-02-Quantization/Untitled.png" title="example image" class="img-fluid rounded z-depth-1" %}
     </div>
 </div>
-<!-- <div class="row justify-content-sm-center">
-    <div class="col-sm-8 mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/2024-03-02-Quantization/Untitled1.png" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm-4 mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/2024-0-01-Quantization/Untitled.png" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div> -->
 <div class="caption">
     Scale Quantization (Symmetric) from FP32 to IN8 vs Affine Quantization (Asymmetric) from FP32 to INT8
 </div>
