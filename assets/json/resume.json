@@ -45,7 +45,7 @@
   ],
   "education": [
     {
-      "institution": "KAIST (Korea Advanced Institute of Science and Technology",
+      "institution": "KAIST (Korea Advanced Institute of Science and Technology)",
       "location": "Daejeon, Korea",
       "url": "https://www.kaist.ac.kr/en/",
       "area": "4.09/4.3",
@@ -53,25 +53,33 @@
       "startDate": "2020-03-02",
       "endDate": "2024-08-31",
       "score": "4.09/4.3",
-      "courses": ["Electrical Engineering", "Computer Science"]
+      "courses": ["Major : Electrical Engineering", "Minor : Computer Science"]
     },
     {
-      "institution": "VICLab at KAIST (Korea Advanced Institute of Science and Technology",
+      "institution": "TUM (Technical University of Munich)",
+      "location": "Munich, Germany",
+      "url": "https://www.tum.de/en/",
+      "studyType": "Exchange Student",
+      "startDate": "2023-08-28",
+      "endDate": "2024-02-25",
+      "courses": ["Major : Informatik"]
+    },
+    {
+      "institution": "VICLab at KAIST (Korea Advanced Institute of Science and Technology)",
       "location": "Daejeon, Korea",
       "url": "https://www.kaist.ac.kr/en/",
       "studyType": "M.S.",
       "startDate": "2024-09-02",
-      "endDate": "20XX-XX-XX",
       "courses": ["Video Computing", "Image Computing"]
     }
   ],
   "awards": [
     {
-      "title": "Dean's List",
+      "title": "Fall, 2022 Dean's List",
       "date": "2023-02-27",
       "awarder": "KAIST College of Engineering",
       "url": "https://engineering.kaist.ac.kr/",
-      "summary": "Fall, 2022 : Top 3% at Electrical Engineering Department"
+      "summary": "Top 3% at Electrical Engineering Department"
     }
   ],
   "certificates": [
