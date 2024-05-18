@@ -489,8 +489,8 @@ jsonresume:
   - basics
   - work
   - education
-  - publications
-  - projects
+  # - publications
+  # - projects
   # - volunteer
   - awards
   # - certificates
