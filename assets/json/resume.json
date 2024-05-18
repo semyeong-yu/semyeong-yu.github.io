@@ -24,12 +24,11 @@
   },
   "work": [
     {
-      "name": "Deep in Sight",
-      "position": "Internship",
+      "name": "Task : Quantization of Deep-Learning Models on Pytorch and ONNX",
+      "position": "Internship at Company: Deep in Sight",
       "url": "https://www.dinsight.ai/",
       "startDate": "2023-06-26",
       "endDate": "2023-08-23",
-      "summary": "Task : Quantization of Deep-Learning Models on Pytorch and ONNX",
       "highlights": ["Quantization"]
     }
   ],
@@ -47,7 +46,7 @@
   "education": [
     {
       "institution": "KAIST (Korea Advanced Institute of Science and Technology",
-      "location": "Daejeon, South Korea",
+      "location": "Daejeon, Korea",
       "url": "https://www.kaist.ac.kr/en/",
       "area": "4.09/4.3",
       "studyType": "B.S.",
@@ -58,7 +57,7 @@
     },
     {
       "institution": "VICLab at KAIST (Korea Advanced Institute of Science and Technology",
-      "location": "Daejeon, South Korea",
+      "location": "Daejeon, Korea",
       "url": "https://www.kaist.ac.kr/en/",
       "studyType": "M.S.",
       "startDate": "2024-09-02",
