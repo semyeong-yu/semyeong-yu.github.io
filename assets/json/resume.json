@@ -226,9 +226,9 @@
       "url": "https://example.com"
     },
     {
-      "name": "AI-Based Autonomous Rover",
-      "summary": "Autonomous Rover avoids Obstacles and grasps Landmines",
-      "highlights": ["ROS", "ORB_SLAM3", "Motion Primitive", "YOLOv5", "Pose Estimation", "LLM", "Manipulation"],
+      "name": "AI-Based Autonomous Rover avoiding ",
+      "summary": "Robot avoids Obstacles and grasps Landmines ",
+      "highlights": ["ROS, Jetson, Armpi Pro", "ORB_SLAM3 : localization", "Motion Primitive : motion planner", "YOLOv5 : object detection", "Pose Estimation : depth image to point cloud", "LLM : task planner", "Manipulation : grasping"],
       "startDate": "2024-03-04",
       "endDate": "2024-06-07",
       "url": "https://example.com"
