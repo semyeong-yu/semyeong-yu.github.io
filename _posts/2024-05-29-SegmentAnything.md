@@ -1,8 +1,8 @@
 ---
-layout: distill
+layout: post
 title: SegmentAnything
 date: 2024-05-29 14:00:00
-description: Image Segmentation
+description: Promptable Image Segmentation
 tags: image segmentation
 categories: cv-tasks
 thumbnail: assets/img/2024-05-29-SegmentAnything/1.png

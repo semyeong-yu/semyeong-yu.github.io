@@ -1,5 +1,5 @@
 ---
-layout: distill
+layout: post
 title: Reconstruction and Synthesis 3D humans in 3D scenes
 date: 2024-05-13 14:00:00
 description: SoC Colloquium lecture by Siyu Tang (ETH Zurich)

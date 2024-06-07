@@ -219,10 +219,18 @@
   "projects": [
     {
       "name": "MusicEM",
-      "summary": "MusicEM : Music based on Emotion Sequence from the Movie Dialogues",
-      "highlights": ["transformer", "sentimental analysis", "music generation"],
+      "summary": "MusicEM : Music Generation Model based on Emotion Sequence from the Movie Dialogues",
+      "highlights": ["multi-modal", "transformer", "sentimental analysis", "music generation"],
       "startDate": "2023-04-24",
       "endDate": "2023-06-16",
+      "url": "https://example.com"
+    },
+    {
+      "name": "AI-Based Autonomous Rover",
+      "summary": "Autonomous Rover avoids Obstacles and grasps Landmines",
+      "highlights": ["ROS", "ORB_SLAM3", "Motion Primitive", "YOLOv5", "Pose Estimation", "LLM", "Manipulation"],
+      "startDate": "2024-03-04",
+      "endDate": "2024-06-07",
       "url": "https://example.com"
     }
   ]

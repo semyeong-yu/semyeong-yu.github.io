@@ -490,9 +490,9 @@ jsonresume:
   - work
   - education
   # - publications
-  # - projects
   # - volunteer
   - awards
+  - projects
   # - certificates
   # - skills
   - languages
