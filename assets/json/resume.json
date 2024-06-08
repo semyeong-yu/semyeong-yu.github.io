@@ -227,8 +227,8 @@
     },
     {
       "name": "AI-Based Autonomous Rover",
-      "summary": "Autonomous Rover avoids Obstacles and grasps Landmines\nWe got 1st place on Rehearsal and 2nd place on Final Competition",
-      "highlights": ["ROS, Jetson, Armpi Pro", "ORB_SLAM3, tag : localization", "Motion Primitive : motion planner", "PID control : mobile robot controller", "YOLOv5 : object detection", "Pose Estimation : depth image to point cloud", "LLM : task planner", "Grasping : manipulator controller"],
+      "summary": "We got 1st place on Rehearsal and 2nd place on Final Competition (Task : Avoid Obstacles and Grasp Landmines)",
+      "highlights": ["ROS, Jetson, Armpi Pro", "ORB_SLAM3, tag : localization", "Node-Link Dijkstra : global path planner", "Motion Primitive : local path planner", "PID control : mobile robot controller", "YOLOv5 : object detection", "Pose Estimation : depth image to point cloud", "LLM : task planner", "Grasping : manipulator controller"],
       "startDate": "2024-03-04",
       "endDate": "2024-06-07",
       "url": "https://www.youtube.com/watch?v=lC3vR2oJAB4"
