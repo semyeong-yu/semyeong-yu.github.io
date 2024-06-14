@@ -132,7 +132,7 @@ bing_site_verification: # out your bing-site-verification ID (Bing Webmaster)
 
 blog_name: Paper Review # blog_name will be displayed in your blog page
 blog_nav_tktle: blog
-blog_description: A Lifelong Learner who is Always Seeking New Knowledge
+blog_description: Always Seeking New Knowledge
 permalink: /blog/:year/:title/
 
 # Pagination
