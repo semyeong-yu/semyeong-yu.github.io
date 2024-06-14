@@ -20,7 +20,11 @@ social: true # includes social icons at the bottom of the page
 
 Hello!
 I am a first-year M.S. student at Korea Advanced Institute of Science and Technology (KAIST), advised by Prof. Munchurl Kim.  
+
+
 I am interested in Computer Vision : Deep-Learning application within the field of Image and Video processing. My research areas include Depth Estimation, Super-Resolution, Video Motion Deblurring, Frame Interpolation, and Neural Radiance Fields, etc.  
+
+
 Thank you for visiting my page.
 
 <!-- Write your biography here. Tell the world about yourself. Link to your favorite [subreddit](http://reddit.com). You can put a picture in, too. The code is already in, just name your picture `prof_pic.jpg` and put it in the `img/` folder.
