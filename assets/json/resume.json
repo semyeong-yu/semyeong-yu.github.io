@@ -228,7 +228,7 @@
     {
       "name": "AI-Based Autonomous Rover",
       "summary": "Task : Avoid Obstacles and Grasp Landmines",
-      "highlights": ["ROS, Gazebo, Jetson nano, Armpi Pro", "ORB_SLAM3, tag : localization", "Node-Link Dijkstra : global path planner", "Motion Primitive : local path planner", "PID control : mobile robot controller", "YOLOv5 : object detection", "Pose Estimation : depth image to point cloud", "LLM : task planner", "Grasping : manipulator controller"],
+      "highlights": ["ROS, Gazebo, Jetson Orin Nano, Armpi Pro", "ORB_SLAM3, tag : localization", "Node-Link Dijkstra : global path planner", "Motion Primitive : local path planner", "PID control : mobile robot controller", "YOLOv5 : object detection", "Pose Estimation : depth image to point cloud", "LLM : task planner", "Grasping : manipulator controller"],
       "startDate": "2024-03-04",
       "endDate": "2024-06-07",
       "url": "https://www.youtube.com/watch?v=lC3vR2oJAB4"
