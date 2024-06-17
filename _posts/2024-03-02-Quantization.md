@@ -738,7 +738,7 @@ for act_name, err in act_error.items():
 
 - Summary :
 
-Assume that you implemented Step 1. into [preprocess.py](http://preprocess.py) and Step 2. into [quantize.py](http://quantize.py) and Step 3. into [debug.py](http://debug.py) with proper I/O. Then you can run them in terminal as shown below.
+Assume that you implemented Step 1. into preprocess.py and Step 2. into quantize.py and Step 3. into debug.py with proper I/O. Then you can run them in terminal as shown below.
 
 (i) If you do not optimize ONNX model during quantization (recommended)
 
