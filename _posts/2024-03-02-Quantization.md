@@ -1140,10 +1140,6 @@ Moreover, as the field of deep learning continues to expand, quantization will p
 
 [https://pytorch.org/docs/stable/_modules/torch/ao/nn/intrinsic/modules/fused.html#ConvReLU2d](https://pytorch.org/docs/stable/_modules/torch/ao/nn/intrinsic/modules/fused.html#ConvReLU2d)
 
-[10] Quantization - debug : 
-
-[https://pytorch.org/docs/stable/torch.ao.ns._numeric_suite.html#torch-ao-ns-numeric-suite](https://pytorch.org/docs/stable/torch.ao.ns._numeric_suite.html#torch-ao-ns-numeric-suite)
-
 [11] Quantized Transfer Learning : [https://tutorials.pytorch.kr/intermediate/quantized_transfer_learning_tutorial.html#part-1-training-a-custom-classifier-based-on-a-quantized-feature-extractor](https://tutorials.pytorch.kr/intermediate/quantized_transfer_learning_tutorial.html#part-1-training-a-custom-classifier-based-on-a-quantized-feature-extractor)
 
 ### pytorch_quantization
