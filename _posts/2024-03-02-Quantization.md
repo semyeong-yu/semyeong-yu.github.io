@@ -1152,17 +1152,10 @@ Moreover, as the field of deep learning continues to expand, quantization will p
 
 [https://github.com/NVIDIA/TensorRT/tree/master/tools/pytorch-quantization](https://github.com/NVIDIA/TensorRT/tree/master/tools/pytorch-quantization)
 
-[13] PTQ, QAT :
-
-[https://docs.nvidia.com/deeplearning/tensorrt/pytorch-quantization-toolkit/docs/userguide.html](https://docs.nvidia.com/deeplearning/tensorrt/pytorch-quantization-toolkit/docs/userguide.html)
-
 [14] quant_modules : 
 
 [https://www.ccoderun.ca/programming/doxygen/tensorrt/namespacepytorch__quantization_1_1quant__modules.html](https://www.ccoderun.ca/programming/doxygen/tensorrt/namespacepytorch__quantization_1_1quant__modules.html)
 
-[15] quant_conv : 
-
-[https://docs.nvidia.com/deeplearning/tensorrt/pytorch-quantization-toolkit/docs/_modules/pytorch_quantization/nn/modules/quant_conv.html](https://docs.nvidia.com/deeplearning/tensorrt/pytorch-quantization-toolkit/docs/_modules/pytorch_quantization/nn/modules/quant_conv.html)
 
 [16] Post-Training Static Quantization of resnet50 : 
 
