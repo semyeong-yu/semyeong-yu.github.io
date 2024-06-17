@@ -8,9 +8,6 @@ categories: depth-estimation
 thumbnail: assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/1.JPG
 giscus_comments: true
 related_posts: true
-toc:
-  beginning: true
-  sidebar: right
 images:
   compare: true
   slider: true
