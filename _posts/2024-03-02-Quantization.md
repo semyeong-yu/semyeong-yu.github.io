@@ -397,21 +397,15 @@ Note that training of a model can be executed on both CPU and GPU, but inference
 Fuse modules for less accuracy drop
 
 ```python
-torch.ao.quantization.fuse_modules_qat(model, 
-																			[["conv1", "bn1", "act1"]], 
-																			inplace=True)
+torch.ao.quantization.fuse_modules_qat(model, [["conv1", "bn1", "act1"]], inplace=True)
 
 for name1, module1 in model.named_children():
     if "layer" in name1 and module1 is not None:
         for name2, module2 in module1.named_children():
-            torch.ao.quantization.fuse_modules_qat(module2, 
-																					[["conv1", "bn1"], ["conv2", "bn2"]],
-																				  inplace=True)
+            torch.ao.quantization.fuse_modules_qat(module2, [["conv1", "bn1"], ["conv2", "bn2"]], inplace=True)
             for name3, module3 in module2.named_children():
                 if name3 == "downsample" and module3 is not None:
-                    torch.ao.quantization.fuse_modules_qat(module3, 
-																													[["0", "1"]], 
-																													inplace=True)
+                    torch.ao.quantization.fuse_modules_qat(module3, [["0", "1"]], inplace=True)
 
 # To emulate the quantization process,
 # insert torch.ao.quantization.QuantStub() layer 
