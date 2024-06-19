@@ -166,7 +166,6 @@ ul.task-list input[type="checkbox"] {
 
   img {
     width: 100%;
-    padding-top: 1.25rem;
   }
 
   .card-title {
@@ -681,6 +680,7 @@ footer.sticky-bottom {
     border-top: 1px solid var(--global-divider-color);
     padding-top: 1rem;
     margin-top: 2rem;
+    margin-bottom: -2rem;
     text-align: right;
   }
 
@@ -769,9 +769,6 @@ footer.sticky-bottom {
             border-color: var(--global-theme-color);
           }
         }
-        a.award.btn {
-          border-color: var(--global-highlight-color);
-        }
       }
 
       .badges {
@@ -828,12 +825,6 @@ footer.sticky-bottom {
       div.abstract.hidden.open {
         border-color: var(--global-text-color);
       }
-    }
-    div.award.hidden {
-      border: dashed 1px var(--global-bg-color);
-    }
-    div.award.hidden.open {
-      border-color: var(--global-highlight-color);
     }
   }
 }
