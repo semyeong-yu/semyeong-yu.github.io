@@ -167,27 +167,27 @@
   "languages": [
     {
       "language": "Korean",
-      "fluency": "Native speaker",
+      "fluency": "Native",
       "icon": ""
     },
     {
       "language": "English",
-      "fluency": "Fluent",
+      "fluency": "Conversational",
       "icon": ""
     },
     {
       "language": "Python",
-      "fluency": "Fluent",
+      "fluency": "Proficient",
       "icon": ""
     },
     {
-      "language": "C, C++",
-      "fluency": "Fluent",
+      "language": "C",
+      "fluency": "Proficient",
       "icon": ""
     },
     {
       "language": "Scala",
-      "fluency": "Fluent",
+      "fluency": "Proficient",
       "icon": ""
     }
   ],
