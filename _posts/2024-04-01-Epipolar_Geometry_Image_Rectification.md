@@ -225,8 +225,8 @@ calibrated cameras에 대해서는 essential matrix가 두 camera 사이의 관�
 빨간색 axis : rectified camera coordinate  
 `rectified camera coordinate` $$r_{1}, r_{2}, r_{3}$$ 구하는 방법 :  
 $$r_{1} = \frac{t}{\| t \|}$$ where $$t$$ is vector from camera 1 to camera 2  
-$$r_{2} = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix} \prod r_{1}$$ where $$\begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}$$ is z-axis from original camera coordinate  
-$$r_{3} = r_{1} \prod r_{2}$$  
+$$r_{2} = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix} \times r_{1}$$ where $$\begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}$$ is z-axis from original camera coordinate  
+$$r_{3} = r_{1} \times r_{2}$$  
 
 Image rectification 알고리즘은 대표적으로 세 가지가 있다. : `planar, cylindrical, and polar rectification`  
 Image rectification을 수행하기 위해서는 projective transformation을 위해 homography matrix $$H_L, H_R$$를 찾아야 하는데, 여러 방법 중 하나를 아래에서 소개하겠다.  
