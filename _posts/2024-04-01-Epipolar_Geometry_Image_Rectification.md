@@ -224,7 +224,7 @@ calibrated cameras에 대해서는 essential matrix가 두 camera 사이의 관�
 파란색 axis : camera coordinate  
 빨간색 axis : rectified camera coordinate  
 `rectified camera coordinate` $$r_{1}, r_{2}, r_{3}$$ 구하는 방법 :  
-$$r_{1} = \frac{t}{|t|}$$ where $$t$$ is vector from camera 1 to camera 2  
+$$r_{1} = \frac{t}{\| t \|}$$ where $$t$$ is vector from camera 1 to camera 2  
 $$r_{2} = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix} \prod r_{1}$$ where $$\begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}$$ is z-axis from original camera coordinate  
 $$r_{3} = r_{1} \prod r_{2}$$  
 
