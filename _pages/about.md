@@ -22,10 +22,12 @@ Hello!
 I am a first-year M.S. student at Korea Advanced Institute of Science and Technology (KAIST), advised by Prof. Munchurl Kim.  
 
 
-I am interested in Computer Vision : Deep-Learning application within the field of Image and Video processing. My research areas include Super-Resolution, Video Motion Deblurring, Depth Estimation, and Novel View Synthesis. I'm interested in Generative foundation models, Neural Radiance Fields, and Gaussian Splatting.  
+I am interested in Computer Vision : Deep-Learning application within the field of Image and Video processing.  
 
 
 Thank you for visiting my page.
+
+<!-- My research areas include Super-Resolution, Video Motion Deblurring, Depth Estimation, and Novel View Synthesis(Neural Radiance Fields, and Gaussian Splatting). I'm also interested in Generative foundation models. -->
 
 <!-- Write your biography here. Tell the world about yourself. Link to your favorite [subreddit](http://reddit.com). You can put a picture in, too. The code is already in, just name your picture `prof_pic.jpg` and put it in the `img/` folder.
 
