@@ -6,7 +6,7 @@ title: blank # the website title (if blank, full name will be used instead)
 first_name: Semyeong
 middle_name:
 last_name: Yu
-email: semongsu0223@kaist.ac.kr
+email: semyu01@kaist.ac.kr
 description: > # the ">" symbol means to ignore newlines until "footer_text:"
   A simple, whitespace theme for academics. Based on [*folio](https://github.com/bogoli/-folio) design.
 footer_text: >
@@ -110,7 +110,7 @@ zotero_username: # your zotero username
 wechat_qr: # filename of your wechat qr-code saved as an image (e.g., wechat-qr.png if saved to assets/img/wechat-qr.png)
 
 contact_note: >
-  semongsu0223@kaist.ac.kr
+  semyu01@kaist.ac.kr
 
 # -----------------------------------------------------------------------------
 # Analytics and search engine verification

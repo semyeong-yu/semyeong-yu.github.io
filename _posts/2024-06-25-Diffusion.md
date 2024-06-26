@@ -48,15 +48,17 @@ _styles: >
 #### Markov process
 
 - `Markov` process (= Markov chain = `memoryless` process) : Markov property를 가지는 discrete stochastic process  
-$$P[s_{t+1}|s_t] = P[s_{t+1}|s_1, \ldot, s_t]$$
+$$P[s_{t+1}|s_t] = P[s_{t+1}|s_1, \ldots, s_t]$$
 
 #### KL-divergence
 
-$$H(p, q) = - \sum p_i log q_i$$ : 두 확률분포 p, q의 cross entropy (보통 $$p$$는 GT, $$q$$는 predicted)  
+$$H(p, q) = - \sum p_i log q_i$$ : 두 확률분포 p, q의 cross entropy  
+(보통 $$p$$는 GT, $$q$$는 predicted)  
 $$H(p) = - \sum p_i log p_i$$ : p's entropy (상수값)  
 $$KL(p \| q) = H(p, q) - H(p) = \sum p_i log \frac{p_i}{q_i}$$ : 두 확률분포 p, q의 차이  
-$$H(p)$$는 상수값이므로 KL-divergence minimize $$\eq$$ cross entropy minimize  
-$$KL(p \| q) \simeq \frac{1}{N} \sum_{n=1}^{N} {-log q(x_n | \theta) + log p(x_n)}$$ : $$log p(x_n)$$은 $$\theta$$에 독립이므로 KL-divergence minimize $$\eq$$ (negative log) likelihood maximize  
+$$H(p)$$는 상수값이므로 `KL-divergence minimize = cross entropy minimize`  
+$$KL(p \| q) \simeq \frac{1}{N} \sum_{n=1}^{N} {-log q(x_n | \theta) + log p(x_n)}$$ :  
+$$log p(x_n)$$은 $$\theta$$에 독립이므로 `KL-divergence minimize = negative log likelihood minimize = MLE`  
 
 KL-diverence 특성 :  
 1. $$KL(p \| q) \geq 0$$ : p = q일 때 최소
@@ -70,6 +72,21 @@ KL-diverence 특성 :
         {% include figure.liquid loading="eager" path="assets/img/2024-06-25-Diffusion/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
+
+- forward process : $$q(X_t | X_{t-1}) = N(X_t ; \mu_{X_{t-1}}, \Sigma_{X_{t-1}}) = N(X_t ; \sqrt{1-\beta_t} \cdot X_{t-1}, \beta_t \cdot I)$$  
+where $$\beta_t$$ : noise 주입 정도 (상수값)  
+t가 증가하면 $$\beta_t$$가 증가하여 다른 pixel($$I$$)을 선택하므로 noise가 강해진다  
+
+- backward process : image prior $$q(X_t)$$를 모르기 때문에 $$q(X_{t-1} | X_t)$$를 계산할 수 없으므로  
+Goal : $$q(X_{t-1} | X_t)$$에 근사하는 $$p_{\theta}(X_{t-1} | X_t)$$ 학습  
+즉, 확률분포 $$q$$에서 관측한 값 $$x$$로 likelihood $$p_{theta | x}$$를 구했을 때 그 값이 최대가 되도록 하는 MLE Problem  
+
+
+$$E_q [D_{KL}(q(x_T | x_0) \| p(x_T)) + \sum_{t \gt 1} D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} \| x_t)) - log p_{\theta} (x_0 | x_1)]$$  
+$$L_T = D_{KL}(q(x_T | x_0) \| p(x_T))$$ : ddd  
+$$L_{t-1} = D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} \| x_t))$$ : ddd  
+$$L_0 = - log p_{\theta} (x_0 | x_1)$$ : ddd  
+
 
 > 출처 블로그 :  
 [Diffusion Model](https://xoft.tistory.com/32)  
