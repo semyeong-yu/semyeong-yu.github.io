@@ -57,6 +57,7 @@ $$H(p, q) = - \sum p_i log q_i$$ : 두 확률분포 p, q의 cross entropy
 $$H(p) = - \sum p_i log p_i$$ : p's entropy (상수값)  
 $$KL(p \| q) = H(p, q) - H(p) = \sum p_i log \frac{p_i}{q_i}$$ : 두 확률분포 p, q의 차이  
 $$H(p)$$는 상수값이므로 `KL-divergence minimize = cross entropy minimize`  
+모르는 분포 $$p(x)$$를 N개 sampling하여 trained $$q(x | \theta)$$로 근사하고자 할 때,  
 $$KL(p \| q) \simeq \frac{1}{N} \sum_{n=1}^{N} {-log q(x_n | \theta) + log p(x_n)}$$ :  
 $$log p(x_n)$$은 $$\theta$$에 독립이므로 `KL-divergence minimize = negative log likelihood minimize = MLE`  
 
@@ -73,19 +74,35 @@ KL-diverence 특성 :
     </div>
 </div>
 
-- forward process : $$q(X_t | X_{t-1}) = N(X_t ; \mu_{X_{t-1}}, \Sigma_{X_{t-1}}) = N(X_t ; \sqrt{1-\beta_t} \cdot X_{t-1}, \beta_t \cdot I)$$  
+- forward process ($$q$$) : $$q(X_t | X_{t-1}) = N(X_t ; \mu_{X_{t-1}}, \Sigma_{X_{t-1}}) = N(X_t ; \sqrt{1-\beta_t} \cdot X_{t-1}, \beta_t \cdot I)$$  
 where $$\beta_t$$ : noise 주입 정도 (상수값)  
 t가 증가하면 $$\beta_t$$가 증가하여 다른 pixel($$I$$)을 선택하므로 noise가 강해진다  
 
-- backward process : image prior $$q(X_t)$$를 모르기 때문에 $$q(X_{t-1} | X_t)$$를 계산할 수 없으므로  
-Goal : $$q(X_{t-1} | X_t)$$를 근사하는 $$p_{\theta}(X_{t-1} | X_t)$$ 학습  
-즉, 확률분포 $$q$$에서 관측한 값 $$x$$로 likelihood $$p_{\theta | x}$$를 구했을 때 그 값이 최대가 되도록 하는 MLE Problem  
+- backward process ($$p_{\theta}$$) : image prior $$q(X_t)$$를 모르기 때문에 $$q(X_{t-1} | X_t)$$를 계산할 수 없으므로  
+목표 : $$q(X_{t-1} | X_t)$$를 근사하는 $$p_{\theta}(X_{t-1} | X_t)$$ 학습  
+즉, 확률분포 $$q$$에서 관측한 값 $$x$$로 $$p_{\theta | x}$$의 likelihood를 구했을 때 그 값이 최대가 되도록 하는 `MLE Problem`  
 
-- $$E_q [D_{KL}(q(x_T | x_0) \| p(x_T)) + \sum_{t \gt 1} D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t)) - log p_{\theta} (x_0 | x_1)]$$  
-$$L_T = D_{KL}(q(x_T | x_0) \| p(x_T))$$ : ddd  
-$$L_{t-1} = D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))$$ : ddd  
-$$L_0 = - log p_{\theta} (x_0 | x_1)$$ : ddd  
+- 확률분포 $$q$$로 sampling했을 때,  
+$$E_q [D_{KL}(q(x_T | x_0) \| p_{\theta} (x_T)) + \sum_{t \gt 1} D_{KL}(q(x_{t-1} | x_t, x_0) \| p_{\theta} (x_{t-1} | x_t)) - log p_{\theta} (x_0 | x_1)]$$  
+$$L_T = D_{KL}(q(x_T | x_0) \| p(x_T))$$ : `regularization` loss (`마지막 상태` $$x_T$$에서 확률분포 q, p의 차이를 최소화)  
+$$L_{t-1} = D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))$$ : `denoising process` loss (`현재 상태` $$x_t$$가 주어질 때 `이전 상태` $$x_{t-1}$$가 나올 확률 분포 q, p의 차이를 최소화)  
+$$L_0 = - log p_{\theta} (x_0 | x_1)$$ : `reconstruction` loss (q를 sammpling했을 때 $$p_{\theta} (x_0 | x_1)$$를 최대화하여 (MLE) 확률분포 q, p의 차이를 최소화)  
 
+- `DDPM`(2020) 수식 :  
+$$E_{t, x_0, \epsilon} [\| \epsilon - \epsilon_{\theta}(\sqrt{\bar \alpha_{t}}x_0 + \sqrt{1-\bar \alpha_{t}} \epsilon, t) \|^{2}]$$  
+where $$\epsilon \sim N(0, I)$$  
+즉, $$\epsilon_{\theta}$$가 Standard Gaussian 분포 $$\epsilon$$를 따르도록!  
+
+
+이 때, $$\epsilon_{\theta}$$의 input은 $$q(X_t | X_{t-1}), t$$!!  
+$$q(X_t | X_{t-1}) = N(X_t ; \mu_{X_{t-1}}, \Sigma_{X_{t-1}}) = N(X_t ; \sqrt{1-\beta_t} \cdot X_{t-1}, \beta_t \cdot I)$$  
+$$\rightarrow q(x_t | x_0) = N(x_t; \sqrt{\bar \alpha_{t}}x_0, \sqrt{1-\bar \alpha_{t}} I) = \sqrt{\bar \alpha_{t}}x_0 + \sqrt{1-\bar \alpha_{t}} \epsilon$$  
+where $$\epsilon \sim N(0, I)$$ and $$\alpha_t = 1 - \beta_t$$ and $$\bar \alpha_t = \prod_{s=1}^t \alpha_s$$  
+
+#### DDPM 수식 유도
+
+Step 1. hi  
+ddd
 
 > 출처 블로그 :  
 [Diffusion Model](https://xoft.tistory.com/32)  
