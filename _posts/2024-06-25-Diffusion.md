@@ -78,13 +78,12 @@ where $$\beta_t$$ : noise 주입 정도 (상수값)
 t가 증가하면 $$\beta_t$$가 증가하여 다른 pixel($$I$$)을 선택하므로 noise가 강해진다  
 
 - backward process : image prior $$q(X_t)$$를 모르기 때문에 $$q(X_{t-1} | X_t)$$를 계산할 수 없으므로  
-Goal : $$q(X_{t-1} | X_t)$$에 근사하는 $$p_{\theta}(X_{t-1} | X_t)$$ 학습  
-즉, 확률분포 $$q$$에서 관측한 값 $$x$$로 likelihood $$p_{theta | x}$$를 구했을 때 그 값이 최대가 되도록 하는 MLE Problem  
+Goal : $$q(X_{t-1} | X_t)$$를 근사하는 $$p_{\theta}(X_{t-1} | X_t)$$ 학습  
+즉, 확률분포 $$q$$에서 관측한 값 $$x$$로 likelihood $$p_{\theta | x}$$를 구했을 때 그 값이 최대가 되도록 하는 MLE Problem  
 
-
-$$E_q [D_{KL}(q(x_T | x_0) \| p(x_T)) + \sum_{t \gt 1} D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} \| x_t)) - log p_{\theta} (x_0 | x_1)]$$  
+- $$E_q [D_{KL}(q(x_T | x_0) \| p(x_T)) + \sum_{t \gt 1} D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t)) - log p_{\theta} (x_0 | x_1)]$$  
 $$L_T = D_{KL}(q(x_T | x_0) \| p(x_T))$$ : ddd  
-$$L_{t-1} = D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} \| x_t))$$ : ddd  
+$$L_{t-1} = D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))$$ : ddd  
 $$L_0 = - log p_{\theta} (x_0 | x_1)$$ : ddd  
 
 
