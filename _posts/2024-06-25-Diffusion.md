@@ -52,17 +52,17 @@ $$P[s_{t+1}|s_t] = P[s_{t+1}|s_1, \ldots, s_t]$$
 
 #### KL-divergence
 
-$$H(p, q) = - \sum p_i log q_i$$ : 두 확률분포 p, q의 cross entropy  
+- $$H(p, q) = - \sum p_i log q_i$$ : 두 확률분포 p, q의 cross entropy  
 (보통 $$p$$는 GT, $$q$$는 predicted)  
-$$H(p) = - \sum p_i log p_i$$ : p's entropy (상수값)  
-$$KL(p \| q) = H(p, q) - H(p) = \sum p_i log \frac{p_i}{q_i}$$ : 두 확률분포 p, q의 차이  
+- $$H(p) = - \sum p_i log p_i$$ : p's entropy (상수값)  
+- $$KL(p \| q) = H(p, q) - H(p) = \sum p_i log \frac{p_i}{q_i}$$ : 두 확률분포 p, q의 차이  
 $$H(p)$$는 상수값이므로 `KL-divergence minimize = cross entropy minimize`  
-모르는 분포 $$p(x)$$를 N개 sampling하여 trained $$q(x | \theta)$$로 근사하고자 할 때,  
+- 모르는 분포 $$p(x)$$를 N개 sampling하여 trained $$q(x | \theta)$$로 근사하고자 할 때,  
 $$KL(p \| q) \simeq \frac{1}{N} \sum_{n=1}^{N} {-log q(x_n | \theta) + log p(x_n)}$$ :  
 $$log p(x_n)$$은 $$\theta$$에 독립이므로 `KL-divergence minimize = negative log likelihood minimize = MLE`  
 
 KL-diverence 특성 :  
-1. $$KL(p \| q) \geq 0$$ : p = q일 때 최소
+1. $$KL(p \| q) \geq 0$$ : 확률분포 p = q일 때 최소
 2. $$KL(p \| q) \neq KL(q \| p)$$ (asymmetric) : 거리 개념이 아님  
 거리 개념으로 쓰는 방법 : 2가지 KL-divergence를 평균내는 방식의 $$JSD(p \| q)$$  
 
@@ -85,17 +85,21 @@ image prior $$q(X_t)$$를 모르기 때문에 $$q(X_{t-1} | X_t)$$를 계산할 
 즉, 확률분포 $$q$$에서 관측한 값 $$x$$로 $$p_{\theta | x}$$의 likelihood를 구했을 때 그 값이 최대가 되도록 하는 `MLE Problem`  
 즉, minimize $$E_q [- log p_{\theta} (x_0)]$$  
 
-- `Diffusion` Naive Loss 수식 :  
+- `Diffusion Model` Naive Loss 수식 :  
 확률분포 $$q$$로 sampling했을 때,  
 $$E_q [D_{KL}(q(x_T | x_0) \| p_{\theta} (x_T)) + \sum_{t \gt 1} D_{KL}(q(x_{t-1} | x_t, x_0) \| p_{\theta} (x_{t-1} | x_t)) - log p_{\theta} (x_0 | x_1)]$$  
-$$L_T = D_{KL}(q(x_T | x_0) \| p(x_T))$$ : `regularization` loss (`마지막 상태` $$x_T$$에서 확률분포 q, p의 차이를 최소화)  
-$$L_{t-1} = D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))$$ : `denoising process` loss (`현재 상태` $$x_t$$가 주어질 때 `이전 상태` $$x_{t-1}$$가 나올 확률 분포 q, p의 차이를 최소화)  
-$$L_0 = - log p_{\theta} (x_0 | x_1)$$ : `reconstruction` loss (q를 sammpling했을 때 $$p_{\theta} (x_0 | x_1)$$를 최대화하여 (MLE) 확률분포 q, p의 차이를 최소화)  
+$$L_T = D_{KL}(q(x_T | x_0) \| p(x_T))$$ :  
+`regularization` loss (`마지막 상태` $$x_T$$에서 확률분포 q, p의 차이를 최소화)  
+$$L_{t-1} = D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))$$ :  
+`denoising process` loss (`현재 상태` $$x_t$$가 주어질 때 `이전 상태` $$x_{t-1}$$가 나올 확률 분포 q, p의 차이를 최소화)  
+$$L_0 = - log p_{\theta} (x_0 | x_1)$$ :  
+`reconstruction` loss (q를 sammpling했을 때 $$p_{\theta} (x_0 | x_1)$$를 최대화하여 (MLE) 확률분포 q, p의 차이를 최소화)  
 
-- `DDPM`(2020) Loss 수식 :  
+- `DDPM`(Denoising Diffusion Probabilistic Model)(2020) Loss 수식 :  
 $$E_{t, x_0, \epsilon} [\| \epsilon - \epsilon_{\theta}(\sqrt{\bar \alpha_{t}}x_0 + \sqrt{1-\bar \alpha_{t}} \epsilon, t) \|^{2}]$$  
 where $$\epsilon \sim N(0, I)$$  
 즉, $$\epsilon_{\theta}$$가 Standard Gaussian 분포 $$\epsilon$$를 따르도록!  
+
 
 이 때, $$\epsilon_{\theta}$$의 input은 $$q(X_t | X_{t-1})$$와 $$t$$ !!  
 $$q(X_t | X_{t-1}) = N(X_t ; \mu_{X_{t-1}}, \Sigma_{X_{t-1}}) = N(X_t ; \sqrt{1-\beta_t} \cdot X_{t-1}, \beta_t \cdot I)$$  
@@ -104,8 +108,45 @@ where $$\alpha_t = 1 - \beta_t$$ and $$\bar \alpha_t = \prod_{s=1}^t \alpha_s$$ 
 
 #### DDPM 수식 유도
 
-Step 1. hi  
-ddd
+> Step 1. ELBO (`Evidence Lower Bound`) 꼴로 변환  
+
+$$log p_{\theta}(x)$$  
+$$= E_{q(z|x)}[log p_{\theta}(x)] = E_{q(z|x)}[log \frac{p_{\theta}(x, z)}{p_{\theta}(z|x)}]$$  
+$$= E_{q(z|x)}[log \frac{p_{\theta}(x, z)}{q(z|x)}] + E_{q(z|x)}[log \frac{q(z|x)}{p_{\theta}(z|x)}]$$  
+
+이 때, 마지막 식의 오른쪽 항은 `KL divergence` 꼴이다.  
+$$E_{q(z|x)}[log \frac{q(z|x)}{p_{\theta}(z|x)}] = \sum q(z|x) log \frac{q(z|x)}{p_{\theta}(z|x)} = D_{KL}(q(z|x) \| p_{\theta}(z|x))$$  
+$$q(z|x)$$는 계산할 수 있지만 $$p_{\theta}(z|x)$$는 계산할 수 없으므로 KL divergence의 특성 $$KL(p \| q) \geq 0$$을 이용하면  
+마지막 식의 왼쪽 항은 $$log p_{\theta}(x)$$의 ELBO가 된다.  
+$$log p_{\theta}(x) \geq E_{q(z|x)}[log \frac{p_{\theta}(x, z)}{q(z|x)}]$$  
+
+$$z$$에 $$x_{1:T}$$를, $$x$$에 $$x_0$$을 대입하면  
+$$E[- log p_{\theta}(x_0)] \leq E_{q}[- log \frac{p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}]$$  
+
+> Step 2. `Markov property` 이용하여 `Diffusion Model Loss` 유도  
+
+$$E_{q}[- log \frac{p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}]$$  
+$$= E_{q(x_{0:T})}[log \frac{q(x_{1:T}|x_0)}{p_{\theta}(x_{0:T})}]$$  
+$$= E_{q(x_{0:T})}[log \frac{\prod_{t=1}^{T}q(x_t|x_{t-1})}{p_{\theta}(x_T)\prod_{t=1}^T p_{\theta}(x_{t-1}|x_t)}]$$ by `Markov property`  
+$$= E_{q(x_{0:T})}[- log p_{\theta}(x_T) + \sum_{t=1}^{T} log \frac{q(x_t|x_{t-1})}{p_{\theta}(x_{t-1}|x_t)}]$$  
+$$= E_{q(x_{0:T})}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log \frac{q(x_t|x_{t-1})}{p_{\theta}(x_{t-1}|x_t)} + log \frac{q(x_1|x_0)}{p_{\theta}(x_0|x_1)}]$$  
+$$= E_{q(x_{0:T})}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log \frac{q(x_t|x_{t-1}, x_0)}{p_{\theta}(x_{t-1}|x_t)} + log \frac{q(x_1|x_0)}{p_{\theta}(x_0|x_1)}]$$ by `Markov property` (계산 가능하게 만들기 위해 $$q(x_t|x_{t-1})$$의 조건부에 $$x_0$$ 추가)  
+$$= E_{q(x_{0:T})}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log (\frac{q(x_{t-1}|x_t, x_0)}{p_{\theta}(x_{t-1}|x_t)} \cdot \frac{q(x_t|x_0)}{q(x_{t-1}|x_0)}) + log \frac{q(x_1|x_0)}{p_{\theta}(x_0|x_1)}]$$ by `Bayes` 정리 $$P(A|B \bigcap C) = \frac{P(B|A \bigcap C) \cdot P(A|C)}{P(B|C)}$$  
+$$= E_{q(x_{0:T})}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log \frac{q(x_{t-1}|x_t, x_0)}{p_{\theta}(x_{t-1}|x_t)} + log \frac{q(x_T|x_0)}{q(x_1|x_0)} + log \frac{q(x_1|x_0)}{p_{\theta}(x_0|x_1)}]$$  
+$$= E_{q(x_{0:T})}[log \frac{q(x_T|x_0)}{p_{\theta}(x_T)} + \sum_{t=2}^{T} log \frac{q(x_{t-1}|x_t, x_0)}{p_{\theta}(x_{t-1}|x_t)} - log p_{\theta}(x_0|x_1)]$$  
+$$= E_q[D_{KL}(q(x_T|x_0) \| p_{\theta}(x_T)) + \sum_{t=2}^{T} D_{KL}(q(x_{t-1}|x_t, x_0) \| p_{\theta}(x_{t-1}|x_t)) - log p_{\theta}(x_0|x_1)]$$ by `KL divergence` 식 $$D_{KL}(P \| Q) = \sum P(x) log (\frac{P(x)}{Q(x)})$$  
+
+> Step 3. `DDPM Loss` 유도  
+
+- $$L_T = D_{KL}(q(x_T | x_0) \| p(x_T))$$ = `regularization` loss :  
+noise 주입 정도를 의미하는 regularization 관련 $$\beta_t$$가 t에 따른 상수값(fixed)이므로 training에서 제외  
+- $$L_{t-1} = D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))$$ = `denoising process` loss  
+- $$L_0 = - log p_{\theta} (x_0 | x_1)$$ = `reconstruction` loss :  
+전체적으로 봤을 때 영향력 적으므로 training에서 제외  
+
+$$\rightarrow$$ 즉, Let's only minimize $$L_{t-1} = D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))$$ !!
+
+
 
 > 출처 블로그 :  
 [Diffusion Model](https://xoft.tistory.com/32)  
