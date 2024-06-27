@@ -126,7 +126,8 @@ $$E[- log p_{\theta}(x_0)] \leq E_{q}[- log \frac{p_{\theta}(x_{0:T})}{q(x_{1:T}
 
 > Step 2. `Markov property` 이용하여 `Diffusion Loss` 유도  
 
-$$E_{q}[- log \frac{p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}] = E_{q(x_{0:T})}[log \frac{q(x_{1:T}|x_0)}{p_{\theta}(x_{0:T})}]$$  
+$$E_{q}[- log \frac{p_{\theta}(x_{0 \sim T})}{q(x_{1 \sim T}|x_0)}]$$  
+$$= E_{q(x_{0 \sim T})}[log \frac{q(x_{1 \sim T}|x_0)}{p_{\theta}(x_{0 \sim T})}]$$  
 $$= E_{q(x_{0:T})}[log \frac{\prod_{t=1}^{T}q(x_t|x_{t-1})}{p_{\theta}(x_T)\prod_{t=1}^T p_{\theta}(x_{t-1}|x_t)}]$$ by `Markov property`  
 $$= E_{q(x_{0:T})}[- log p_{\theta}(x_T) + \sum_{t=1}^{T} log \frac{q(x_t|x_{t-1})}{p_{\theta}(x_{t-1}|x_t)}]$$  
 $$= E_{q(x_{0:T})}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log \frac{q(x_t|x_{t-1})}{p_{\theta}(x_{t-1}|x_t)} + log \frac{q(x_1|x_0)}{p_{\theta}(x_0|x_1)}]$$  
