@@ -1,6 +1,6 @@
 ---
 layout: distill
-title: Diffusion
+title: Diffusion-DDPM
 date: 2024-06-25 15:00:00
 description: Diffusion Study
 tags: diffusion generative
@@ -31,12 +31,12 @@ _styles: >
 
 ## Diffusion
 
-#### Diffusion Model
+### Diffusion Model
 
 - forward process : `fixed` Gaussian noise 더함
 - reverse process : `learned` Gaussian noise 뺌 (mean, std를 학습)
 
-#### Likelihood
+### Likelihood
 
 아래 둘 다 관측값 $$x$$가 나올 확률인데,
 - `probability` $$P(x | \theta)$$ : `확률 분포가 고정`된 상태에서, `관측되는 사건이 변화`할 때의 확률  
@@ -45,12 +45,12 @@ _styles: >
 예: 선택 가능한 정수를 1~5가 아니라 1~10 또는 4~50으로 바꾸면서(확률 분포 모름), 2가 관측될 확률을 계산(관측 사건 고정)할 경우  
 예: 어떤(모르는) 확률 분포를 따르는 task를 n회 반복 수행하여 관측했을 때 random var. 종류를 가정할 수도 있고 특정 random var.의 parameter를 가정할 수도 있다  
 
-#### Markov process
+### Markov process
 
 - `Markov` process (= Markov chain = `memoryless` process) : Markov property를 가지는 discrete stochastic process  
 $$P[s_{t+1}|s_t] = P[s_{t+1}|s_1, \ldots, s_t]$$
 
-#### KL-divergence
+### KL-divergence
 
 - $$H(p, q) = - \sum p_i log q_i$$ : 두 확률분포 p, q의 cross entropy  
 (보통 $$p$$는 GT, $$q$$는 predicted)  
@@ -66,7 +66,7 @@ KL-diverence 특성 :
 2. $$KL(p \| q) \neq KL(q \| p)$$ (asymmetric) : 거리 개념이 아님  
 거리 개념으로 쓰는 방법 : 2가지 KL-divergence를 평균내는 방식의 $$JSD(p \| q)$$  
 
-#### Diffusion Algorithm
+### Diffusion Algorithm
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
@@ -106,7 +106,8 @@ $$q(X_t | X_{t-1}) = N(X_t ; \mu_{X_{t-1}}, \Sigma_{X_{t-1}}) = N(X_t ; \sqrt{1-
 $$\rightarrow q(x_t | x_0) = N(x_t; \sqrt{\bar \alpha_{t}}x_0, \sqrt{1-\bar \alpha_{t}} I) = \sqrt{\bar \alpha_{t}}x_0 + \sqrt{1-\bar \alpha_{t}} \epsilon$$  
 where $$\alpha_t = 1 - \beta_t$$ and $$\bar \alpha_t = \prod_{s=1}^t \alpha_s$$ and $$\epsilon \sim N(0, I)$$  
 
-#### DDPM 수식 유도
+
+### DDPM 수식 유도
 
 > Step 1. ELBO (`Evidence Lower Bound`) 꼴로 변환  
 
@@ -114,7 +115,7 @@ $$log p_{\theta}(x)$$
 $$= E_{q(z|x)}[log p_{\theta}(x)] = E_{q(z|x)}[log \frac{p_{\theta}(x, z)}{p_{\theta}(z|x)}]$$  
 $$= E_{q(z|x)}[log \frac{p_{\theta}(x, z)}{q(z|x)}] + E_{q(z|x)}[log \frac{q(z|x)}{p_{\theta}(z|x)}]$$  
 
-이 때, 마지막 식의 오른쪽 항은 `KL divergence` 꼴이다.  
+이 때, 마지막 식의 오른쪽 항은 아래와 같이 `KL divergence` 꼴이다.  
 $$E_{q(z|x)}[log \frac{q(z|x)}{p_{\theta}(z|x)}] = \sum q(z|x) log \frac{q(z|x)}{p_{\theta}(z|x)} = D_{KL}(q(z|x) \| p_{\theta}(z|x))$$  
 $$q(z|x)$$는 계산할 수 있지만 $$p_{\theta}(z|x)$$는 계산할 수 없으므로 KL divergence의 특성 $$KL(p \| q) \geq 0$$을 이용하면  
 마지막 식의 왼쪽 항은 $$log p_{\theta}(x)$$의 ELBO가 된다.  
@@ -123,10 +124,9 @@ $$log p_{\theta}(x) \geq E_{q(z|x)}[log \frac{p_{\theta}(x, z)}{q(z|x)}]$$
 $$z$$에 $$x_{1:T}$$를, $$x$$에 $$x_0$$을 대입하면  
 $$E[- log p_{\theta}(x_0)] \leq E_{q}[- log \frac{p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}]$$  
 
-> Step 2. `Markov property` 이용하여 `Diffusion Model Loss` 유도  
+> Step 2. `Markov property` 이용하여 `Diffusion Loss` 유도  
 
-$$E_{q}[- log \frac{p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}]$$  
-$$= E_{q(x_{0:T})}[log \frac{q(x_{1:T}|x_0)}{p_{\theta}(x_{0:T})}]$$  
+$$E_{q}[- log \frac{p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}] = E_{q(x_{0:T})}[log \frac{q(x_{1:T}|x_0)}{p_{\theta}(x_{0:T})}]$$  
 $$= E_{q(x_{0:T})}[log \frac{\prod_{t=1}^{T}q(x_t|x_{t-1})}{p_{\theta}(x_T)\prod_{t=1}^T p_{\theta}(x_{t-1}|x_t)}]$$ by `Markov property`  
 $$= E_{q(x_{0:T})}[- log p_{\theta}(x_T) + \sum_{t=1}^{T} log \frac{q(x_t|x_{t-1})}{p_{\theta}(x_{t-1}|x_t)}]$$  
 $$= E_{q(x_{0:T})}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log \frac{q(x_t|x_{t-1})}{p_{\theta}(x_{t-1}|x_t)} + log \frac{q(x_1|x_0)}{p_{\theta}(x_0|x_1)}]$$  
