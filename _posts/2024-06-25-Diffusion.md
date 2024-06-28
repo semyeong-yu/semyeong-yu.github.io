@@ -126,8 +126,8 @@ $$E[- log p_{\theta}(x_0)] \leq E_{q}[- log \frac{p_{\theta}(x_{0:T})}{q(x_{1:T}
 
 > Step 2. `Markov property` 이용하여 `Diffusion Loss` 유도  
 
-$$E_{q}[- log \frac{p_{\theta}(x_{0 \sim T})}{q(x_{1 \sim T}|x_0)}]$$  
-$$= E_{q(x_{0 \sim T})}[log \frac{q(x_{1 \sim T}|x_0)}{p_{\theta}(x_{0 \sim T})}]$$  
+$$E_{q}[- log \frac{p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}]$$  
+$$= E_{q(x_{0:T})}[log \frac{q(x_{1:T}|x_0)}{p_{\theta}(x_{0:T})}]$$  
 $$= E_{q(x_{0:T})}[log \frac{\prod_{t=1}^{T}q(x_t|x_{t-1})}{p_{\theta}(x_T)\prod_{t=1}^T p_{\theta}(x_{t-1}|x_t)}]$$ by `Markov property`  
 $$= E_{q(x_{0:T})}[- log p_{\theta}(x_T) + \sum_{t=1}^{T} log \frac{q(x_t|x_{t-1})}{p_{\theta}(x_{t-1}|x_t)}]$$  
 $$= E_{q(x_{0:T})}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log \frac{q(x_t|x_{t-1})}{p_{\theta}(x_{t-1}|x_t)} + log \frac{q(x_1|x_0)}{p_{\theta}(x_0|x_1)}]$$  
@@ -140,15 +140,25 @@ $$= E_q[D_{KL}(q(x_T|x_0) \| p_{\theta}(x_T)) + \sum_{t=2}^{T} D_{KL}(q(x_{t-1}|
 > Step 3. `DDPM Loss` 유도  
 
 - $$L_T = D_{KL}(q(x_T | x_0) \| p(x_T))$$ = `regularization` loss :  
-noise 주입 정도를 의미하는 regularization 관련 $$\beta_t$$가 t에 따른 상수값(fixed)이므로 training에서 제외  
+noise 주입 정도를 의미하는 regularization 관련 $$\beta_t$$가 t에 따른 상수값(fixed)이므로 training에서 제외 `?????`  
 - $$L_{t-1} = D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))$$ = `denoising process` loss  
 - $$L_0 = - log p_{\theta} (x_0 | x_1)$$ = `reconstruction` loss :  
-전체적으로 봤을 때 영향력 적으므로 training에서 제외  
+전체적으로 봤을 때 영향력 적으므로 training에서 제외 `?????`  
 
-$$\rightarrow$$ 즉, Let's only minimize $$L_{t-1} = D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))$$ !!
+$$\rightarrow$$ 즉, Let's only minimize $$L_{t-1} = D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))$$ !!  
 
+$$L_{t-1} = D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))$$  
+$$= \int q(x_{t-1} | x_t, x_0) log \frac{q(x_{t-1} | x_t, x_0)}{p(x_{t-1} | x_t)} dx$$  
+$$= - \int q(x_{t-1} | x_t, x_0) log p(x_{t-1} | x_t) dx + \int q(x_{t-1} | x_t, x_0) log q(x_{t-1} | x_t, x_0) dx$$  
+$$= $ by Derivation $$\ast$$  
+
+> Step 3-1. Derivation $$\ast$$  
+
+`Gaussian Integral` : $$\int_{-\inf}^{\inf} e^{-x^2}dx = \sqrt{\pi}$$ and $$\int_{-\inf}^{\inf} x^2 e^{-ax^2}dx = \frac{1}{2}\sqrt{\pi}a^{-\frac{3}{2}}$$  
+$$$$
 
 
 > 출처 블로그 :  
 [Diffusion Model](https://xoft.tistory.com/32)  
 [DDPM 수식 유도](https://xoft.tistory.com/33?category=1156151)  
+[DDPM 수식 유도](https://woongchan789.tistory.com/12)
