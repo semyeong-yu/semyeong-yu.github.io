@@ -134,11 +134,13 @@ $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log \
 
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log \frac{q(x_t|x_{t-1}, x_0)}{p_{\theta}(x_{t-1}|x_t)} + log \frac{q(x_1|x_0)}{p_{\theta}(x_0|x_1)}]$$  
 
-by memoryless `Markov property` (`tractable`하도록 만들기 위해 $$q(x_t|x_{t-1})$$의 조건부에 $$x_0$$ 추가)  
+by memoryless `Markov property`  
+`tractable`하도록 만들기 위해 $$q(x_t|x_{t-1})$$ 의 조건부에 $$x_0$$ 추가  
 
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log (\frac{q(x_{t-1}|x_t, x_0)}{p_{\theta}(x_{t-1}|x_t)} \cdot \frac{q(x_t|x_0)}{q(x_{t-1}|x_0)}) + log \frac{q(x_1|x_0)}{p_{\theta}(x_0|x_1)}]$$  
 
-by `Bayes` 정리 $$P(A|B \bigcap C) = \frac{P(B|A \bigcap C) \cdot P(A|C)}{P(B|C)}$$  
+by `Bayes` 정리  
+$$P(A|B \bigcap C) = \frac{P(B|A \bigcap C) \cdot P(A|C)}{P(B|C)}$$  
 
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log \frac{q(x_{t-1}|x_t, x_0)}{p_{\theta}(x_{t-1}|x_t)} + log \frac{q(x_T|x_0)}{q(x_1|x_0)} + log \frac{q(x_1|x_0)}{p_{\theta}(x_0|x_1)}]$$  
 by log 곱셈  
@@ -166,9 +168,10 @@ q를 sampling했을 때 $$p_{\theta} (x_0 | x_1)$$를 최대화하여 (MLE) 확�
 전체적으로 봤을 때 $$L_0$$는 무수히 많은 time step $$T \sim 1000$$ 중 단일 시점에서의 log likelihood 값이므로  
 값이 너무 작아서 training에서 $$L_0$$ term은 제외  
 
-Let's only minimize $$L_{t-1} = E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\sum_{t=2}^{T} log \frac{q(x_{t-1}|x_t, x_0)}{p_{\theta}(x_{t-1}|x_t)}] = D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))$$
+Let's only minimize the second term  
+$$E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\sum_{t=2}^{T} L_{t-1}] = E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\sum_{t=2}^{T} D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))]$$  
 
-> Step 4. $$\mu, \sigma$$로 KL-divergence 나타내는 법  
+> Step 4. Gaussian param. $$\mu, \sigma$$로 KL-divergence 나타내는 법  
 
 - `Gaussian Integral` :  
 $$\int_{-\infty}^{\infty} e^{-x^2}dx = \sqrt{\pi}$$ and $$\int_{-\infty}^{\infty} x^2 e^{-ax^2}dx = \frac{1}{2}\sqrt{\pi}a^{-\frac{3}{2}}$$  
@@ -198,9 +201,42 @@ $$= log \frac{1}{\sqrt{2 \pi \sigma_{2}^{2}}} - \frac{\sigma_{1}^2 + \mu_{1}^2 -
 by $$Var(X) = E[X^2] - (E[X])^2$$  
 $$= - \frac{1}{2} log (2 \pi \sigma_{2}^{2}) - \frac{\sigma_{1}^2 + (\mu_{1} - \mu_{2})^2}{2 \sigma_{2}^2}$$  
 
-> Step 5. Only Minimize $$L_{t-1} = E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\sum_{t=2}^{T} log \frac{q(x_{t-1}|x_t, x_0)}{p_{\theta}(x_{t-1}|x_t)}]$$  
+- `KL divergence` for Gaussian $$p(x)$$ and $$q(x)$$ :  
+For $$p(x) = \frac{1}{\sqrt{2 \pi \sigma_{1}^{2}}} e^{-\frac{(x-\mu_{1})^2}{2 \sigma_{1}^2}} \sim N(\mu_{1}, \sigma_{1})$$  
+and $$q(x) = \frac{1}{\sqrt{2 \pi \sigma_{2}^{2}}} e^{-\frac{(x-\mu_{2})^2}{2 \sigma_{2}^2}} \sim N(\mu_{2}, \sigma_{2})$$,  
+$$D_{KL}(p \| q)$$  
+$$\int p(x) logp(x) dx - \int p(x) log q(x)dx$$  
+$$= - \frac{1}{2} (1 + log(2\pi \sigma_{1}^{2})) - (- \frac{1}{2} log (2 \pi \sigma_{2}^{2}) - \frac{\sigma_{1}^2 + (\mu_{1} - \mu_{2})^2}{2 \sigma_{2}^2})$$  
+$$= - \frac{1}{2} + \frac{1}{2} log (\frac{2 \pi \sigma_{2}^2}{2 \pi \sigma_{1}^2}) + \frac{\sigma_{1}^2 + (\mu_{1} - \mu_{2})^2}{2 \sigma_{2}^2}$$  
+$$= - \frac{1}{2} + log (\frac{\sigma_{2}}{\sigma_{1}}) + \frac{\sigma_{1}^2 + (\mu_{1} - \mu_{2})^2}{2 \sigma_{2}^2}$$  
 
-$$L_{t-1} = E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\sum_{t=2}^{T} log \frac{q(x_{t-1}|x_t, x_0)}{p_{\theta}(x_{t-1}|x_t)}]$$
+> Step 5. Only Minimize $$E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\sum_{t=2}^{T} L_{t-1}]$$ in Diffusion Loss  
+
+$$E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\sum_{t=2}^{T} L_{t-1}]$$  
+$$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\sum_{t=2}^{T} D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))]$$  
+
+Let $$\sigma$$ `std have no learning param. (상수값)`  
+Let $$q(x_{t-1} | x_t, x_0)$$ have Gaussian mean $$\tilde \mu_{t}$$  
+Let $$p_{\theta}(x_{t-1} | x_t)$$ have Gaussian mean $$\mu_{\theta}$$  
+By Step 4., we have to minimize  
+$$E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\frac{1}{2 \sigma_{t}^2} \| \tilde \mu_{t} (x_t, x_0) - \mu_{\theta} (x_t, t) \|^2] + C$$  
+Now we have to know $$\tilde \mu_{t}$$ and $$\mu_{\theta}$$
+
+> Step 6. Obtain $$q(x_t|x_0)$$
+
+ddd
+
+> Step 7. Obtain $$q(x_{t-1} | x_t, x_0)$$
+
+ddd
+
+> Step 8. Obtain $$p_{\theta}(x_{t-1} | x_t)$$
+
+ddd
+
+> Step 9. Final `DDPM Loss`
+
+ddd
 
 
 > 출처 블로그 :  
