@@ -125,6 +125,7 @@ $$E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log \frac{p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[log \frac{q(x_{1:T}|x_0)}{p_{\theta}(x_{0:T})}]$$  
 
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[log \frac{\prod_{t=1}^{T} q(x_t|x_{t-1})}{p_{\theta}(x_T) \prod_{t=1}^T p_{\theta}(x_{t-1}|x_t)}]$$  
+
 by memoryless `Markov chain property`  
 
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log p_{\theta}(x_T) + \sum_{t=1}^{T} log \frac{q(x_t|x_{t-1})}{p_{\theta}(x_{t-1}|x_t)}]$$  
@@ -132,9 +133,11 @@ $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log p_{\theta}(x_T) + \sum_{t=1}^{T} log \
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log \frac{q(x_t|x_{t-1})}{p_{\theta}(x_{t-1}|x_t)} + log \frac{q(x_1|x_0)}{p_{\theta}(x_0|x_1)}]$$  
 
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log \frac{q(x_t|x_{t-1}, x_0)}{p_{\theta}(x_{t-1}|x_t)} + log \frac{q(x_1|x_0)}{p_{\theta}(x_0|x_1)}]$$  
+
 by memoryless `Markov property` (`tractable`하도록 만들기 위해 $$q(x_t|x_{t-1})$$의 조건부에 $$x_0$$ 추가)  
 
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log (\frac{q(x_{t-1}|x_t, x_0)}{p_{\theta}(x_{t-1}|x_t)} \cdot \frac{q(x_t|x_0)}{q(x_{t-1}|x_0)}) + log \frac{q(x_1|x_0)}{p_{\theta}(x_0|x_1)}]$$  
+
 by `Bayes` 정리 $$P(A|B \bigcap C) = \frac{P(B|A \bigcap C) \cdot P(A|C)}{P(B|C)}$$  
 
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log \frac{q(x_{t-1}|x_t, x_0)}{p_{\theta}(x_{t-1}|x_t)} + log \frac{q(x_T|x_0)}{q(x_1|x_0)} + log \frac{q(x_1|x_0)}{p_{\theta}(x_0|x_1)}]$$  
@@ -142,8 +145,9 @@ by log 곱셈
 
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[log \frac{q(x_T|x_0)}{p_{\theta}(x_T)} + \sum_{t=2}^{T} log \frac{q(x_{t-1}|x_t, x_0)}{p_{\theta}(x_{t-1}|x_t)} - log p_{\theta}(x_0|x_1)]$$  
 
-$$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[D_{KL}(q(x_T|x_0) \| p_{\theta}(x_T)) + \sum_{t=2}^{T} D_{KL}(q(x_{t-1}|x_t, x_0) \| p_{\theta}(x_{t-1}|x_t)) - log p_{\theta}(x_0|x_1)]$$ by  
-`KL divergence` 식 $$D_{KL}(P \| Q) = \sum P(x) log (\frac{P(x)}{Q(x)})$$  
+$$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[D_{KL}(q(x_T|x_0) \| p_{\theta}(x_T)) + \sum_{t=2}^{T} D_{KL}(q(x_{t-1}|x_t, x_0) \| p_{\theta}(x_{t-1}|x_t)) - log p_{\theta}(x_0|x_1)]$$  
+
+by `KL divergence` 식 $$D_{KL}(P \| Q) = \sum P(x) log (\frac{P(x)}{Q(x)})$$  
 
 > Step 3. `DDPM Loss` 유도  
 
@@ -162,13 +166,14 @@ q를 sampling했을 때 $$p_{\theta} (x_0 | x_1)$$를 최대화하여 (MLE) 확�
 전체적으로 봤을 때 $$L_0$$는 무수히 많은 time step $$T \sim 1000$$ 중 단일 시점에서의 log likelihood 값이므로  
 값이 너무 작아서 training에서 $$L_0$$ term은 제외  
 
-즉, Let's only minimize $$L_{t-1} = E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\sum_{t=2}^{T} log \frac{q(x_{t-1}|x_t, x_0)}{p_{\theta}(x_{t-1}|x_t)}] = D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))$$
+Let's only minimize $$L_{t-1} = E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\sum_{t=2}^{T} log \frac{q(x_{t-1}|x_t, x_0)}{p_{\theta}(x_{t-1}|x_t)}] = D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))$$
 
-> Step 4. Integral of $$p(x)logp(x)$$ and $$p(x)logq(x)$$ for Gaussian $$p(x), q(x)$$  
+> Step 4. $$\mu, \sigma$$로 KL-divergence 나타내는 법  
 
-`Gaussian Integral` :  
+- `Gaussian Integral` :  
 $$\int_{-\infty}^{\infty} e^{-x^2}dx = \sqrt{\pi}$$ and $$\int_{-\infty}^{\infty} x^2 e^{-ax^2}dx = \frac{1}{2}\sqrt{\pi}a^{-\frac{3}{2}}$$  
 
+- Integral of $$p(x)logp(x)$$ for Gaussian $$p(x)$$ :  
 For $$p(x) = \frac{1}{\sqrt{2 \pi \sigma_{1}^{2}}} e^{-\frac{(x-\mu_{1})^2}{2 \sigma_{1}^2}} \sim N(\mu_{1}, \sigma_{1})$$,  
 $$\int p(x) log p(x) dx$$  
 $$= \int \frac{1}{\sqrt{2 \pi \sigma_{1}^{2}}} e^{-\frac{(x-\mu_{1})^2}{2 \sigma_{1}^2}} log (\frac{1}{\sqrt{2 \pi \sigma_{1}^{2}}} e^{-\frac{(x-\mu_{1})^2}{2 \sigma_{1}^2}}) dx$$  
@@ -180,10 +185,23 @@ $$= - \frac{log(2\pi \sigma_{1}^{2})}{2 \sqrt{\pi}} \cdot \sqrt{\pi} - \frac{1}{
 $$= - \frac{log(2\pi \sigma_{1}^{2})}{2} - \frac{1}{2}$$  
 $$= - \frac{1}{2} (1 + log(2\pi \sigma_{1}^{2}))$$  
 
-
+- Integral of $$p(x)logq(x)$$ for Gaussian $$p(x)$$ and $$q(x)$$ :  
 For $$p(x) = \frac{1}{\sqrt{2 \pi \sigma_{1}^{2}}} e^{-\frac{(x-\mu_{1})^2}{2 \sigma_{1}^2}} \sim N(\mu_{1}, \sigma_{1})$$  
 and $$q(x) = \frac{1}{\sqrt{2 \pi \sigma_{2}^{2}}} e^{-\frac{(x-\mu_{2})^2}{2 \sigma_{2}^2}} \sim N(\mu_{2}, \sigma_{2})$$,  
-ddd
+$$\int p(x) log q(x) dx$$  
+$$= \int p(x) log \frac{1}{\sqrt{2 \pi \sigma_{2}^{2}}} e^{-\frac{(x-\mu_{2})^2}{2 \sigma_{2}^2}} dx$$  
+$$= \int p(x) log \frac{1}{\sqrt{2 \pi \sigma_{2}^{2}}} dx - \int p(x) \frac{(x-\mu_{2})^2}{2 \sigma_{2}^2} dx$$  
+$$= log \frac{1}{\sqrt{2 \pi \sigma_{2}^{2}}} - \int p(x) \frac{(x-\mu_{2})^2}{2 \sigma_{2}^2} dx$$  
+$$= log \frac{1}{\sqrt{2 \pi \sigma_{2}^{2}}} - \frac{\int p(x) x^2 dx - \int 2 \mu_{2} x p(x) dx + \mu_{2}^2 \int p(x) dx}{2 \sigma_{2}^2}$$  
+$$= log \frac{1}{\sqrt{2 \pi \sigma_{2}^{2}}} - \frac{E_{1}(x^2) - 2 \mu_{2} E_{1}(x) + \mu_{2}^2}{2 \sigma_{2}^2}$$  
+$$= log \frac{1}{\sqrt{2 \pi \sigma_{2}^{2}}} - \frac{\sigma_{1}^2 + \mu_{1}^2 - 2 \mu_{2} \mu_{1} + \mu_{2}^2}{2 \sigma_{2}^2}$$  
+by $$Var(X) = E[X^2] - (E[X])^2$$  
+$$= - \frac{1}{2} log (2 \pi \sigma_{2}^{2}) - \frac{\sigma_{1}^2 + (\mu_{1} - \mu_{2})^2}{2 \sigma_{2}^2}$$  
+
+> Step 5. Only Minimize $$L_{t-1} = E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\sum_{t=2}^{T} log \frac{q(x_{t-1}|x_t, x_0)}{p_{\theta}(x_{t-1}|x_t)}]$$  
+
+$$L_{t-1} = E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\sum_{t=2}^{T} log \frac{q(x_{t-1}|x_t, x_0)}{p_{\theta}(x_{t-1}|x_t)}]$$
+
 
 > 출처 블로그 :  
 [Diffusion Model](https://xoft.tistory.com/32)  
