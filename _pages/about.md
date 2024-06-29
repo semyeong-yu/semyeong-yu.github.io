@@ -21,9 +21,7 @@ social: true # includes social icons at the bottom of the page
 Hello!
 I am a first-year M.S. student at Korea Advanced Institute of Science and Technology (KAIST), advised by Prof. Munchurl Kim.  
 
-
 I am interested in Computer Vision : Deep-Learning application within the field of Image and Video processing.  
-
 
 Thank you for visiting my page.
 

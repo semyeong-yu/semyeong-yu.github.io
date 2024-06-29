@@ -121,41 +121,45 @@ $$log p_{\theta}(x_0) \geq E_{x_{1:T} \sim q(x_{1:T}|x_0)}[log \frac{p_{\theta}(
 > Step 2. `Markov property` 이용하여 `Diffusion Loss` 유도  
 
 $$E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log \frac{p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}]$$  
+
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[log \frac{q(x_{1:T}|x_0)}{p_{\theta}(x_{0:T})}]$$  
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[log \frac{\prod_{t=1}^{T}q(x_t|x_{t-1})}{p_{\theta}(x_T) \prod_{t=1}^T p_{\theta}(x_{t-1}|x_t)}]$$ by memoryless `Markov chain property`  
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log p_{\theta}(x_T) + \sum_{t=1}^{T} log \frac{q(x_t|x_{t-1})}{p_{\theta}(x_{t-1}|x_t)}]$$  
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log \frac{q(x_t|x_{t-1})}{p_{\theta}(x_{t-1}|x_t)} + log \frac{q(x_1|x_0)}{p_{\theta}(x_0|x_1)}]$$  
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log \frac{q(x_t|x_{t-1}, x_0)}{p_{\theta}(x_{t-1}|x_t)} + log \frac{q(x_1|x_0)}{p_{\theta}(x_0|x_1)}]$$ by memoryless `Markov property` (`tractable`하도록 만들기 위해 $$q(x_t|x_{t-1})$$의 조건부에 $$x_0$$ 추가)  
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log (\frac{q(x_{t-1}|x_t, x_0)}{p_{\theta}(x_{t-1}|x_t)} \cdot \frac{q(x_t|x_0)}{q(x_{t-1}|x_0)}) + log \frac{q(x_1|x_0)}{p_{\theta}(x_0|x_1)}]$$ by `Bayes` 정리 $$P(A|B \bigcap C) = \frac{P(B|A \bigcap C) \cdot P(A|C)}{P(B|C)}$$  
-$$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log \frac{q(x_{t-1}|x_t, x_0)}{p_{\theta}(x_{t-1}|x_t)} + log \frac{q(x_T|x_0)}{q(x_1|x_0)} + log \frac{q(x_1|x_0)}{p_{\theta}(x_0|x_1)}]$$  
+$$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log \frac{q(x_{t-1}|x_t, x_0)}{p_{\theta}(x_{t-1}|x_t)} + log \frac{q(x_T|x_0)}{q(x_1|x_0)} + log \frac{q(x_1|x_0)}{p_{\theta}(x_0|x_1)}]$$ by log 곱셈  
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[log \frac{q(x_T|x_0)}{p_{\theta}(x_T)} + \sum_{t=2}^{T} log \frac{q(x_{t-1}|x_t, x_0)}{p_{\theta}(x_{t-1}|x_t)} - log p_{\theta}(x_0|x_1)]$$  
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[D_{KL}(q(x_T|x_0) \| p_{\theta}(x_T)) + \sum_{t=2}^{T} D_{KL}(q(x_{t-1}|x_t, x_0) \| p_{\theta}(x_{t-1}|x_t)) - log p_{\theta}(x_0|x_1)]$$ by `KL divergence` 식 $$D_{KL}(P \| Q) = \sum P(x) log (\frac{P(x)}{Q(x)})$$  
 
 > Step 3. `DDPM Loss` 유도  
 
-$$L_T = D_{KL}(q(x_T | x_0) \| p(x_T))$$ :  
-`regularization` loss (`마지막 상태` $$x_T$$에서 확률분포 q, p의 차이를 최소화)  
-noise 주입 정도를 의미하는 regularization 관련 $$\beta_t$$가 t에 따른 상수값(fixed)이므로 training에서 제외 `?????`  
+$$L_T = D_{KL}(q(x_T | x_0) \| p(x_T))$$ : `regularization` loss  
+`마지막 상태` $$x_T$$에서 확률분포 q, p의 차이를 최소화  
+noise 주입 정도인 $$\beta_t$$는 미리 정해둔 schedule에 따른 상수값(fixed)이므로  
+$$q(x_T | x_0)$$는 training과 관계없이 $$x_T$$가 항상 Gaussian 분포를 따르도록 한다.  
+$$x_T$$가 Gaussian 분포를 따르므로 $$q(x_T | x_0)$$와 $$p(x_T)$$는 거의 유사하고,  
+결과적으로 둘의 KL divergence인 $$L_T$$는 항상 0에 가까운 값을 가지므로 training에서 $$L_T$$ term은 제외  
 
-$$L_{t-1} = D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))$$ :  
-`denoising process` loss (`현재 상태` $$x_t$$가 주어질 때 `이전 상태` $$x_{t-1}$$가 나올 확률 분포 q, p의 차이를 최소화)  
+$$L_{t-1} = D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))$$ : `denoising process` loss  
+`현재 상태` $$x_t$$가 주어질 때 `이전 상태` $$x_{t-1}$$가 나올 확률 분포 q, p의 차이를 최소화  
 
-$$L_0 = - log p_{\theta} (x_0 | x_1)$$ :  
-`reconstruction` loss (q를 sampling했을 때 $$p_{\theta} (x_0 | x_1)$$를 최대화하여 (MLE) 확률분포 q, p의 차이를 최소화)  
-전체적으로 봤을 때 영향력 적으므로 training에서 제외 `?????`  
+$$L_0 = - log p_{\theta} (x_0 | x_1)$$ : `reconstruction` loss  
+q를 sampling했을 때 $$p_{\theta} (x_0 | x_1)$$를 최대화하여 (MLE) 확률분포 q, p의 차이를 최소화  
+전체적으로 봤을 때 $$L_0$$는 무수히 많은 time step $$T \sim 1000$$ 중 단일 시점에서의 log likelihood 값이므로  
+값이 너무 작아서 training에서 $$L_0$$ term은 제외  
 
-$$\rightarrow$$ 즉, Let's only minimize $$L_{t-1} = D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))$$ !!  
+$$\rightarrow$$ 즉, Let's only minimize $$L_{t-1} = E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\sum_{t=2}^{T} log \frac{q(x_{t-1}|x_t, x_0)}{p_{\theta}(x_{t-1}|x_t)}] = D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))$$ !!  
 
-$$L_{t-1} = D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))$$  
-$$= \int q(x_{t-1} | x_t, x_0) log \frac{q(x_{t-1} | x_t, x_0)}{p(x_{t-1} | x_t)} dx$$  
-$$= - \int q(x_{t-1} | x_t, x_0) log p(x_{t-1} | x_t) dx + \int q(x_{t-1} | x_t, x_0) log q(x_{t-1} | x_t, x_0) dx$$  
-$$= $$ by Step 3-1. below  
+> Step 4. integral of $$p(x)logp(x)$$ and $$p(x)logq(x)$$ for Gaussian $$p(x), q(x)$$  
 
-> Step 3-1. integral of $$p(x)logp(x)$$ for Gaussian p(x)  
+`Gaussian Integral` :  
+$$\int_{-\infty}^{\infty} e^{-x^2}dx = \sqrt{\pi}$$ and $$\int_{-\infty}^{\infty} x^2 e^{-ax^2}dx = \frac{1}{2}\sqrt{\pi}a^{-\frac{3}{2}}$$  
 
-`Gaussian Integral` : $$\int_{-\infty}^{\infty} e^{-x^2}dx = \sqrt{\pi}$$ and $$\int_{-\infty}^{\infty} x^2 e^{-ax^2}dx = \frac{1}{2}\sqrt{\pi}a^{-\frac{3}{2}}$$  
-$$$$
-
+For $$p(x) = \frac{1}{\sqrt{2 \pi \sigma^{2}}} e^{-\frac{(x-\mu)^2}{2 \sigma^2}}$$,  
+$$\int p(x) log p(x) dx$$  
+$$= \frac{1}{\sqrt{2 \pi \sigma^{2}}} e^{-\frac{(x-\mu)^2}{2 \sigma^2}} log (\frac{1}{\sqrt{2 \pi \sigma^{2}}} e^{-\frac{(x-\mu)^2}{2 \sigma^2}}) dx$$  
+$$= $$
 
 > 출처 블로그 :  
 [Diffusion Model](https://xoft.tistory.com/32)  
