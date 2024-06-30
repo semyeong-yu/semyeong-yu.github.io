@@ -350,21 +350,21 @@ while (converge)
   t ~ Uniform({1, ..., T}) # time step (integer)
   epsilon ~ N(0, I) # Gaussian target epsilon
 
-  gradient descent by DDPM loss
+  # gradient descent by DDPM loss
 ```
 DDPM loss :  
 $$E_{x_0, \epsilon}[\| \epsilon_{t} - \epsilon_{\theta}(\sqrt{\bar \alpha_{t}} x_{0} + \sqrt{1-\bar \alpha_{t}} \epsilon, t) \|^2]$$  
 
 
 - `backward` process :  
-`Sampling` from Gaussian noise image to new image by trained $$\epsilon_{\theta}$$  
+`Sampling` from Gaussian noise img to new img by trained $$\epsilon_{\theta}$$  
 ```Python
 x_T = N(0, I) # start with Gaussian noise image
 
 for t = T, ..., 1:
   z ~ N(0, I) if t > 1 else z = 0
   
-  obtain x_{t-1} from x_t by p_{theta}(x_{t-1} | x_t)
+  # obtain x_{t-1} from x_t by p_{theta}(x_{t-1} | x_t)
 ```
 Sampling :  
 $$x_{t-1} = \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{\theta}(x_t, t)) + \sigma_{t} z$$  
