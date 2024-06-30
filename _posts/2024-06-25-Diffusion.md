@@ -95,10 +95,11 @@ where $$\epsilon \sim N(0, I)$$
 즉, $$\epsilon_{\theta}$$가 Standard Gaussian 분포 $$\epsilon$$를 따르도록!  
 
 
-이 때, $$\epsilon_{\theta}$$의 input은 $$q(X_t | X_{t-1})$$와 $$t$$ !!  
+이 때, $$\epsilon_{\theta}$$의 input은 $$q(x_t | x_0)$$와 $$t$$ !!  
 $$q(X_t | X_{t-1}) = N(X_t ; \mu_{X_{t-1}}, \Sigma_{X_{t-1}}) = N(X_t ; \sqrt{1-\beta_t} \cdot X_{t-1}, \beta_t \cdot I)$$  
 $$\rightarrow q(x_t | x_0) = N(x_t; \sqrt{\bar \alpha_{t}}x_0, \sqrt{1-\bar \alpha_{t}} I) = \sqrt{\bar \alpha_{t}}x_0 + \sqrt{1-\bar \alpha_{t}} \epsilon$$  
 where $$\alpha_t = 1 - \beta_t$$ and $$\bar \alpha_t = \prod_{s=1}^t \alpha_s$$ and $$\epsilon \sim N(0, I)$$  
+(위의 수식 유도과정은 아래에서 다룰 예정)  
 
 
 ### Diffusion Model 및 DDPM Loss 수식 유도
@@ -220,11 +221,14 @@ $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\sum_{t=2}^{T} D_{KL}(q(x_{t-1} | x_t, x_0) 
 Let $$\sigma$$ `std have no learning param. (상수값)`  
 Let $$q(x_{t-1} | x_t, x_0)$$ have Gaussian mean $$\tilde \mu_{t}$$  
 Let $$p_{\theta}(x_{t-1} | x_t)$$ have Gaussian mean $$\mu_{\theta}$$  
+
 By Step 4., since $$\sigma$$ is fixed, we have to minimize  
+
 $$E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\frac{1}{2 \sigma_{t}^2} \| \tilde \mu_{t} (x_t, x_0) - \mu_{\theta} (x_t, t) \|^2] + C$$  
+
 Now we have to know $$\tilde \mu_{t}$$ and $$\mu_{\theta}$$
 
-> Step 6. Obtain $$q(x_t|x_0)$$ from $$q(x_t | x_{t-1})$$
+> Step 6. Obtain q(x_t|x_0) from q(x_t | x_{t-1})
 
 1. Let's define $$q(x_t | x_{t-1}) = N(x_t ; \sqrt{1-\beta_{t}} \cdot x_{t-1}, \beta_{t} \cdot \boldsymbol I)$$  
 where noise 주입 비율인 $$\beta_{t}$$는 t에 따라 증가하는 상수값이고,  
@@ -233,23 +237,67 @@ noise 주입 비율이 커질수록 분산이 커지는 건 reasonable
 2. Let's define $$\alpha_{t} = 1 - \beta_{t}$$ and $$\bar \alpha_{t} = \prod_{s=1}^t \alpha_{s}$$  
 where $$\bar \alpha_{t}$$는 $$s=1$$부터 $$s=t$$까지 $$\alpha_{s} = 1 - \beta_{s}$$의 누적곱  
 
-When $$\epsilon_{t-1}, \epsilon_{t-2}, \cdots \sim N(0, I)$$,  
+When $$\epsilon_{t-1}, \epsilon_{t-2}, \cdots, \epsilon_0 \sim N(0, I)$$,  
 $$x_t = \mu + \sigma \cdot \epsilon = \sqrt{\alpha_{t}} x_{t-1} + \sqrt{1-\alpha_{t}} \cdot \epsilon_{t-1}$$  
 $$\cdots$$  
 $$x_t = \sqrt{\bar \alpha_{t}} x_{0} + \sqrt{1-\bar \alpha_{t}} \cdot \epsilon$$  
-where $$\epsilon_0 \sim N(0, I)$$  
-by merging two Gaussian $$N(0, \sigma_{1}^2 I), N(0, \sigma_{2}^2 I) \rightarrwo N(0, (\sigma_{1}^2 + \sigma_{2}^2) I)$$  
+where $$\epsilon \sim N(0, I)$$  
+by merging two Gaussians $$N(0, \sigma_{1}^2 I), N(0, \sigma_{2}^2 I) \rightarrow N(0, (\sigma_{1}^2 + \sigma_{2}^2) I)$$  
 
 Therefore,  
 $$q(x_t | x_0) = N(x_t; \sqrt{\bar \alpha_{t}} x_{0}, (1-\bar \alpha_{t}) \boldsymbol I)$$
 
-즉, 우리가 정의한 Gaussian $$q(x_t | x_{t-1})$$로부터 Gaussian $$q(x_t|x_0)$$를 얻어냈다!  
+즉, 우리가 정의한 Gaussian q(x_t | x_{t-1})로부터 Gaussian q(x_t|x_0)를 얻어냈다!  
 
-> Step 7. Obtain $$q(x_{t-1} | x_t, x_0)$$
+> Step 7. Obtain q(x_{t-1} | x_t, x_0)
 
-ddd
+Remind that  
+1. $$q(x_t | x_{t-1}, x_0) = q(x_t | x_{t-1}) = N(x_t ; \sqrt{\alpha_{t}} \cdot x_{t-1}, \beta_{t} \cdot \boldsymbol I)$$  
+2. $$q(x_t | x_0) = N(x_t; \sqrt{\bar \alpha_{t}} x_{0}, (1-\bar \alpha_{t}) \boldsymbol I)$$  
 
-> Step 8. Obtain $$p_{\theta}(x_{t-1} | x_t)$$
+
+$$q(x_{t-1} | x_t, x_0)$$  
+$$= q(x_t | x_{t-1}, x_0) \frac{q(x_{t-1} | x_0)}{q(x_t | x_0)}$$  
+$$\propto \exp (- \frac{(x_t - \sqrt{\alpha_{t}} x_{t-1})^2}{2 \beta_{t}} - \frac{(x_{t-1} - \sqrt{\bar \alpha_{t-1}} x_{0})^2}{2 (1-\bar \alpha_{t-1})} - \frac{(x_{t} - \sqrt{\bar \alpha_{t}} x_{0})^2}{2 (1-\bar \alpha_{t})})$$  
+$$= \exp (- \frac{1}{2} ((\frac{\alpha_{t}}{\beta_{t}} + \frac{1}{1 - \bar \alpha_{t-1}})x_{t-1}^2 - (\frac{2 \sqrt{\alpha_t}}{\beta_{t}} x_t + \frac{2\sqrt{\bar \alpha_{t-1}}}{1 - \bar \alpha_{t-1}} x_0) x_{t-1} + C(x_t, x_0)))$$  
+
+$$q(x_{t-1} | x_t, x_0)$$ 또한 Gaussian이라서  
+$$\frac{1}{\sqrt{2 \pi \sigma^{2}}} e^{-\frac{(x-\mu)^2}{2 \sigma^2}}$$ 꼴이므로  
+$$q(x_{t-1} | x_t, x_0)$$의 지수부분을 $$x_{t-1}$$에 대한 이차식 꼴로 정리하면  
+계수 비교를 통해 $$q(x_{t-1} | x_t, x_0)$$의 mean, variance를 알 수 있음!  
+
+- $$q(x_{t-1} | x_t, x_0)$$ 의 variance :  
+$$\frac{1}{\sigma^{2}}$$  
+$$= \frac{\alpha_{t}}{\beta_{t}} + \frac{1}{1 - \bar \alpha_{t-1}}$$  
+$$= \frac{\alpha_{t} - \alpha_{t} \bar \alpha_{t-1} + \beta_{t}}{\beta_{t}(1 - \bar \alpha_{t-1})}$$  
+$$= \frac{\alpha_{t} - \bar \alpha_{t} + 1 - \alpha_{t}}{\beta_{t}(1 - \bar \alpha_{t-1})}$$  
+$$= \frac{1 - \bar \alpha_{t}}{\beta_{t}(1 - \bar \alpha_{t-1})}$$  
+
+따라서 $$\sigma^{2} = \frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} \beta_{t}$$  
+
+- $$q(x_{t-1} | x_t, x_0)$$ 의 mean :  
+$$- \frac{2 \mu}{\sigma^{2}}$$  
+$$= - (\frac{2 \sqrt{\alpha_t}}{\beta_{t}} x_t + \frac{2\sqrt{\bar \alpha_{t-1}}}{1 - \bar \alpha_{t-1}} x_0)$$  
+$$\rightarrow \mu = (\frac{\sqrt{\alpha_t}}{\beta_{t}} x_t + \frac{\sqrt{\bar \alpha_{t-1}}}{1 - \bar \alpha_{t-1}} x_0) \cdot \sigma^{2}$$  
+$$= - (\frac{2 \sqrt{\alpha_t}}{\beta_{t}} x_t + \frac{2\sqrt{\bar \alpha_{t-1}}}{1 - \bar \alpha_{t-1}} x_0)$$  
+$$\rightarrow \mu = (\frac{\sqrt{\alpha_t}}{\beta_{t}} x_t + \frac{\sqrt{\bar \alpha_{t-1}}}{1 - \bar \alpha_{t-1}} x_0) \cdot (\frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} \beta_{t})$$  
+$$= \frac{\sqrt{\alpha_t} x_t (1 - \bar \alpha_{t-1}) + \beta_{t} x_0 \sqrt{\bar \alpha_{t-1}}}{\beta_{t}(1 - \bar \alpha_{t-1})} \cdot (\frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} \beta_{t})$$  
+$$= \frac{\sqrt{\alpha_t} x_t (1 - \bar \alpha_{t-1}) + \beta_{t} x_0 \sqrt{\bar \alpha_{t-1}}}{1 - \bar \alpha_{t}}$$  
+
+따라서  
+$$\mu = \frac{\sqrt{\bar \alpha_{t-1}} \beta_{t}}{1 - \bar \alpha_{t}} x_0 + \frac{\sqrt{\alpha_t} (1 - \bar \alpha_{t-1})}{1 - \bar \alpha_{t}} x_t$$  
+  
+$$q(x_t | x_0) = N(x_t; \sqrt{\bar \alpha_{t}} x_{0}, (1-\bar \alpha_{t}) \boldsymbol I)$$이므로  
+$$x_t = \sqrt{\bar \alpha_{t}} x_{0} + sqrt{1-\bar \alpha_{t}} \epsilon $$ 대입하면  
+
+$$\mu_{t} = \frac{\sqrt{\bar \alpha_{t-1}} \beta_{t}}{1 - \bar \alpha_{t}} x_0 + \frac{\sqrt{\alpha_t} (1 - \bar \alpha_{t-1})}{1 - \bar \alpha_{t}} x_t$$  
+$$= $$
+
+- $$q(x_{t-1} | x_t, x_0)$$ :  
+$$q(x_{t-1} | x_t, x_0) = N(x_{t-1}; ???, ???)$$
+
+
+> Step 8. Obtain p_{\theta}(x_{t-1} | x_t)
 
 ddd
 
