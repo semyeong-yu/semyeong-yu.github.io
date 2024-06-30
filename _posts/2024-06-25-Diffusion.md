@@ -342,8 +342,8 @@ where $$x_t = q(x_t | x_0) = \sqrt{\bar \alpha_{t}} x_{0} + \sqrt{1-\bar \alpha_
 
 ### DDPM Pseudo-Code
 
-- `forward` process :  
-`Training` $$\epsilon_{\theta}$$ for given input image $$x_0$$  
+- `forward` process : `Training` $$\epsilon_{\theta}$$ for given input image $$x_0$$  
+
 ```Python
 while (converge){
   x_0 ~ q(x_0) # input image
@@ -357,14 +357,13 @@ DDPM loss :
 $$E_{x_0, \epsilon}[\| \epsilon_{t} - \epsilon_{\theta}(\sqrt{\bar \alpha_{t}} x_{0} + \sqrt{1-\bar \alpha_{t}} \epsilon, t) \|^2]$$  
 
 
-- `backward` process :  
-`Sampling` from Gaussian noise img to new img by trained $$\epsilon_{\theta}$$  
+- `backward` process : `Sampling` from Gaussian noise img to new img by trained $$\epsilon_{\theta}$$  
+
 ```Python
 x_T ~ N(0, I) # start with Gaussian noise image
 
 for (t = T, ..., 1){
-  z ~ N(0, I) if t > 1 else z = 0
-  
+  z ~ N(0, I) if t > 1 else z = 0  
   # sampling x_{t-1} from x_t by p_{theta}(x_{t-1} | x_t)
 }
 ```
