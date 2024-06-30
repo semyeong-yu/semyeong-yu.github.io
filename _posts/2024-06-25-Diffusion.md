@@ -247,9 +247,9 @@ by merging two Gaussians $$N(0, \sigma_{1}^2 I), N(0, \sigma_{2}^2 I) \rightarro
 Therefore,  
 $$q(x_t | x_0) = N(x_t; \sqrt{\bar \alpha_{t}} x_{0}, (1-\bar \alpha_{t}) \boldsymbol I)$$
 
-즉, 우리가 정의한 Gaussian $q(x_t | x_{t-1})$로부터 Gaussian $q(x_t|x_0)$를 얻어냈다!  
+즉, 우리가 정의한 Gaussian $$q(x_t | x_{t-1})$$ 으로부터 Gaussian $$q(x_t|x_0)$$ 를 얻어냈다!  
 
-> Step 7. Obtain $q(x_{t-1} | x_t, x_0)$
+> Step 7. Obtain $$q(x_{t-1} | x_t, x_0)$$  
 
 Remind that  
 1. $$q(x_t | x_{t-1}, x_0) = q(x_t | x_{t-1}) = N(x_t ; \sqrt{\alpha_{t}} \cdot x_{t-1}, \beta_{t} \cdot \boldsymbol I)$$
@@ -287,28 +287,56 @@ $$= \frac{\sqrt{\alpha_t} x_t (1 - \bar \alpha_{t-1}) + \beta_{t} x_0 \sqrt{\bar
 $$\mu = \frac{\sqrt{\bar \alpha_{t-1}} \beta_{t}}{1 - \bar \alpha_{t}} x_0 + \frac{\sqrt{\alpha_t} (1 - \bar \alpha_{t-1})}{1 - \bar \alpha_{t}} x_t$$  
   
 $$q(x_t | x_0) = N(x_t; \sqrt{\bar \alpha_{t}} x_{0}, (1-\bar \alpha_{t}) \boldsymbol I)$$이므로  
-$$x_0$$ 소거하기 위해  
-$$x_t = \sqrt{\bar \alpha_{t}} x_{0} + \sqrt{1-\bar \alpha_{t}} \epsilon $$ 대입하면  
+$$x_0$$ `소거`하기 위해  
+$$x_t = \sqrt{\bar \alpha_{t}} x_{0} + \sqrt{1-\bar \alpha_{t}} \epsilon$$ 대입하면  
 
 $$\mu_{t} = \frac{\sqrt{\bar \alpha_{t-1}} \beta_{t}}{1 - \bar \alpha_{t}} x_0 + \frac{\sqrt{\alpha_t} (1 - \bar \alpha_{t-1})}{1 - \bar \alpha_{t}} x_t$$  
 $$= \frac{\sqrt{\bar \alpha_{t-1}} \beta_{t}}{1 - \bar \alpha_{t}} (\frac{1}{\sqrt{\bar \alpha_{t}}}(x_t - \sqrt{1 - \bar \alpha_{t}} \epsilon_{t})) + \frac{\sqrt{\alpha_t} (1 - \bar \alpha_{t-1})}{1 - \bar \alpha_{t}} x_t$$  
 $$= \frac{\sqrt{\bar \alpha_{t-1}} (1 - \alpha_{t})}{1 - \bar \alpha_{t}} (\frac{1}{\sqrt{\bar \alpha_{t}}}(x_t - \sqrt{1 - \bar \alpha_{t}} \epsilon_{t})) + \frac{\sqrt{\alpha_t} (1 - \bar \alpha_{t-1})}{1 - \bar \alpha_{t}} x_t$$  
 $$= \frac{\sqrt{k} (1 - \alpha_{t})}{1 - \alpha_{t} k} (\frac{1}{\sqrt{\alpha_{t} k}}(x_t - \sqrt{1 - \alpha_{t} k} \epsilon_{t})) + \frac{\sqrt{\alpha_t} (1 - k)}{1 - \alpha_{t} k} x_t$$  
 by $$k = \bar \alpha_{t-1}$$ 및 $$\alpha_{t}k = \bar \alpha_{t}$$로 치환  
-$$= ddd$$
+$$= \frac{1}{\sqrt{\alpha_{t}}} x_t - \frac{1 - \alpha_{t}}{\sqrt{\alpha_{t}}\sqrt{1 - \alpha_{t}k}} \epsilon_{t}$$  
+$$= \frac{1}{\sqrt{\alpha_{t}}} x_t - \frac{1 - \alpha_{t}}{\sqrt{\alpha_{t}}\sqrt{1 - \bar \alpha_{t}}} \epsilon_{t}$$  
+$$= \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{t})$$  
 
 - $$q(x_{t-1} | x_t, x_0)$$ 결과 :  
-$$q(x_{t-1} | x_t, x_0) = N(x_{t-1}; ???, ???)$$
+$$q(x_{t-1} | x_t, x_0) = N(x_{t-1}; \tilde \mu_{t}(x_t), \tilde \beta_{t})$$  
+where $$\tilde \mu_{t}(x_t) = \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{t})$$  
+and $$\tilde \beta_{t} = \frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} \beta_{t}$$
 
+> Step 8. Obtain $$p_{\theta}(x_{t-1} | x_t)$$  
 
-> Step 8. Obtain p_{\theta}(x_{t-1} | x_t)
+우리의 목적은  
+$$D_{KL}(q(x_{t-1} | x_t, x_0) \| p_{\theta}(x_{t-1} | x_t))$$ 최소화  
+즉, $$p$$의 분포를 $$q$$의 분포에 approx.하는 것이다  
 
-ddd
+$$q(x_{t-1} | x_t, x_0)$$ 의 mean, variance 인  
+$$\tilde \mu_{t}(x_t) = \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{t})$$  
+$$\tilde \beta_{t} = \frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} \beta_{t}$$ 에서  
+$$x_t, \alpha_{t}, \beta_{t}$$는 입력값 및 미리 정해놓는 상수값이라서  
+deep learning network인 $$\epsilon_{\theta}$$ 가 시간 t에 따라 $$\epsilon_{t} \sim N(0, I)$$ 을 학습하도록 하기 위해서  
+`training param.로 학습할 수 있는 부분`은 $$\epsilon_{t} \sim N(0, I)$$ 뿐이다  
+즉, `p와 q의 분포에서 차이가 날 수 있는 부분은 epsilon 뿐!`  
+
+따라서 $$p_{\theta}(x_{t-1} | x_t)$$의 평균인 $$\mu_{\theta}(x_t, t)$$ 는  
+$$\tilde \mu_{t}(x_t) = \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{t})$$ 에서  
+$$\epsilon_{t}$$ 만 $$\epsilon_{\theta}(x_t, t)$$ 로 바꾼 값이다  
+$$\mu_{\theta}(x_t, t) = \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{\theta}(x_t, t))$$  
 
 > Step 9. Final `DDPM Loss`
 
-ddd
+Step 5.에 따르면 we have to minimize  
+$$E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\frac{1}{2 \sigma_{t}^2} \| \tilde \mu_{t} (x_t, x_0) - \mu_{\theta} (x_t, t) \|^2] + C$$  
 
+$$E_{x_0, \epsilon}[\frac{1}{2 \|\Sigma(x_t, t) \|^2} \| \tilde \mu_{t} (x_t, x_0) - \mu_{\theta} (x_t, t) \|^2]$$  
+$$= E_{x_0, \epsilon}[\frac{1}{2 \|\Sigma \|^2} \| \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{t}) - \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{\theta}(x_t, t)) \|^2]$$  
+$$= E_{x_0, \epsilon}[\frac{(1 - \alpha_{t})^2}{2 \|\Sigma \|^2 \alpha_{t} (1 - \bar \alpha_{t})} \| \epsilon_{t} - \epsilon_{\theta}(x_t, t) \|^2]$$  
+$$= E_{x_0, \epsilon}[\frac{(1 - \alpha_{t})^2}{2 \|\Sigma \|^2 \alpha_{t} (1 - \bar \alpha_{t})} \| \epsilon_{t} - \epsilon_{\theta}(\sqrt{\bar \alpha_{t}} x_{0} + \sqrt{1-\bar \alpha_{t}} \epsilon, t) \|^2]$$  
+since $$x_t = \sqrt{\bar \alpha_{t}} x_{0} + \sqrt{1-\bar \alpha_{t}} \epsilon$$  
+
+앞의 weight term을 제거하면  
+최종 Loss 값은 드디어!!!  
+$$= E_{x_0, \epsilon}[\| \epsilon_{t} - \epsilon_{\theta}(\sqrt{\bar \alpha_{t}} x_{0} + \sqrt{1-\bar \alpha_{t}} \epsilon, t) \|^2]$$  
 
 > 출처 블로그 :  
 [Diffusion Model](https://xoft.tistory.com/32)  
