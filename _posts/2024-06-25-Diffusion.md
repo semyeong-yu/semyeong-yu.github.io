@@ -228,7 +228,7 @@ $$E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\frac{1}{2 \sigma_{t}^2} \| \tilde \mu_{t} (x_
 
 Now we have to know $$\tilde \mu_{t}$$ and $$\mu_{\theta}$$
 
-> Step 6. Obtain q(x_t|x_0) from q(x_t | x_{t-1})
+> Step 6. Obtain $q(x_t|x_0)$ from $q(x_t | x_{t-1})$
 
 1. Let's define $$q(x_t | x_{t-1}) = N(x_t ; \sqrt{1-\beta_{t}} \cdot x_{t-1}, \beta_{t} \cdot \boldsymbol I)$$  
 where noise 주입 비율인 $$\beta_{t}$$는 t에 따라 증가하는 상수값이고,  
@@ -247,18 +247,18 @@ by merging two Gaussians $$N(0, \sigma_{1}^2 I), N(0, \sigma_{2}^2 I) \rightarro
 Therefore,  
 $$q(x_t | x_0) = N(x_t; \sqrt{\bar \alpha_{t}} x_{0}, (1-\bar \alpha_{t}) \boldsymbol I)$$
 
-즉, 우리가 정의한 Gaussian q(x_t | x_{t-1})로부터 Gaussian q(x_t|x_0)를 얻어냈다!  
+즉, 우리가 정의한 Gaussian $q(x_t | x_{t-1})$로부터 Gaussian $q(x_t|x_0)$를 얻어냈다!  
 
-> Step 7. Obtain q(x_{t-1} | x_t, x_0)
+> Step 7. Obtain $q(x_{t-1} | x_t, x_0)$
 
 Remind that  
-1. $$q(x_t | x_{t-1}, x_0) = q(x_t | x_{t-1}) = N(x_t ; \sqrt{\alpha_{t}} \cdot x_{t-1}, \beta_{t} \cdot \boldsymbol I)$$  
-2. $$q(x_t | x_0) = N(x_t; \sqrt{\bar \alpha_{t}} x_{0}, (1-\bar \alpha_{t}) \boldsymbol I)$$  
+1. $$q(x_t | x_{t-1}, x_0) = q(x_t | x_{t-1}) = N(x_t ; \sqrt{\alpha_{t}} \cdot x_{t-1}, \beta_{t} \cdot \boldsymbol I)$$
+2. $$q(x_t | x_0) = N(x_t; \sqrt{\bar \alpha_{t}} x_{0}, (1-\bar \alpha_{t}) \boldsymbol I)$$
 
 
 $$q(x_{t-1} | x_t, x_0)$$  
 $$= q(x_t | x_{t-1}, x_0) \frac{q(x_{t-1} | x_0)}{q(x_t | x_0)}$$  
-$$\propto \exp (- \frac{(x_t - \sqrt{\alpha_{t}} x_{t-1})^2}{2 \beta_{t}} - \frac{(x_{t-1} - \sqrt{\bar \alpha_{t-1}} x_{0})^2}{2 (1-\bar \alpha_{t-1})} - \frac{(x_{t} - \sqrt{\bar \alpha_{t}} x_{0})^2}{2 (1-\bar \alpha_{t})})$$  
+$$\propto \exp (- \frac{(x_t - \sqrt{\alpha_{t}} x_{t-1})^2}{2 \beta_{t}} - \frac{(x_{t-1} - \sqrt{\bar \alpha_{t-1}} x_{0})^2}{2 (1-\bar \alpha_{t-1})} + \frac{(x_{t} - \sqrt{\bar \alpha_{t}} x_{0})^2}{2 (1-\bar \alpha_{t})})$$  
 $$= \exp (- \frac{1}{2} ((\frac{\alpha_{t}}{\beta_{t}} + \frac{1}{1 - \bar \alpha_{t-1}})x_{t-1}^2 - (\frac{2 \sqrt{\alpha_t}}{\beta_{t}} x_t + \frac{2\sqrt{\bar \alpha_{t-1}}}{1 - \bar \alpha_{t-1}} x_0) x_{t-1} + C(x_t, x_0)))$$  
 
 $$q(x_{t-1} | x_t, x_0)$$ 또한 Gaussian이라서  
@@ -279,8 +279,7 @@ $$= \frac{1 - \bar \alpha_{t}}{\beta_{t}(1 - \bar \alpha_{t-1})}$$
 $$- \frac{2 \mu}{\sigma^{2}}$$  
 $$= - (\frac{2 \sqrt{\alpha_t}}{\beta_{t}} x_t + \frac{2\sqrt{\bar \alpha_{t-1}}}{1 - \bar \alpha_{t-1}} x_0)$$  
 $$\rightarrow \mu = (\frac{\sqrt{\alpha_t}}{\beta_{t}} x_t + \frac{\sqrt{\bar \alpha_{t-1}}}{1 - \bar \alpha_{t-1}} x_0) \cdot \sigma^{2}$$  
-$$= - (\frac{2 \sqrt{\alpha_t}}{\beta_{t}} x_t + \frac{2\sqrt{\bar \alpha_{t-1}}}{1 - \bar \alpha_{t-1}} x_0)$$  
-$$\rightarrow \mu = (\frac{\sqrt{\alpha_t}}{\beta_{t}} x_t + \frac{\sqrt{\bar \alpha_{t-1}}}{1 - \bar \alpha_{t-1}} x_0) \cdot (\frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} \beta_{t})$$  
+$$= (\frac{\sqrt{\alpha_t}}{\beta_{t}} x_t + \frac{\sqrt{\bar \alpha_{t-1}}}{1 - \bar \alpha_{t-1}} x_0) \cdot (\frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} \beta_{t})$$  
 $$= \frac{\sqrt{\alpha_t} x_t (1 - \bar \alpha_{t-1}) + \beta_{t} x_0 \sqrt{\bar \alpha_{t-1}}}{\beta_{t}(1 - \bar \alpha_{t-1})} \cdot (\frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} \beta_{t})$$  
 $$= \frac{\sqrt{\alpha_t} x_t (1 - \bar \alpha_{t-1}) + \beta_{t} x_0 \sqrt{\bar \alpha_{t-1}}}{1 - \bar \alpha_{t}}$$  
 
@@ -288,12 +287,17 @@ $$= \frac{\sqrt{\alpha_t} x_t (1 - \bar \alpha_{t-1}) + \beta_{t} x_0 \sqrt{\bar
 $$\mu = \frac{\sqrt{\bar \alpha_{t-1}} \beta_{t}}{1 - \bar \alpha_{t}} x_0 + \frac{\sqrt{\alpha_t} (1 - \bar \alpha_{t-1})}{1 - \bar \alpha_{t}} x_t$$  
   
 $$q(x_t | x_0) = N(x_t; \sqrt{\bar \alpha_{t}} x_{0}, (1-\bar \alpha_{t}) \boldsymbol I)$$이므로  
-$$x_t = \sqrt{\bar \alpha_{t}} x_{0} + sqrt{1-\bar \alpha_{t}} \epsilon $$ 대입하면  
+$$x_0$$ 소거하기 위해  
+$$x_t = \sqrt{\bar \alpha_{t}} x_{0} + \sqrt{1-\bar \alpha_{t}} \epsilon $$ 대입하면  
 
 $$\mu_{t} = \frac{\sqrt{\bar \alpha_{t-1}} \beta_{t}}{1 - \bar \alpha_{t}} x_0 + \frac{\sqrt{\alpha_t} (1 - \bar \alpha_{t-1})}{1 - \bar \alpha_{t}} x_t$$  
-$$= $$
+$$= \frac{\sqrt{\bar \alpha_{t-1}} \beta_{t}}{1 - \bar \alpha_{t}} (\frac{1}{\sqrt{\bar \alpha_{t}}}(x_t - \sqrt{1 - \bar \alpha_{t}} \epsilon_{t})) + \frac{\sqrt{\alpha_t} (1 - \bar \alpha_{t-1})}{1 - \bar \alpha_{t}} x_t$$  
+$$= \frac{\sqrt{\bar \alpha_{t-1}} (1 - \alpha_{t})}{1 - \bar \alpha_{t}} (\frac{1}{\sqrt{\bar \alpha_{t}}}(x_t - \sqrt{1 - \bar \alpha_{t}} \epsilon_{t})) + \frac{\sqrt{\alpha_t} (1 - \bar \alpha_{t-1})}{1 - \bar \alpha_{t}} x_t$$  
+$$= \frac{\sqrt{k} (1 - \alpha_{t})}{1 - \alpha_{t} k} (\frac{1}{\sqrt{\alpha_{t} k}}(x_t - \sqrt{1 - \alpha_{t} k} \epsilon_{t})) + \frac{\sqrt{\alpha_t} (1 - k)}{1 - \alpha_{t} k} x_t$$  
+by $$k = \bar \alpha_{t-1}$$ 및 $$\alpha_{t}k = \bar \alpha_{t}$$로 치환  
+$$= ddd$$
 
-- $$q(x_{t-1} | x_t, x_0)$$ :  
+- $$q(x_{t-1} | x_t, x_0)$$ 결과 :  
 $$q(x_{t-1} | x_t, x_0) = N(x_{t-1}; ???, ???)$$
 
 
