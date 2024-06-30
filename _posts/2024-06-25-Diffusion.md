@@ -228,7 +228,7 @@ $$E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\frac{1}{2 \sigma_{t}^2} \| \tilde \mu_{t} (x_
 
 Now we have to know $$\tilde \mu_{t}$$ and $$\mu_{\theta}$$
 
-> Step 6. Obtain $q(x_t|x_0)$ from $q(x_t | x_{t-1})$
+> Step 6. Obtain $$q(x_t | x_0)$$ from $$q(x_t | x_{t-1})$$  
 
 1. Let's define $$q(x_t | x_{t-1}) = N(x_t ; \sqrt{1-\beta_{t}} \cdot x_{t-1}, \beta_{t} \cdot \boldsymbol I)$$  
 where noise 주입 비율인 $$\beta_{t}$$는 t에 따라 증가하는 상수값이고,  
@@ -249,7 +249,7 @@ $$q(x_t | x_0) = N(x_t; \sqrt{\bar \alpha_{t}} x_{0}, (1-\bar \alpha_{t}) \bolds
 
 즉, 우리가 정의한 Gaussian $$q(x_t | x_{t-1})$$ 으로부터 Gaussian $$q(x_t|x_0)$$ 를 얻어냈다!  
 
-> Step 7. Obtain $$q(x_{t-1} | x_t, x_0)$$  
+> Step 7. Obtain $$q(x_{t-1} \| x_t, x_0)$$  
 
 Remind that  
 1. $$q(x_t | x_{t-1}, x_0) = q(x_t | x_{t-1}) = N(x_t ; \sqrt{\alpha_{t}} \cdot x_{t-1}, \beta_{t} \cdot \boldsymbol I)$$
@@ -304,7 +304,7 @@ $$q(x_{t-1} | x_t, x_0) = N(x_{t-1}; \tilde \mu_{t}(x_t), \tilde \beta_{t})$$
 where $$\tilde \mu_{t}(x_t) = \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{t})$$  
 and $$\tilde \beta_{t} = \frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} \beta_{t}$$
 
-> Step 8. Obtain $$p_{\theta}(x_{t-1} | x_t)$$  
+> Step 8. Obtain $$p_{\theta}(x_{t-1} \| x_t)$$  
 
 우리의 목적은  
 $$D_{KL}(q(x_{t-1} | x_t, x_0) \| p_{\theta}(x_{t-1} | x_t))$$ 최소화  
@@ -335,8 +335,14 @@ $$= E_{x_0, \epsilon}[\frac{(1 - \alpha_{t})^2}{2 \|\Sigma \|^2 \alpha_{t} (1 - 
 since $$x_t = \sqrt{\bar \alpha_{t}} x_{0} + \sqrt{1-\bar \alpha_{t}} \epsilon$$  
 
 앞의 weight term을 제거하면  
-최종 Loss 값은 드디어!!!  
+`최종 Loss 값`은 드디어!!!  
 $$= E_{x_0, \epsilon}[\| \epsilon_{t} - \epsilon_{\theta}(\sqrt{\bar \alpha_{t}} x_{0} + \sqrt{1-\bar \alpha_{t}} \epsilon, t) \|^2]$$  
+where $$x_t = q(x_t | x_0) = \sqrt{\bar \alpha_{t}} x_{0} + \sqrt{1-\bar \alpha_{t}} \epsilon$$ and $$\epsilon \sim N(0, I)$$  
+
+
+### DDPM Pseudo-Code
+
+
 
 > 출처 블로그 :  
 [Diffusion Model](https://xoft.tistory.com/32)  
