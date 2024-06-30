@@ -77,7 +77,7 @@ KL-diverence 특성 :
 - forward process ($$q$$) :  
 $$q(X_t | X_{t-1}) = N(X_t ; \mu_{X_{t-1}}, \Sigma_{X_{t-1}}) = N(X_t ; \sqrt{1-\beta_t} \cdot X_{t-1}, \beta_t \cdot I)$$  
 where $$\beta_t$$ : noise 주입 정도 (상수값)  
-t가 증가하면 $$\beta_t$$가 증가하여 다른 pixel($$I$$)을 선택하므로 noise가 강해진다  
+t가 증가할수록 $$\beta_t$$가 증가하여 다른 pixel($$I$$)을 선택하므로 noise가 강해진다  
 
 - backward process ($$p_{\theta}$$) :  
 image prior $$q(X_t)$$를 모르기 때문에 $$q(X_{t-1} | X_t)$$를 계산할 수 없으므로  
@@ -111,7 +111,7 @@ $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[log \frac{p_{\theta}(x_{0:T})}{p_{\theta}(x_
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[log \frac{p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}] + E_{x_{1:T} \sim q(x_{1:T}|x_0)}[log \frac{q(x_{1:T}|x_0)}{p_{\theta}(x_{1:T}|x_0)}] \cdots (\ast)$$  
 ($$p_{\theta}(x_{1:T}|x_0)$$은 `intractable`하므로 KL divergence 항에 넣어서 제거!)  
 
-이 때, 마지막 식의 오른쪽 항은 아래와 같이 `KL divergence` 꼴이다.  
+마지막 식의 오른쪽 항은 아래와 같이 `KL divergence` 꼴이다.  
 $$E_{x_{1:T} \sim q(x_{1:T}|x_0)}[log \frac{q(x_{1:T}|x_0)}{p_{\theta}(x_{1:T}|x_0)}] = \sum q(x_{1:T}|x_0) log \frac{q(x_{1:T}|x_0)}{p_{\theta}(x_{1:T}|x_0)} = D_{KL}(q(x_{1:T}|x_0) \| p_{\theta}(x_{1:T}|x_0))$$  
 $$q(x_{1:T}|x_0)$$는 계산할 수 있지만 $$p_{\theta}(x_{1:T}|x_0)$$는 계산할 수 없으므로 KL divergence의 특성 $$KL(p \| q) \geq 0$$을 이용하면  
 $$(\ast)$$ 으로부터  
@@ -143,7 +143,7 @@ by `Bayes` 정리
 $$P(A|B \bigcap C) = \frac{P(B|A \bigcap C) \cdot P(A|C)}{P(B|C)}$$  
 
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log \frac{q(x_{t-1}|x_t, x_0)}{p_{\theta}(x_{t-1}|x_t)} + log \frac{q(x_T|x_0)}{q(x_1|x_0)} + log \frac{q(x_1|x_0)}{p_{\theta}(x_0|x_1)}]$$  
-by log 곱셈  
+by log 곱셈으로 소거  
 
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[log \frac{q(x_T|x_0)}{p_{\theta}(x_T)} + \sum_{t=2}^{T} log \frac{q(x_{t-1}|x_t, x_0)}{p_{\theta}(x_{t-1}|x_t)} - log p_{\theta}(x_0|x_1)]$$  
 
@@ -157,8 +157,8 @@ by `KL divergence` 식 $$D_{KL}(P \| Q) = \sum P(x) log (\frac{P(x)}{Q(x)})$$
 `마지막 상태` $$x_T$$에서 확률분포 q, p의 차이를 최소화  
 noise 주입 정도인 $$\beta_t$$는 미리 정해둔 schedule에 따른 상수값(fixed)이므로  
 $$q(x_T | x_0)$$는 training과 관계없이 $$x_T$$가 항상 Gaussian 분포를 따르도록 한다.  
-$$x_T$$가 Gaussian 분포를 따르므로 $$q(x_T | x_0)$$와 $$p(x_T)$$는 거의 유사하고,  
-결과적으로 둘의 KL divergence인 $$L_T$$는 항상 0에 가까운 값을 가지므로 training에서 $$L_T$$ term은 제외  
+$$x_T$$가 `Gaussian 분포`를 따르므로 $$q(x_T | x_0)$$와 $$p(x_T)$$는 거의 유사하고,  
+결과적으로 둘의 KL divergence인 $$L_T$$는 항상 0에 가까운 값을 가지므로 training에서 $$L_T$$ term은 `제외`  
 
 2. $$L_{t-1} = D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))$$ : `denoising process` loss  
 `현재 상태` $$x_t$$가 주어질 때 `이전 상태` $$x_{t-1}$$가 나올 확률 분포 q, p의 차이를 최소화  
@@ -166,12 +166,12 @@ $$x_T$$가 Gaussian 분포를 따르므로 $$q(x_T | x_0)$$와 $$p(x_T)$$는 거
 3. $$L_0 = - log p_{\theta} (x_0 | x_1)$$ : `reconstruction` loss  
 q를 sampling했을 때 $$p_{\theta} (x_0 | x_1)$$를 최대화하여 (MLE) 확률분포 q, p의 차이를 최소화  
 전체적으로 봤을 때 $$L_0$$는 무수히 많은 time step $$T \sim 1000$$ 중 단일 시점에서의 log likelihood 값이므로  
-값이 너무 작아서 training에서 $$L_0$$ term은 제외  
+`값이 너무 작아서` training에서 $$L_0$$ term은 `제외`  
 
 Let's only minimize the second term  
 $$E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\sum_{t=2}^{T} L_{t-1}] = E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\sum_{t=2}^{T} D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))]$$  
 
-> Step 4. Gaussian param. $$\mu, \sigma$$로 KL-divergence 나타내는 법  
+> Step 4. Gaussian param. $$\mu, \sigma$$로 KL-divergence 나타내기  
 
 - `Gaussian Integral` :  
 $$\int_{-\infty}^{\infty} e^{-x^2}dx = \sqrt{\pi}$$ and $$\int_{-\infty}^{\infty} x^2 e^{-ax^2}dx = \frac{1}{2}\sqrt{\pi}a^{-\frac{3}{2}}$$  
@@ -205,26 +205,45 @@ $$= - \frac{1}{2} log (2 \pi \sigma_{2}^{2}) - \frac{\sigma_{1}^2 + (\mu_{1} - \
 For $$p(x) = \frac{1}{\sqrt{2 \pi \sigma_{1}^{2}}} e^{-\frac{(x-\mu_{1})^2}{2 \sigma_{1}^2}} \sim N(\mu_{1}, \sigma_{1})$$  
 and $$q(x) = \frac{1}{\sqrt{2 \pi \sigma_{2}^{2}}} e^{-\frac{(x-\mu_{2})^2}{2 \sigma_{2}^2}} \sim N(\mu_{2}, \sigma_{2})$$,  
 $$D_{KL}(p \| q)$$  
-$$\int p(x) logp(x) dx - \int p(x) log q(x)dx$$  
+$$= \int p(x) log \frac{p(x)}{q(x)} dx$$  
+$$= \int p(x) logp(x) dx - \int p(x) log q(x)dx$$  
 $$= - \frac{1}{2} (1 + log(2\pi \sigma_{1}^{2})) - (- \frac{1}{2} log (2 \pi \sigma_{2}^{2}) - \frac{\sigma_{1}^2 + (\mu_{1} - \mu_{2})^2}{2 \sigma_{2}^2})$$  
 $$= - \frac{1}{2} + \frac{1}{2} log (\frac{2 \pi \sigma_{2}^2}{2 \pi \sigma_{1}^2}) + \frac{\sigma_{1}^2 + (\mu_{1} - \mu_{2})^2}{2 \sigma_{2}^2}$$  
 $$= - \frac{1}{2} + log (\frac{\sigma_{2}}{\sigma_{1}}) + \frac{\sigma_{1}^2 + (\mu_{1} - \mu_{2})^2}{2 \sigma_{2}^2}$$  
 
-> Step 5. Only Minimize $$E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\sum_{t=2}^{T} L_{t-1}]$$ in Diffusion Loss  
+> Step 5. Only Minimize the second term in Diffusion Loss  
 
 $$E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\sum_{t=2}^{T} L_{t-1}]$$  
+
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\sum_{t=2}^{T} D_{KL}(q(x_{t-1} | x_t, x_0) \| p(x_{t-1} | x_t))]$$  
 
 Let $$\sigma$$ `std have no learning param. (상수값)`  
 Let $$q(x_{t-1} | x_t, x_0)$$ have Gaussian mean $$\tilde \mu_{t}$$  
 Let $$p_{\theta}(x_{t-1} | x_t)$$ have Gaussian mean $$\mu_{\theta}$$  
-By Step 4., we have to minimize  
+By Step 4., since $$\sigma$$ is fixed, we have to minimize  
 $$E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\frac{1}{2 \sigma_{t}^2} \| \tilde \mu_{t} (x_t, x_0) - \mu_{\theta} (x_t, t) \|^2] + C$$  
 Now we have to know $$\tilde \mu_{t}$$ and $$\mu_{\theta}$$
 
-> Step 6. Obtain $$q(x_t|x_0)$$
+> Step 6. Obtain $$q(x_t|x_0)$$ from $$q(x_t | x_{t-1})$$
 
-ddd
+1. Let's define $$q(x_t | x_{t-1}) = N(x_t ; \sqrt{1-\beta_{t}} \cdot x_{t-1}, \beta_{t} \cdot \boldsymbol I)$$  
+where noise 주입 비율인 $$\beta_{t}$$는 t에 따라 증가하는 상수값이고,  
+noise 주입 비율이 커질수록 분산이 커지는 건 reasonable  
+
+2. Let's define $$\alpha_{t} = 1 - \beta_{t}$$ and $$\bar \alpha_{t} = \prod_{s=1}^t \alpha_{s}$$  
+where $$\bar \alpha_{t}$$는 $$s=1$$부터 $$s=t$$까지 $$\alpha_{s} = 1 - \beta_{s}$$의 누적곱  
+
+When $$\epsilon_{t-1}, \epsilon_{t-2}, \cdots \sim N(0, I)$$,  
+$$x_t = \mu + \sigma \cdot \epsilon = \sqrt{\alpha_{t}} x_{t-1} + \sqrt{1-\alpha_{t}} \cdot \epsilon_{t-1}$$  
+$$\cdots$$  
+$$x_t = \sqrt{\bar \alpha_{t}} x_{0} + \sqrt{1-\bar \alpha_{t}} \cdot \epsilon$$  
+where $$\epsilon_0 \sim N(0, I)$$  
+by merging two Gaussian $$N(0, \sigma_{1}^2 I), N(0, \sigma_{2}^2 I) \rightarrwo N(0, (\sigma_{1}^2 + \sigma_{2}^2) I)$$  
+
+Therefore,  
+$$q(x_t | x_0) = N(x_t; \sqrt{\bar \alpha_{t}} x_{0}, (1-\bar \alpha_{t}) \boldsymbol I)$$
+
+즉, 우리가 정의한 Gaussian $$q(x_t | x_{t-1})$$로부터 Gaussian $$q(x_t|x_0)$$를 얻어냈다!  
 
 > Step 7. Obtain $$q(x_{t-1} | x_t, x_0)$$
 
