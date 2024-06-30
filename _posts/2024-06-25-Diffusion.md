@@ -228,7 +228,7 @@ $$E_{x_{1:T} \sim q(x_{1:T}|x_0)}[\frac{1}{2 \sigma_{t}^2} \| \tilde \mu_{t} (x_
 
 Now we have to know $$\tilde \mu_{t}$$ and $$\mu_{\theta}$$
 
-> Step 6. Obtain $$q(x_t | x_0)$$ from $$q(x_t | x_{t-1})$$  
+> Step 6. Obtain $$q(x_t \| x_0)$$ from $$q(x_t \| x_{t-1})$$  
 
 1. Let's define $$q(x_t | x_{t-1}) = N(x_t ; \sqrt{1-\beta_{t}} \cdot x_{t-1}, \beta_{t} \cdot \boldsymbol I)$$  
 where noise 주입 비율인 $$\beta_{t}$$는 t에 따라 증가하는 상수값이고,  
@@ -247,11 +247,11 @@ by merging two Gaussians $$N(0, \sigma_{1}^2 I), N(0, \sigma_{2}^2 I) \rightarro
 Therefore,  
 $$q(x_t | x_0) = N(x_t; \sqrt{\bar \alpha_{t}} x_{0}, (1-\bar \alpha_{t}) \boldsymbol I)$$
 
-즉, 우리가 정의한 Gaussian $$q(x_t | x_{t-1})$$ 으로부터 Gaussian $$q(x_t|x_0)$$ 를 얻어냈다!  
+즉, 우리가 정의한 Gaussian $$q(x_t \| x_{t-1})$$ 으로부터 Gaussian $$q(x_t\|x_0)$$ 를 얻어냈다!  
 
 > Step 7. Obtain $$q(x_{t-1} \| x_t, x_0)$$  
 
-Remind that  
+`Remind that`  
 1. $$q(x_t | x_{t-1}, x_0) = q(x_t | x_{t-1}) = N(x_t ; \sqrt{\alpha_{t}} \cdot x_{t-1}, \beta_{t} \cdot \boldsymbol I)$$
 2. $$q(x_t | x_0) = N(x_t; \sqrt{\bar \alpha_{t}} x_{0}, (1-\bar \alpha_{t}) \boldsymbol I)$$
 
@@ -299,7 +299,7 @@ $$= \frac{1}{\sqrt{\alpha_{t}}} x_t - \frac{1 - \alpha_{t}}{\sqrt{\alpha_{t}}\sq
 $$= \frac{1}{\sqrt{\alpha_{t}}} x_t - \frac{1 - \alpha_{t}}{\sqrt{\alpha_{t}}\sqrt{1 - \bar \alpha_{t}}} \epsilon_{t}$$  
 $$= \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{t})$$  
 
-- $$q(x_{t-1} | x_t, x_0)$$ 결과 :  
+- $$q(x_{t-1} | x_t, x_0)$$ `결과` :  
 $$q(x_{t-1} | x_t, x_0) = N(x_{t-1}; \tilde \mu_{t}(x_t), \tilde \beta_{t})$$  
 where $$\tilde \mu_{t}(x_t) = \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{t})$$  
 and $$\tilde \beta_{t} = \frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} \beta_{t}$$
@@ -342,6 +342,32 @@ where $$x_t = q(x_t | x_0) = \sqrt{\bar \alpha_{t}} x_{0} + \sqrt{1-\bar \alpha_
 
 ### DDPM Pseudo-Code
 
+- `forward` process :  
+`Training` $$\epsilon_{\theta}$$ for given input image $$x_0$$  
+```Python
+while (converge)
+  x_0 ~ q(x_0) # input image
+  t ~ Uniform({1, ..., T}) # time step (integer)
+  epsilon ~ N(0, I) # Gaussian target epsilon
+
+  gradient descent by DDPM loss
+```
+DDPM loss :  
+$$E_{x_0, \epsilon}[\| \epsilon_{t} - \epsilon_{\theta}(\sqrt{\bar \alpha_{t}} x_{0} + \sqrt{1-\bar \alpha_{t}} \epsilon, t) \|^2]$$  
+
+
+- `backward` process :  
+`Sampling` from Gaussian noise image to new image by trained $$\epsilon_{\theta}$$  
+```Python
+x_T = N(0, I) # start with Gaussian noise image
+
+for t = T, ..., 1:
+  z ~ N(0, I) if t > 1 else z = 0
+  
+  obtain x_{t-1} from x_t by p_{theta}(x_{t-1} | x_t)
+```
+Sampling :  
+$$x_{t-1} = \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{\theta}(x_t, t)) + \sigma_{t} z$$  
 
 
 > 출처 블로그 :  
