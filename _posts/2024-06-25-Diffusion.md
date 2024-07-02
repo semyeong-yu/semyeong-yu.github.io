@@ -94,13 +94,13 @@ $$E_q [D_{KL}(q(x_T | x_0) \| p_{\theta} (x_T)) + \sum_{t \gt 1} D_{KL}(q(x_{t-1
 $$E_{t, x_0, \epsilon} [\| \epsilon - \epsilon_{\theta}(\sqrt{\bar \alpha_{t}}x_0 + \sqrt{1-\bar \alpha_{t}} \epsilon, t) \|^{2}]$$  
 where $$\epsilon \sim N(0, I)$$  
 즉, $$\epsilon_{\theta}$$가 Standard Gaussian 분포 $$\epsilon$$를 따르도록!  
-
-
-이 때, $$\epsilon_{\theta}$$의 input은 $$q(x_t | x_0)$$와 $$t$$ !!  
+이 때, $$\epsilon_{\theta}$$의 input은 $$q(x_t | x_0)$$와 $$t$$ !  
 
 Let $$\alpha_t = 1 - \beta_t$$ and $$\bar \alpha_t = \prod_{s=1}^t \alpha_s$$ and $$\epsilon \sim N(0, I)$$  
-1. $$q(x_t | x_{t-1}, x_0) = q(x_t | x_{t-1}) = N(x_t ; \sqrt{\alpha_{t}} \cdot x_{t-1}, \beta_{t} \cdot \boldsymbol I)$$
-2. $$q(x_t | x_0) = N(x_t; \sqrt{\bar \alpha_{t}} x_{0}, (1-\bar \alpha_{t}) \boldsymbol I) = \sqrt{\bar \alpha_{t}}x_0 + \sqrt{1-\bar \alpha_{t}} \epsilon$$
+1. $$q(x_t | x_{t-1}, x_0) = q(x_t | x_{t-1}) = N(x_t ; \sqrt{\alpha_{t}} \cdot x_{t-1}, \beta_{t} \cdot \boldsymbol I)$$  
+
+2. $$q(x_t | x_0) = N(x_t; \sqrt{\bar \alpha_{t}} x_{0}, (1-\bar \alpha_{t}) \boldsymbol I) = \sqrt{\bar \alpha_{t}}x_0 + \sqrt{1-\bar \alpha_{t}} \epsilon$$  
+
 3. $$q(x_{t-1} | x_t, x_0) = N(x_{t-1}; \tilde \mu_{t}(x_t), \tilde \beta_{t})$$  
 where $$\tilde \mu_{t}(x_t) = \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{t})$$  
 and $$\tilde \beta_{t} = \frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} \beta_{t}$$
