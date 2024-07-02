@@ -1,7 +1,7 @@
 ---
 layout: distill
-title: Quaternion
-date: 2024-07-03 14:00:00
+title: 3D Rotation-Quaternion
+date: 2024-07-02 14:00:00
 description: Quaternion for Rotation Matrix
 tags: quaternion rotation
 categories: 3d-view-synthesis
@@ -29,14 +29,19 @@ _styles: >
   }
 ---
 
-## 3D Gaussian Splatting for Real-Time Radiance Field Rendering
-
-#### Bernhard Kerbl, Georgios Kopanas, Thomas Leimkühler, George Drettakis
+## Lecture 06: 3D Rotations and Complex Representations (CMU 15-462/662)
 
 > referenced video :  
 [3D Rotations and Quaternion](https://www.youtube.com/watch?v=YF5ZUlKxSgE&list=PL9_jI1bdZmz2emSh0UQ5iOdT2xRHFHL7E&index=7)
 
+#### 3D Rotation
 
+- Degrees of Freedom = 3 
+
+- 2D rotation에서는 order of rotations 노상관, but  
+3D rotation에서는 order of roations 중요
+
+- 
 
 
 - 4 $$\times$$ 1 `quaternion` $$q$$ 으로 3 $$\times$$ 3 `rotation matrix` 만드는 방법 : [build_rotation(r)](https://github.com/graphdeco-inria/gaussian-splatting/blob/b2ada78a779ba0455dfdc2b718bdf1726b05a1b6/utils/general_utils.py#L78)  
@@ -63,9 +68,3 @@ def build_rotation(r):
     R[:, 2, 2] = 1 - 2 * (x*x + y*y)
     return R
 ```
-
-<div class="row mt-3">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-03-Quaternion/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
-    </div>
-</div>
