@@ -1,11 +1,11 @@
 ---
 layout: distill
 title: 3D Rotation-Quaternion
-date: 2024-07-02 14:00:00
+date: 2024-07-01 14:00:00
 description: Quaternion for Rotation Matrix
 tags: quaternion rotation
 categories: 3d-view-synthesis
-thumbnail: assets/img/2024-07-02-Quaternion/1.png
+thumbnail: assets/img/2024-07-01-Quaternion/1.png
 giscus_comments: true
 related_posts: true
 # toc:
@@ -36,14 +36,16 @@ _styles: >
 referenced blog :  
 [Quaternion](https://blog.naver.com/hblee4119/223188806834)
 
-#### 3D Rotation
+## 3D Rotation
 
 - Degrees of Freedom = 3 
 
 - 2D rotation에서는 order of rotations 노상관, but  
-3D rotation에서는 order of roations 중요
+`3D rotation에서는 order of rotations 중요`
 
 - 
+
+## Quaternion
 
 
 - 4 $$\times$$ 1 `quaternion` $$q$$ 으로 3 $$\times$$ 3 `rotation matrix` 만드는 방법 : [build_rotation(r)](https://github.com/graphdeco-inria/gaussian-splatting/blob/b2ada78a779ba0455dfdc2b718bdf1726b05a1b6/utils/general_utils.py#L78)  
