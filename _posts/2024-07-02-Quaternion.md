@@ -5,7 +5,7 @@ date: 2024-07-02 14:00:00
 description: Quaternion for Rotation Matrix
 tags: quaternion rotation
 categories: 3d-view-synthesis
-thumbnail: assets/img/2024-07-03-Quaternion/1.png
+thumbnail: assets/img/2024-07-02-Quaternion/1.png
 giscus_comments: true
 related_posts: true
 # toc:
@@ -32,7 +32,9 @@ _styles: >
 ## Lecture 06: 3D Rotations and Complex Representations (CMU 15-462/662)
 
 > referenced video :  
-[3D Rotations and Quaternion](https://www.youtube.com/watch?v=YF5ZUlKxSgE&list=PL9_jI1bdZmz2emSh0UQ5iOdT2xRHFHL7E&index=7)
+[3D Rotations and Quaternion](https://www.youtube.com/watch?v=YF5ZUlKxSgE&list=PL9_jI1bdZmz2emSh0UQ5iOdT2xRHFHL7E&index=7)  
+referenced blog :  
+[Quaternion](https://blog.naver.com/hblee4119/223188806834)
 
 #### 3D Rotation
 
