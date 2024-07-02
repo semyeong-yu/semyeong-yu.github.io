@@ -81,7 +81,9 @@ $$R_x R_y R_z = {bmatrix} 0 & 0 & 1 \\ sin(\theta_{x}+\theta_{z}) & cos(\theta_{
 
 - Euler angles vs Quaternion :  
 Euler angles는 상속관계이므로 한 번에 계산이 불가능하여 순서대로 회전시켜야 하지만,  
-Quaternion은 `한 번에 계산 가능`하여 동시에 회전시킬 수 있다!
+Quaternion은 `한 번에 계산 가능`하여 `동시에 회전`시킬 수 있다!
+
+ddd
 
 - 4 $$\times$$ 1 `quaternion` $$q$$ 으로 3 $$\times$$ 3 `rotation matrix` 만드는 방법 : [build_rotation(r)](https://github.com/graphdeco-inria/gaussian-splatting/blob/b2ada78a779ba0455dfdc2b718bdf1726b05a1b6/utils/general_utils.py#L78)  
 ```Python
