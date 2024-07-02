@@ -11,7 +11,6 @@ related_posts: true
 # toc:
 #   beginning: true
 #   sidebar: right
-featured: true
 _styles: >
   .fake-img {
     background: #bbb;
@@ -41,7 +40,7 @@ referenced blog :
 - Degrees of Freedom = 3 
 
 - 2D rotation에서는 order of rotations 노상관, but  
-`3D rotation에서는 order of rotations 중요`
+3D rotation에서는 `order of rotations 중요`
 
 - 
 
