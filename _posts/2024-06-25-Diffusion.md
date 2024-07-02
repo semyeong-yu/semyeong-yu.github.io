@@ -96,6 +96,8 @@ where $$\epsilon \sim N(0, I)$$
 즉, $$\epsilon_{\theta}$$가 Standard Gaussian 분포 $$\epsilon$$를 따르도록!  
 이 때, $$\epsilon_{\theta}$$의 input은 $$q(x_t | x_0)$$와 $$t$$ !  
 
+- `Distribution Summary` :  
+
 Let $$\alpha_t = 1 - \beta_t$$ and $$\bar \alpha_t = \prod_{s=1}^t \alpha_s$$ and $$\epsilon \sim N(0, I)$$  
 1. $$q(x_t | x_{t-1}, x_0) = q(x_t | x_{t-1}) = N(x_t ; \sqrt{\alpha_{t}} \cdot x_{t-1}, \beta_{t} \cdot \boldsymbol I)$$  
 
