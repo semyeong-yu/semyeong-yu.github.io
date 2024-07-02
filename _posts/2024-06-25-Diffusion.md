@@ -87,6 +87,7 @@ image prior $$q(X_t)$$를 모르기 때문에 $$q(X_{t-1} | X_t)$$를 계산할 
 
 - `Diffusion Model` Naive Loss 수식 :  
 확률분포 $$q$$로 sampling했을 때,  
+$$E_{x_T \sim q(x_T|x_0)}[- log p_{\theta}(x_0)] \leq$$  
 $$E_q [D_{KL}(q(x_T | x_0) \| p_{\theta} (x_T)) + \sum_{t \gt 1} D_{KL}(q(x_{t-1} | x_t, x_0) \| p_{\theta} (x_{t-1} | x_t)) - log p_{\theta} (x_0 | x_1)]$$  
 
 - `DDPM`(Denoising Diffusion Probabilistic Model)(2020) Loss 수식 :  
@@ -96,11 +97,19 @@ where $$\epsilon \sim N(0, I)$$
 
 
 이 때, $$\epsilon_{\theta}$$의 input은 $$q(x_t | x_0)$$와 $$t$$ !!  
-$$q(X_t | X_{t-1}) = N(X_t ; \mu_{X_{t-1}}, \Sigma_{X_{t-1}}) = N(X_t ; \sqrt{1-\beta_t} \cdot X_{t-1}, \beta_t \cdot I)$$  
-$$\rightarrow q(x_t | x_0) = N(x_t; \sqrt{\bar \alpha_{t}}x_0, \sqrt{1-\bar \alpha_{t}} I) = \sqrt{\bar \alpha_{t}}x_0 + \sqrt{1-\bar \alpha_{t}} \epsilon$$  
-where $$\alpha_t = 1 - \beta_t$$ and $$\bar \alpha_t = \prod_{s=1}^t \alpha_s$$ and $$\epsilon \sim N(0, I)$$  
-(위의 수식 유도과정은 아래에서 다룰 예정)  
 
+Let $$\alpha_t = 1 - \beta_t$$ and $$\bar \alpha_t = \prod_{s=1}^t \alpha_s$$ and $$\epsilon \sim N(0, I)$$  
+1. $$q(x_t | x_{t-1}, x_0) = q(x_t | x_{t-1}) = N(x_t ; \sqrt{\alpha_{t}} \cdot x_{t-1}, \beta_{t} \cdot \boldsymbol I)$$
+2. $$q(x_t | x_0) = N(x_t; \sqrt{\bar \alpha_{t}} x_{0}, (1-\bar \alpha_{t}) \boldsymbol I) = \sqrt{\bar \alpha_{t}}x_0 + \sqrt{1-\bar \alpha_{t}} \epsilon$$
+3. $$q(x_{t-1} | x_t, x_0) = N(x_{t-1}; \tilde \mu_{t}(x_t), \tilde \beta_{t})$$  
+where $$\tilde \mu_{t}(x_t) = \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{t})$$  
+and $$\tilde \beta_{t} = \frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} \beta_{t}$$
+4. $$p_{\theta}(x_{t-1} | x_t) = N(x_{t-1}; \mu_{\theta}(x_t, t), \tilde \beta_{t})$$  
+where $$\mu_{\theta}(x_t, t) = \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{\theta}(x_t, t))$$  
+and $$\tilde \beta_{t} = \frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} \beta_{t}$$  
+(training param.로 학습하는 부분은 $$\epsilon_{\theta}(x_t, t)$$ 뿐!!)  
+
+(위의 수식 유도과정은 지금부터 아래에서 다룰 예정)  
 
 ### Diffusion Model 및 DDPM Loss 수식 유도
 
@@ -119,7 +128,7 @@ $$(\ast)$$ 으로부터
 $$log p_{\theta}(x_0) \geq E_{x_{1:T} \sim q(x_{1:T}|x_0)}[log \frac{p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}]$$  
 즉, $$E_{x_T \sim q(x_T|x_0)}[- log p_{\theta}(x_0)] \leq E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log \frac{p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}]$$  
 
-> Step 2. `Markov property` 이용하여 `Diffusion Loss` 유도  
+> Step 2. `Markov property` 이용하여 `Diffusion Model Naive Loss` 유도  
 
 $$E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log \frac{p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}]$$  
 
