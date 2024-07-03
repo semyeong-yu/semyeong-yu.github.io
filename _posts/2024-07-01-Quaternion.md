@@ -93,7 +93,9 @@ Quaternion은 `한 번에 계산 가능`하여 `동시에 회전`시킬 수 있�
   $$H$$ = span($$\{1, i, j, k\}$$)  
   $$q = a + bi + cj + dk \in H$$  
   $$i^2 = j^2 = k^2 = ijk = -1$$ $$\leftarrow$$ `new property!`  
-  $$jk = i$$, $$ki = j$$, $$kj = -i$$, $$ik = -j$$ $$\leftarrow$$ `new property!`  
+  $$ij = k$$, $$ji = -k$$  
+  $$jk = i$$, $$kj = -i$$  
+  $$ki = j$$, , $$ik = -j$$  
 
 - Quaternion :  
   - distributive and associative
@@ -101,19 +103,26 @@ Quaternion은 `한 번에 계산 가능`하여 `동시에 회전`시킬 수 있�
   - quaternion is `a pair of scalar and vector`  
   $$(a, \boldsymbol u) = (a, (b, c, d)) \in H$$  
   where $$a \in Re(H) = R$$ and $$\boldsymbol u \in Im(H) = R^3$$  
-  - `quaternion product` : 아래의 수식으로 새로운 수 체계를 정의!  
+  - `quaternion product` :  
   $$(a, \boldsymbol u)(b, \boldsymbol v) = (ab - \boldsymbol u \cdot \boldsymbol v, a \boldsymbol v + b \boldsymbol u + \boldsymbol u \times \boldsymbol v)$$  
-  $$\boldsymbol u \boldsymbol v = \boldsymbol u \times \boldsymbol v - \boldsymbol u \cdot \boldsymbol v$$
+  $$\boldsymbol u \boldsymbol v = \boldsymbol u \times \boldsymbol v - \boldsymbol u \cdot \boldsymbol v$$  
+  - `quaternion conjugate` :  
+  $$ q = (w, x, y, z)$$  
+  $$\bar q = (w, -x, -y, -z)$$  
+  $$\| q \| = \sqrt{w^2 + x^2 + y^2 + z^2}$$  
+  $$q \cdot \bar q = (w, x, y, z) \cdot (w, -x, -y, -z) = w^2 + x^2 + y^2 + z^2 = \| q \|^2$$  
+  $$q^{-1} = \frac{\bar q}{\| q \|^2} = \frac{\bar q}{q \cdot \bar q} = \frac{1}{q}$$  
+  $$\bar{(q_1 q_2)} = \bar{q_2} \bar{q_1}$$
 
 - 3D Transformations via Quaternions :  
-  - `3D Rotation` : $$\bar q x q$$ = $$x$$를 $$u$$에 대해 $$\theta$$만큼 회전  
+  - `3D Rotation` : $$q x \bar q$$ == $$x$$를 $$u$$에 대해 $$\theta$$만큼 회전  
   for $$q = cos(\frac{\theta}{2}) + sin(\frac{\theta}{2})u$$  
-  for pure imaginary 3D vector $$x, u \in Im(H) = R^3$$  
-  for unit quaternion $$q \in H = (R, R^3)$$ ($$\| q \|^2 = 1$$)  
-  for $$\bar q$$ = $$q$$의 conjugate  
+  where pure imaginary 3D vector $$x, u \in Im(H) = R^3$$  
+  and unit quaternion $$q \in H = (R, R^3)$$ where $$\| q \|^2 = 1$$  
+  and $$\bar q$$ 는 $$q$$의 conjugate  
   - `Interpolating Rotation` :  
   interpolating Euler angles는 strange-looking paths 및 non-uniform rotation speed를 야기할 수 있음  
-  대신  
+  대신 Quaternion으로 나타내면,  
   `spherical linear interpolation (SLERP)` : Slerp($$q_0, q_1, t$$) = $$q_0(q_0^{-1} q_1)^t$$  
   where $$t \in [0, 1]$$  
   - Generating Coordinates for `Texture Maps` :  
