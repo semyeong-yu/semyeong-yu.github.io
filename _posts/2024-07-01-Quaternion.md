@@ -74,7 +74,7 @@ $$x$$축(초록)을 회전시키면 그의 자식들인 $$y, z$$축(빨강, 파�
 </div> 
 
 - 예를 들어, 만약 $$\theta_{y} = \frac{\pi}{2}$$ 로 고정한다면  
-$$R_x R_y R_z = {bmatrix} 0 & 0 & 1 \\ sin(\theta_{x}+\theta_{z}) & cos(\theta_{x}+\theta_{z}) & 0 \\ - cos(\theta_{x}+\theta_{z}) & sin(\theta_{x}+\theta_{z}) & 0 \end{bmatrix}$$$$  
+$$R_x R_y R_z = {bmatrix} 0 & 0 & 1 \\ sin(\theta_{x}+\theta_{z}) & cos(\theta_{x}+\theta_{z}) & 0 \\ - cos(\theta_{x}+\theta_{z}) & sin(\theta_{x}+\theta_{z}) & 0 \end{bmatrix}$$  
 이므로 $$\theta_{x}, \theta_{z}$$ 값과 관계없이 `특정 하나의 axis에 대한 회전으로 제약 생겨버림`!  
 
 ## Quaternion
