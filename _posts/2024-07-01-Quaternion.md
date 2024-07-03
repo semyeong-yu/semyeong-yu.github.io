@@ -80,8 +80,8 @@ $$R_x R_y R_z = \begin{bmatrix} 0 & 0 & 1 \\ sin(\theta_{x}+\theta_{z}) & cos(\t
 ## Quaternion
 
 - Euler angles vs Quaternion :  
-Euler angles는 상속관계이므로 한 번에 계산이 불가능하여 순서대로 회전시켜야 하지만,  
-Quaternion은 `한 번에 계산 가능`하여 `동시에 회전`시킬 수 있다!
+Euler angles는 상속관계이므로 한 번에 계산이 불가능하여 순서대로 회전시켜야 하고, 짐벌락 현상이 발생할 수 있지만  
+Quaternion은 `한 번에 계산 가능`하여 `동시에 회전`시킬 수 있으며, 짐벌락 현상이 없다!  
 
 - 2D rotation :  
   - real, rectangular form : 2D rotation matrix 복잡  
@@ -92,24 +92,45 @@ Quaternion은 `한 번에 계산 가능`하여 `동시에 회전`시킬 수 있�
   - quaternion : only need `FOUR` coordinates!(one real, three imaginary)  
   $$H$$ = span($$\{1, i, j, k\}$$)  
   $$q = a + bi + cj + dk \in H$$  
-  $$i^2 = j^2 = k^2 = ijk = -1$$ $$\leftarrow$$ `new property!`
+  $$i^2 = j^2 = k^2 = ijk = -1$$ $$\leftarrow$$ `new property!`  
+  $$jk = i$$, $$ki = j$$, $$kj = -i$$, $$ik = -j$$ $$\leftarrow$$ `new property!`  
 
 - Quaternion :  
   - distributive and associative
   - `not commutative` : $$qp \neq pq$$ for $$q, p \in H$$
   - quaternion is `a pair of scalar and vector`  
-  $$(a, \boldsymbol u) \in H$$  
+  $$(a, \boldsymbol u) = (a, (b, c, d)) \in H$$  
   where $$a \in Re(H) = R$$ and $$\boldsymbol u \in Im(H) = R^3$$  
   - `quaternion product` : 아래의 수식으로 새로운 수 체계를 정의!  
   $$(a, \boldsymbol u)(b, \boldsymbol v) = (ab - \boldsymbol u \cdot \boldsymbol v, a \boldsymbol v + b \boldsymbol u + \boldsymbol u \times \boldsymbol v)$$  
   $$\boldsymbol u \boldsymbol v = \boldsymbol u \times \boldsymbol v - \boldsymbol u \cdot \boldsymbol v$$
 
 - 3D Transformations via Quaternions :  
-  - `3D Rotation` : $$\bar q x q$$  
-  $$q = cos(\frac{\theta}{2}) + sin(\frac{\theta}{2})u$$ 일 때  
-  for pure imaginary 3D vector $$x, u \in Im(H) = R^3$$ and unit quaternion $$q \in H = (R, R^3)$$ ($$\| q \|^2 = 1$$)  
-  $$\bar q x q$$ : $$x$$를 $$u$$에 대해 $$\theta$$만큼 회전
-  - `Interpolating Rotation` : ddd
+  - `3D Rotation` : $$\bar q x q$$ = $$x$$를 $$u$$에 대해 $$\theta$$만큼 회전  
+  for $$q = cos(\frac{\theta}{2}) + sin(\frac{\theta}{2})u$$  
+  for pure imaginary 3D vector $$x, u \in Im(H) = R^3$$  
+  for unit quaternion $$q \in H = (R, R^3)$$ ($$\| q \|^2 = 1$$)  
+  for $$\bar q$$ = $$q$$의 conjugate  
+  - `Interpolating Rotation` :  
+  interpolating Euler angles는 strange-looking paths 및 non-uniform rotation speed를 야기할 수 있음  
+  대신  
+  `spherical linear interpolation (SLERP)` : Slerp($$q_0, q_1, t$$) = $$q_0(q_0^{-1} q_1)^t$$  
+  where $$t \in [0, 1]$$  
+  - Generating Coordinates for `Texture Maps` :  
+  (hyper)complex numbers는 `angle-preserving(conformal)` maps에 쓰임!  
+  texture에서 angle-preserving 특성은 사람 눈으로 보기에 매우 그럴 듯하게 보이게 함
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-01-Quaternion/4.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div> 
+
+- Beyond Quaternion ... :  
+`Lie algebras` and `Lie Groups` 으로도 3D rotations를 나타낼 수 있으며,  
+특히 `statistics(averages) of rotations` 를 구할 때 매우 유용!  
+`exponential map` : axis/angle $$\rightarrow$$ rotation matrix  
+`logarithmic map` : rotation matrix $$\rightarrow$$ axis/angle
 
 - 4 $$\times$$ 1 `quaternion` $$q$$ 으로 3 $$\times$$ 3 `rotation matrix` 만드는 방법 : [build_rotation(r)](https://github.com/graphdeco-inria/gaussian-splatting/blob/b2ada78a779ba0455dfdc2b718bdf1726b05a1b6/utils/general_utils.py#L78)  
 ```Python
