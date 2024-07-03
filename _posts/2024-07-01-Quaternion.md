@@ -75,7 +75,7 @@ $$x$$축(초록)을 회전시키면 그의 자식들인 $$y, z$$축(빨강, 파�
 
 - 예를 들어, 만약 $$\theta_{y} = \frac{\pi}{2}$$ 로 고정한다면  
 $$R_x R_y R_z = \begin{bmatrix} 0 & 0 & 1 \\ sin(\theta_{x}+\theta_{z}) & cos(\theta_{x}+\theta_{z}) & 0 \\ - cos(\theta_{x}+\theta_{z}) & sin(\theta_{x}+\theta_{z}) & 0 \end{bmatrix}$$  
-이므로 $$\theta_{x}, \theta_{z}$$ 값과 관계없이 `특정 하나의 axis에 대한 회전으로 제약 생겨버림`!  
+이므로 $$\theta_{x}, \theta_{z}$$ 값(자유도=2)과 관계없이 `특정 하나의 axis에 대한 회전(자유도=1)으로 제약 생겨버림`!  
 
 ## Quaternion
 
@@ -83,7 +83,29 @@ $$R_x R_y R_z = \begin{bmatrix} 0 & 0 & 1 \\ sin(\theta_{x}+\theta_{z}) & cos(\t
 Euler angles는 상속관계이므로 한 번에 계산이 불가능하여 순서대로 회전시켜야 하지만,  
 Quaternion은 `한 번에 계산 가능`하여 `동시에 회전`시킬 수 있다!
 
--   
+- 2D rotation :  
+  - real, rectangular form : 2D rotation matrix 복잡  
+  - complex, polar form : 단순히 크기 곱하고, 각도 더하고!
+
+- 3D rotation :  
+  - real, xyz form : 3D rotation matrix 복잡  
+  - quaternion : only need `FOUR` coordinates!(one real, three imaginary)  
+  $$H$$ = span($$\{1, i, j, k\}$$)  
+  $$q = a + bi + cj + dk \in H$$  
+  $$i^2 = j^2 = k^2 = ijk = -1$$ $$\leftarrow$$ `new property!`
+
+- Quaternion :  
+  - distributive and associative
+  - `not commutative` : $$qp \neq pq$$ for $$q, p \in H$$
+  - quaternion is `a pair of scalar and vector`  
+  $$(a, \boldsymbol u) \in H$$  
+  where $$a \in Re(H) = R$$ and $$\boldsymbol u \in Im(H) = R^3$$  
+  - `quaternion product` : 아래의 수식으로 새로운 수 체계를 정의!  
+  $$(a, \boldsymbol u)(b, \boldsymbol v) = (ab - \boldsymbol u \cdot \boldsymbol v, a \boldsymbol v + b \boldsymbol u + \boldsymbol u \times \boldsymbol v)$$  
+  $$\boldsymbol u \boldsymbol v = \boldsymbol u \times \boldsymbol v - \boldsymbol u \cdot \boldsymbol v$$
+
+- 3D Transformations via Quaternions :  
+  - 
 
 - 4 $$\times$$ 1 `quaternion` $$q$$ 으로 3 $$\times$$ 3 `rotation matrix` 만드는 방법 : [build_rotation(r)](https://github.com/graphdeco-inria/gaussian-splatting/blob/b2ada78a779ba0455dfdc2b718bdf1726b05a1b6/utils/general_utils.py#L78)  
 ```Python
