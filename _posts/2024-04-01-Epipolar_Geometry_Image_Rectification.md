@@ -28,6 +28,9 @@ _styles: >
   }
 ---
 
+Multi-View Geometry 에 대해 공부하고 싶다면 아래 블로그 글 쭉 읽어보는 것 추천!!  
+[DarkProgrammerBlog](https://darkpgmr.tistory.com/32)
+
 ## Epipolar Geometry
 
 <div class="row mt-3">
