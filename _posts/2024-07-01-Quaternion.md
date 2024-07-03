@@ -74,7 +74,7 @@ $$x$$축(초록)을 회전시키면 그의 자식들인 $$y, z$$축(빨강, 파�
 </div> 
 
 - 예를 들어, 만약 $$\theta_{y} = \frac{\pi}{2}$$ 로 고정한다면  
-$$R_x R_y R_z = {bmatrix} 0 & 0 & 1 \\ sin(\theta_{x}+\theta_{z}) & cos(\theta_{x}+\theta_{z}) & 0 \\ - cos(\theta_{x}+\theta_{z}) & sin(\theta_{x}+\theta_{z}) & 0 \end{bmatrix}$$  
+$$R_x R_y R_z = \begin{bmatrix} 0 & 0 & 1 \\ sin(\theta_{x}+\theta_{z}) & cos(\theta_{x}+\theta_{z}) & 0 \\ - cos(\theta_{x}+\theta_{z}) & sin(\theta_{x}+\theta_{z}) & 0 \end{bmatrix}$$  
 이므로 $$\theta_{x}, \theta_{z}$$ 값과 관계없이 `특정 하나의 axis에 대한 회전으로 제약 생겨버림`!  
 
 ## Quaternion
@@ -83,7 +83,7 @@ $$R_x R_y R_z = {bmatrix} 0 & 0 & 1 \\ sin(\theta_{x}+\theta_{z}) & cos(\theta_{
 Euler angles는 상속관계이므로 한 번에 계산이 불가능하여 순서대로 회전시켜야 하지만,  
 Quaternion은 `한 번에 계산 가능`하여 `동시에 회전`시킬 수 있다!
 
-ddd
+-   
 
 - 4 $$\times$$ 1 `quaternion` $$q$$ 으로 3 $$\times$$ 3 `rotation matrix` 만드는 방법 : [build_rotation(r)](https://github.com/graphdeco-inria/gaussian-splatting/blob/b2ada78a779ba0455dfdc2b718bdf1726b05a1b6/utils/general_utils.py#L78)  
 ```Python
