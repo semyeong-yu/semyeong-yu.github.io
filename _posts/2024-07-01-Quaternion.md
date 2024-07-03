@@ -105,7 +105,11 @@ Quaternion은 `한 번에 계산 가능`하여 `동시에 회전`시킬 수 있�
   $$\boldsymbol u \boldsymbol v = \boldsymbol u \times \boldsymbol v - \boldsymbol u \cdot \boldsymbol v$$
 
 - 3D Transformations via Quaternions :  
-  - 
+  - `3D Rotation` : $$\bar q x q$$  
+  $$q = cos(\frac{\theta}{2}) + sin(\frac{\theta}{2})u$$ 일 때  
+  for pure imaginary 3D vector $$x, u \in Im(H) = R^3$$ and unit quaternion $$q \in H = (R, R^3)$$ ($$\| q \|^2 = 1$$)  
+  $$\bar q x q$$ : $$x$$를 $$u$$에 대해 $$\theta$$만큼 회전
+  - `Interpolating Rotation` : ddd
 
 - 4 $$\times$$ 1 `quaternion` $$q$$ 으로 3 $$\times$$ 3 `rotation matrix` 만드는 방법 : [build_rotation(r)](https://github.com/graphdeco-inria/gaussian-splatting/blob/b2ada78a779ba0455dfdc2b718bdf1726b05a1b6/utils/general_utils.py#L78)  
 ```Python
