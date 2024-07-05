@@ -1,28 +1,350 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.3.3">Jekyll</generator><link href="https://semyeong-yu.github.io/feed.xml" rel="self" type="application/atom+xml"/><link href="https://semyeong-yu.github.io/" rel="alternate" type="text/html" hreflang="en"/><updated>2024-07-05T08:08:39+00:00</updated><id>https://semyeong-yu.github.io/feed.xml</id><title type="html">blank</title><subtitle>A simple, whitespace theme for academics. Based on [*folio](https://github.com/bogoli/-folio) design. </subtitle><entry><title type="html">LLM</title><link href="https://semyeong-yu.github.io/blog/2024/LLM/" rel="alternate" type="text/html" title="LLM"/><published>2024-07-03T14:00:00+00:00</published><updated>2024-07-03T14:00:00+00:00</updated><id>https://semyeong-yu.github.io/blog/2024/LLM</id><content type="html" xml:base="https://semyeong-yu.github.io/blog/2024/LLM/"><![CDATA[<h2 id="solar-llm-by-upstage">Solar LLM by Upstage</h2> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-03-LLM/1-480.webp 480w,/assets/img/2024-07-03-LLM/1-800.webp 800w,/assets/img/2024-07-03-LLM/1-1400.webp 1400w," sizes="95vw" type="image/webp"/> <img src="/assets/img/2024-07-03-LLM/1.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"/> </picture> </figure> </div> </div> <h3 id="solar-mini-llm">Solar Mini LLM</h3> <p>small-size<br/> best LLM for fine-tuning<br/> can be used as personalized LLM</p> <h3 id="layout-analyzer">Layout Analyzer</h3> <p>Extract layouts, tables, and figures from any document to .html file</p> <pre><code class="language-Python">import os
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.3.3">Jekyll</generator><link href="https://semyeong-yu.github.io/feed.xml" rel="self" type="application/atom+xml"/><link href="https://semyeong-yu.github.io/" rel="alternate" type="text/html" hreflang="en"/><updated>2024-07-05T11:54:57+00:00</updated><id>https://semyeong-yu.github.io/feed.xml</id><title type="html">blank</title><subtitle>A simple, whitespace theme for academics. Based on [*folio](https://github.com/bogoli/-folio) design. </subtitle><entry><title type="html">LLM</title><link href="https://semyeong-yu.github.io/blog/2024/LLM/" rel="alternate" type="text/html" title="LLM"/><published>2024-07-03T14:00:00+00:00</published><updated>2024-07-03T14:00:00+00:00</updated><id>https://semyeong-yu.github.io/blog/2024/LLM</id><content type="html" xml:base="https://semyeong-yu.github.io/blog/2024/LLM/"><![CDATA[<h2 id="solar-llm-by-upstage">Solar LLM by Upstage</h2> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-03-LLM/1-480.webp 480w,/assets/img/2024-07-03-LLM/1-800.webp 800w,/assets/img/2024-07-03-LLM/1-1400.webp 1400w," sizes="95vw" type="image/webp"/> <img src="/assets/img/2024-07-03-LLM/1.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"/> </picture> </figure> </div> </div> <h3 id="solar-llm-as-personalized-llm">Solar LLM as Personalized LLM</h3> <ul> <li> <p>Referenced Github :<br/> <a href="https://github.com/UpstageAI/cookbook/tree/main">UpstageAI-cookbook</a><br/> <a href="https://github.com/semyeong-yu/LLM-cookbook">UpstageAI-cookbook</a></p> </li> <li> <p>Solar mini LLM :<br/> small-size<br/> best LLM for fine-tuning<br/> can be used as personalized LLM</p> </li> <li> <p>Future of AI Ecosystem Hierarchy :<br/> Domain-specific and self-fine-tuned LLMs<br/> Solar LLM O/S<br/> O/S<br/> AI chips</p> </li> </ul> <h3 id="chat">Chat</h3> <pre><code class="language-Python">from langchain_upstage import ChatUpstage
+
+llm = ChatUpstage()
+llm.invoke("What's the best season to get to Korean?") # invoke llm
+
+llm = ChatUpstage(model="solar-1-mini-chat-ja")
+llm.invoke("ソーラーLLM、こんにちは。ソーラーLLM、こんにちは。")
+</code></pre> <h3 id="few-shot-learning---chain">Few-shot Learning - Chain</h3> <pre><code class="language-Python"># 1. use Chat Prompt Template
+from langchain_core.prompts import ChatPromptTemplate
+
+# 2. 농담조로 말하도록 Few-shot Learning
+chat_prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", "You are a helpful assistant."),
+        ("human", "What is the capital of France?"),
+        ("ai", "I know of it. It's Paris!!"),
+        ("human", "What about Korea?"),
+    ]
+)
+
+# 3. define and invoke chain
+from langchain_core.output_parsers import StrOutputParser
+
+chain = chat_prompt | llm | StrOutputParser()
+chain.invoke({})
+</code></pre> <pre><code class="language-Python"># 1. use Prompt Template
+from langchain_core.prompts import PromptTemplate
+
+# 2. 한 번에 답을 내도록 (Standard Prompting) Few-shot Learning
+# 한 번에 답을 내려다보니 llm이 답 틀리게 내놓음
+prompt_template = PromptTemplate.from_template(
+    """
+Q: Roger has 5 tennis balls. He buys 2 more cans of tennis balls. Each can has 3 tennis balls. How many tennis balls does he have now?
+
+A: The answer is 11.
+
+Q: The cafeteria had 23 apples. If they used 20 to make lunch and bought 6 more, how many apples do they have?
+
+A: the answer is
+"""
+)
+
+# 3. define and invoke chain
+chain = prompt_template | llm | StrOutputParser()
+chain.invoke({})
+</code></pre> <pre><code class="language-Python"># 1. use Prompt Template
+from langchain_core.prompts import PromptTemplate
+
+# 2. 설명하면서 답을 내도록 (Chain-of-Thought Prompting) Few-shot Learning
+# 설명하면서 답을 내니 llm이 알맞게 답을 내놓음
+prompt_template = PromptTemplate.from_template(
+    """
+Q: Roger has 5 tennis balls. He buys 2 more cans of tennis balls. Each can has 3 tennis balls. How many tennis balls does he have now?
+
+A: Roger started with 5 balls. 2 cans of 3 tennis balls
+each is 6 tennis balls. 5 + 6 = 11. The answer is 11.
+
+Q: The cafeteria had 23 apples. If they used 20 to make lunch and bought 6 more, how many apples do they have?"""
+)
+
+# 3. define and invoke chain
+chain = prompt_template | llm | StrOutputParser()
+chain.invoke({})
+</code></pre> <h3 id="zero-shot-learning---chain">Zero-shot Learning - Chain</h3> <pre><code class="language-Python">from langchain_core.prompts import PromptTemplate
+
+# Zero-shot, 즉 예시를 주지 않고
+# "Let's think step by step"이라는 마법의 한 문장만 써줬는데도
+# 답 잘 내놓음
+prompt_template = PromptTemplate.from_template(
+    """
+Q: Roger has 5 tennis balls. He buys 2 more cans of tennis balls. Each can has 3 tennis balls. How many tennis balls does he have now?
+
+A: The answer is 11.
+
+Q: The cafeteria had 23 apples. If they used 20 to make lunch and bought 6 more, how many apples do they have?
+
+A: Let's think step by step.
+"""
+)
+chain = prompt_template | llm | StrOutputParser()
+chain.invoke({})
+</code></pre> <h3 id="divide-and-conquer">Divide-and-Conquer</h3> <ul> <li>Please provide three questions from the following text</li> </ul> <p>보다는</p> <ul> <li>Please extract three keywords from the following text 한 다음<br/> Please provide one question from the following text regarding “Depth up-scaling (DUS)”</li> </ul> <h3 id="prompt-반복">Prompt 반복</h3> <pre><code class="language-Python">from langchain_core.prompts import PromptTemplate
+
+prompt_template = PromptTemplate.from_template(
+    "Tell me a {adjective} joke about {content}."
+)
+# prompt_template.format(adjective="funny", content="chickens")
+
+chain = prompt_template | llm | StrOutputParser()
+chain.invoke({"adjective": "funny", "content": "chickens"})
+</code></pre> <h3 id="groundedness-check-with-langchain">Groundedness Check with LangChain</h3> <p>Groundedness Check :<br/> 답(answer)이 주어진 문맥(context)과 일맥상통하는지 (구라가 아닌지) 팩트 체크!</p> <pre><code class="language-Python">from langchain_upstage import UpstageGroundednessCheck
+
+groundedness_check = UpstageGroundednessCheck()
+
+answer = chain.invoke(
+    {
+        "question": "What is DUS?",
+        "Context": context,
+    }
+)
+print("Potential answer: ", answer)
+
+gc_result = groundedness_check.invoke({"context": context, "answer": answer})
+print("GC check result: ", gc_result)
+if gc_result.lower().startswith("grounded"):
+    print("Groundedness check passed")
+else:
+    print("Groundedness check failed")
+</code></pre> <h3 id="pdf-loader-context로-사용">PDF Loader (Context로 사용)</h3> <p>PDF에 있는 내용을 읽어와서 Context로 사용!</p> <pre><code class="language-Python">from langchain_community.document_loaders import PyPDFLoader
+
+loader = PyPDFLoader("pdfs/solar_sample.pdf")
+docs = loader.load()  # or layzer.lazy_load()
+print(docs[0].page_content[:1000])
+</code></pre> <h3 id="layout-analyzer-context로-사용">Layout Analyzer (Context로 사용)</h3> <p>LLM이 받아들이기 좋은 형태로 문서를 읽기 위해<br/> Extract layouts, tables, and figures from any document to .html file<br/> Maximize RAG(검색 증강 생성) performance</p> <pre><code class="language-Python">! pip3 install -qU  markdownify  langchain-upstage  requests
+import os
 from langchain_upstage import UpstageLayoutAnalysisLoader
+from IPython.display import display, HTML
 
 os.environ["UPSTAGE_API_KEY"] = "UPSTAGE_API_KEY"
 
-file_path = "invoice.png" # "pdfs/solar_sample.pdf"
-loader = UpstageLayoutAnalysisLoader(file_path, split="page", use_ocr=True)
-
+loader = UpstageLayoutAnalysisLoader("invoice.png", split="page", use_ocr=True)
+# For improved memory efficiency, consider using the lazy_load method to load documents page by page.
 pages = loader.load()  # or loader.lazy_load()
 for page in pages:
     print(page)
-</code></pre> <h3 id="embedding">Embedding</h3> <p>Solar-Embedding-1-Large (v1.0)<br/> Convert unstructured text data into embedding vectors</p> <pre><code class="language-Python">from langchain_upstage import UpstageEmbeddings
 
-embeddings = UpstageEmbeddings(
+loader = UpstageLayoutAnalysisLoader("pdfs/solar_sample.pdf", output_type="html")
+docs = layzer.load() # or loader.lazy_load()
+display(HTML(docs[0].page_content[:5000]))
+</code></pre> <h3 id="rag-retrieval-augmented-generation">RAG: Retrieval Augmented Generation</h3> <ul> <li>Large language models (LLMs) have a limited context size.<br/> TLDR<br/> Not all context is relevant to a given question<br/> Query \(\rightarrow\) Retrieve (Search) \(\rightarrow\) Results \(\rightarrow\) (LLM) \(\rightarrow\) Answer<br/> RAG is a method to combine LLM with Retrieval</li> </ul> <pre><code class="language-Python">from langchain_upstage import UpstageLayoutAnalysisLoader
+from langchain_community.retrievers import BM25Retriever
+from langchain_text_splitters import (
+    Language,
+    RecursiveCharacterTextSplitter,
+)
+
+layzer = UpstageLayoutAnalysisLoader(
+    "pdfs/kim-tse-2008.pdf", use_ocr=True, output_type="html"
+)
+docs = layzer.load()
+
+text_splitter = RecursiveCharacterTextSplitter.from_language(
+    chunk_size=1000, chunk_overlap=100, language=Language.HTML
+)
+splits = text_splitter.split_documents(docs)
+
+retriever = BM25Retriever.from_documents(splits)
+
+query = "What is bug classficiation?"
+context_docs = retriever.invoke("bug") # keyword search
+chain.invoke({"question": query, "Context": context_docs})
+</code></pre> <h3 id="keyword-search-대신-semantic-search-with-embedding-space">Keyword Search 대신 Semantic Search with Embedding space</h3> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-03-LLM/2-480.webp 480w,/assets/img/2024-07-03-LLM/2-800.webp 800w,/assets/img/2024-07-03-LLM/2-1400.webp 1400w," sizes="95vw" type="image/webp"/> <img src="/assets/img/2024-07-03-LLM/2.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"/> </picture> </figure> </div> </div> <p>Solar-Embedding-1-Large (v1.0)<br/> Convert unstructured text data into embedding vectors</p> <pre><code class="language-Python">from langchain_upstage import UpstageEmbeddings
+from langchain_chroma import Chroma
+from langchain_upstage import UpstageEmbeddings
+from langchain.docstore.document import Document
+
+embeddings_model = UpstageEmbeddings(
   api_key="UPSTAGE_API_KEY", 
   model="solar-embedding-1-large"
 )
-doc_result = embeddings.embed_documents(
-    ["Sam is a teacher.", "This is another document"]
+embeddings = embeddings_model.embed_documents(
+    [
+        "What is the best season to visit Korea?",
+    ]
 )
-print(doc_result)
+query_result = embeddings.embed_query("What does Sam do?") # vector
 
-query_result = embeddings.embed_query("What does Sam do?")
-print(query_result)
-</code></pre> <h3 id="in-context">In-context</h3> <h3 id="fine-tuning">Fine-tuning</h3> <p>CFT (Continued Fine-Tuning) : feedback database에 기반하여 계속 fine-tuning</p> <pre><code class="language-Python">adapter = pb.adapters.create(
+sample_text_list = [
+    "Korea is a beautiful country to visit in the spring.",
+    "The best time to visit Korea is in the fall.",
+    "Best way to find bug is using unit test.",
+    "Python is a great programming language for beginners.",
+    "Sung Kim is a great teacher.",
+    "맛있는 좋은 과일을 많이 먹어 볼까?"
+]
+
+sample_docs = [Document(page_content=text) for text in sample_text_list]
+
+vectorstore = Chroma.from_documents(
+    documents=sample_docs,
+    embedding=UpstageEmbeddings(model="solar-embedding-1-large"),
+)
+
+retriever = vectorstore.as_retriever()
+result_docs = retriever.invoke("When to visit Korea?")
+print(result_docs[0].page_content[:100])
+</code></pre> <h3 id="rag-summary">RAG Summary</h3> <ol> <li>load doc (done)</li> <li>chunking, splits</li> <li>embedding, indexing</li> <li>retrieve</li> </ol> <pre><code class="language-Python">from langchain_upstage import UpstageLayoutAnalysisLoader
+from langchain_text_splitters import (
+    Language,
+    RecursiveCharacterTextSplitter,
+)
+from langchain_core.prompts import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_upstage import ChatUpstage
+
+# 1. load doc
+layzer = UpstageLayoutAnalysisLoader("pdfs/kim-tse-2008.pdf", output_type="html")
+docs = layzer.load()
+
+# 2. chunking &amp; splits
+text_splitter = RecursiveCharacterTextSplitter.from_language(
+    chunk_size=1000, chunk_overlap=100, language=Language.HTML
+)
+splits = text_splitter.split_documents(docs)
+
+# 3. Embedding &amp; indexing
+vectorstore = Chroma.from_documents(
+    documents=splits,
+    embedding=UpstageEmbeddings(model="solar-embedding-1-large"),
+)
+
+# 4. retrieve
+retriever = vectorstore.as_retriever()
+result_docs = retriever.invoke("What is Bug Classification?")
+print(len(result_docs))
+print(result_docs[0].page_content[:100])
+
+# 5. invoke chain
+llm = ChatUpstage()
+
+prompt_template = PromptTemplate.from_template(
+    """
+    Please provide most correct answer from the following context. 
+    If the answer is not present in the context, please write "The information is not present in the context."
+    ---
+    Question: {question}
+    ---
+    Context: {Context}
+    """
+)
+
+chain = prompt_template | llm | StrOutputParser()
+chain.invoke({"question": "What is bug classficiation?", "Context": result_docs})
+</code></pre> <h3 id="oracle-db를-persistent-memory로-쓰기">Oracle DB를 persistent memory로 쓰기</h3> <p>매번 100만 개의 pdf를 load해서 index할 수는 없는 일!</p> <h3 id="smart-rag">Smart RAG</h3> <p>Know what you know and what you don’t know</p> <pre><code class="language-Python"># RAG or Search?
+def is_in(question, context):
+    is_in_conetxt = """As a helpful assistant, 
+please use your best judgment to determine if the answer to the question is within the given context. 
+If the answer is present in the context, please respond with "yes". 
+If not, please respond with "no". 
+Only provide "yes" or "no" and avoid including any additional information. 
+Please do your best. Here is the question and the context:
+---
+CONTEXT: {context}
+---
+QUESTION: {question}
+---
+OUTPUT (yes or no):"""
+
+    is_in_prompt = PromptTemplate.from_template(is_in_conetxt)
+    chain = is_in_prompt | ChatUpstage() | StrOutputParser()
+
+    response = chain.invoke({"context": context, "question": question})
+    print(response)
+    return response.lower().startswith("yes")
+</code></pre> <pre><code class="language-Python"># Smart RAG, Self-Improving RAG
+import os
+from tavily import TavilyClient
+
+def smart_rag(question, context):
+    if not is_in(question, context):
+        print("Searching in tavily")
+        tavily = TavilyClient(api_key=os.environ["TAVILY_API_KEY"])
+        context = tavily.search(query=question)
+
+    chain = prompt_template | llm | StrOutputParser()
+    return chain.invoke({"context": context, "question": question})
+</code></pre> <pre><code class="language-Python">smart_rag("What is DUS?", solar_summary)
+</code></pre> <p>\(\rightarrow\) 답변 예시 : solar_summary에 있는 내용이므로 RAG<br/> yes<br/> ‘The answer to the question “What is DUS?” is:\n\nDepth Up-Scaling (DUS)’</p> <pre><code class="language-Python">smart_rag("How to get to Seoul from SF?", solar_summary)
+</code></pre> <p>\(\rightarrow\) 답변 예시 : solar_summary에 없는 내용이므로 Search<br/> no<br/> Searching in tavily<br/> ‘The answer to “How to get to Seoul from SF?” is:\n\n1. Fly from San Francisco (SFO) to Seoul (ICN) with airlines such as ANA, Japan Airlines, Asiana Airlines, Korean Air, and United Airlines.\n2. Take a train from Incheon Int'l Airport T1 to Seoul Station.\n3. Take the BART from Civic Center / UN Plaza to Milpitas and then fly from San Jose (SJC) to Incheon (ICN).\n\nPlease note that the cheapest flights from San Francisco to Seoul start at $453 with AIR PREMIA.’</p> <h3 id="tool-rag">Tool RAG</h3> <pre><code class="language-Python">! pip3 install -qU  markdownify  langchain-upstage rank_bm25
+
+# Tools
+from langchain_core.tools import tool
+import requests
+import os
+from tavily import TavilyClient
+
+tavily = TavilyClient(api_key=os.environ["TAVILY_API_KEY"])
+
+@tool
+def solar_paper_search(query: str) -&gt; str:
+    """Query for research paper about solarllm, dus, llm and general AI.
+    If the query is about DUS, Upstage, AI related topics, use this.
+    """
+    return solar_summary
+
+@tool
+def internet_search(query: str) -&gt; str:
+    """This is for query for internet search engine like Google.
+    Query for general topics.
+    """
+    return tavily.search(query=query)
+
+@tool
+def get_news(topic: str) -&gt; str:
+    """Get latest news about a topic.
+    If users are more like recent news, use this.
+    """
+    # https://newsapi.org/v2/everything?q=tesla&amp;from=2024-04-01&amp;sortBy=publishedAt&amp;apiKey=API_KEY
+    # change this to request news from a real API
+    news_url = f"https://newsapi.org/v2/everything?q={topic}&amp;apiKey={os.environ['NEWS_API_KEY']}"
+    respnse = requests.get(news_url)
+    return respnse.json()
+
+tools = [solar_paper_search, internet_search, get_news]
+
+llm_with_tools = llm.bind_tools(tools)
+
+llm_with_tools.invoke("What is Solar LLM?").tool_calls
+# 출력 : [{'name': 'solar_paper_search', 'args': {'query': 'Solar LLM'}, 'id': 'cb1687d2-7c6a-45dc-8287-19376c335cd4'}]
+llm_with_tools.invoke("What's best place in Seoul?").tool_calls
+# 출력 : [{'name': 'internet_search', 'args': {'query': 'best place in Seoul'}, 'id': '1f86d563-de15-460a-abc0-0e644e284518'}]
+</code></pre> <pre><code class="language-Python"># Smart RAG, Self-Improving RAG
+import os
+from tavily import TavilyClient
+
+def call_tool_func(tool_call):
+    tool_name = tool_call["name"].lower()
+    if tool_name not in globals():
+        print("Tool not found", tool_name)
+        return None
+    selected_tool = globals()[tool_name]
+    return selected_tool.invoke(tool_call["args"])
+
+def tool_rag(question):
+    for _ in range(3): # try 3 times
+        tool_calls = llm_with_tools.invoke(question).tool_calls
+        if tool_calls:
+            break
+        else:
+            print("try again")
+
+    if not tool_calls:
+        return "I'm sorry, I don't have an answer for that."
+    
+    print(tool_calls)
+    context = ""
+    for tool_call in tool_calls:
+        context += str(call_tool_func(tool_call))
+
+    chain = prompt_template | llm | StrOutputParser()
+    return chain.invoke({"context": context, "question": question})
+
+tool_rag("What is Solar llm?")
+# 출력 : [{'name': 'solar_paper_search', 'args': {'query': 'What is Solar llm?'}, 'id': 'cb291b01-a1aa-4839-84a8-a473f4eb0920'}] 'Solar llm is a large language model (LLM) with 10.7 billion parameters.'
+tool_rag("What is news about Tesla?")
+# 출력 : [{'name': 'get_news', 'args': {'topic': 'Tesla'}, 'id': 'aade5002-b9e2-4a23-92d7-fd66f12cfeb6'}] "The news about Tesla is that the company has issued a voluntary recall for nearly 4,000 Cybertrucks due to a fault with the accelerator pedal that could get trapped, pushing the car to full speed."
+</code></pre> <h3 id="fine-tuning-with-predibase">Fine-tuning with Predibase</h3> <p>CFT (Continued Fine-Tuning) : feedback database에 기반하여 계속 fine-tuning</p> <pre><code class="language-Python">adapter = pb.adapters.create(
   config=FinetuningConfig(
     base_model = "solar-1-mini-chat-240612",
     epochs = 1, # default: 3
@@ -32,7 +354,7 @@ print(query_result)
   repo = repo,
   description = "initial model with defaults"
 )
-</code></pre> <h3 id="future-of-ai-ecosystem-hierarchy">Future of AI Ecosystem Hierarchy</h3> <p>Domain-specific and self-fine-tuned LLMs<br/> Solar LLM O/S<br/> O/S<br/> AI chips</p> <h2 id="solar-llm-as-personalized-llm">Solar LLM as Personalized LLM</h2> <ul> <li>Referenced Github :<br/> <a href="https://github.com/UpstageAI/cookbook/tree/main">UpstageAI-cookbook</a><br/> <a href="https://github.com/UpstageAI/cookbook/blob/main/Solar-LLM-ZeroToAll/99_all.ipynb">UpstageAI-cookbook-example</a></li> </ul> <h3 id="ddd">DDD</h3>]]></content><author><name></name></author><category term="generative"/><category term="generative"/><category term="LLM"/><summary type="html"><![CDATA[Upstage Solar LLM]]></summary></entry><entry><title type="html">3D Rotation-Quaternion</title><link href="https://semyeong-yu.github.io/blog/2024/Quaternion/" rel="alternate" type="text/html" title="3D Rotation-Quaternion"/><published>2024-07-01T14:00:00+00:00</published><updated>2024-07-01T14:00:00+00:00</updated><id>https://semyeong-yu.github.io/blog/2024/Quaternion</id><content type="html" xml:base="https://semyeong-yu.github.io/blog/2024/Quaternion/"><![CDATA[<h2 id="lecture-06-3d-rotations-and-complex-representations-cmu-15-462662">Lecture 06: 3D Rotations and Complex Representations (CMU 15-462/662)</h2> <blockquote> <p>referenced video :<br/> <a href="https://www.youtube.com/watch?v=YF5ZUlKxSgE&amp;list=PL9_jI1bdZmz2emSh0UQ5iOdT2xRHFHL7E&amp;index=7">3D Rotations and Quaternion</a><br/> referenced blog :<br/> <a href="https://blog.naver.com/hblee4119/223188806834">Quaternion</a></p> </blockquote> <h2 id="3d-rotation">3D Rotation</h2> <ul> <li>2D rotation에서는 order of rotations 노상관, but<br/> 3D rotation에서는 <code class="language-plaintext highlighter-rouge">order of rotations 중요</code></li> </ul> <h2 id="gimbal-lock">Gimbal Lock</h2> <ul> <li>Gimbal Lock :<br/> Euler angles \(\theta_{x}, \theta_{y}, \theta_{z}\) 로 회전시킬 때 두 축이 맞물려서 <code class="language-plaintext highlighter-rouge">한 축이 소실</code>되는 상황</li> </ul> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-01-Quaternion/2-480.webp 480w,/assets/img/2024-07-01-Quaternion/2-800.webp 800w,/assets/img/2024-07-01-Quaternion/2-1400.webp 1400w," sizes="95vw" type="image/webp"/> <img src="/assets/img/2024-07-01-Quaternion/2.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"/> </picture> </figure> </div> </div> <div class="caption"> 1 -&gt; 2번째 그림 : x축(초록) 회전 / 2 -&gt; 3번째 그림 : z축(파랑) 회전 / 3 -&gt; 4번째 그림 : y축(빨강) 회전 </div> <ul> <li>위의 그림에 따르면 Euler angles는 \(x\)(초록), \(y\)(빨강), \(z\)(파랑) 순으로 <code class="language-plaintext highlighter-rouge">상속관계</code>여서<br/> \(x\)축(초록)을 회전시키면 그의 자식들인 \(y, z\)축(빨강, 파랑)도 같이 회전한다.</li> </ul> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-01-Quaternion/3-480.webp 480w,/assets/img/2024-07-01-Quaternion/3-800.webp 800w,/assets/img/2024-07-01-Quaternion/3-1400.webp 1400w," sizes="95vw" type="image/webp"/> <img src="/assets/img/2024-07-01-Quaternion/3.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"/> </picture> </figure> </div> </div> <ul> <li>이 때, <code class="language-plaintext highlighter-rouge">Gimbal Lock</code>은 위의 그림과 같이<br/> <code class="language-plaintext highlighter-rouge">상속관계에서의 2번째 축(빨강)이 -90도 혹은 90도 회전</code>했을 때<br/> <code class="language-plaintext highlighter-rouge">상속관계에서의 1번째 축(초록)과 3번째 축(파랑)이 겹쳐서</code> 같은 방향으로 회전하기 때문에 발생한다.</li> </ul> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-01-Quaternion/1-480.webp 480w,/assets/img/2024-07-01-Quaternion/1-800.webp 800w,/assets/img/2024-07-01-Quaternion/1-1400.webp 1400w," sizes="95vw" type="image/webp"/> <img src="/assets/img/2024-07-01-Quaternion/1.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"/> </picture> </figure> </div> </div> <ul> <li>예를 들어, 만약 \(\theta_{y} = \frac{\pi}{2}\) 로 고정한다면<br/> \(R_x R_y R_z = \begin{bmatrix} 0 &amp; 0 &amp; 1 \\ sin(\theta_{x}+\theta_{z}) &amp; cos(\theta_{x}+\theta_{z}) &amp; 0 \\ - cos(\theta_{x}+\theta_{z}) &amp; sin(\theta_{x}+\theta_{z}) &amp; 0 \end{bmatrix}\)<br/> 이므로 \(\theta_{x}, \theta_{z}\) 값(자유도=2)과 관계없이 <code class="language-plaintext highlighter-rouge">특정 하나의 axis에 대한 회전(자유도=1)으로 제약 생겨버림</code>!</li> </ul> <h2 id="quaternion">Quaternion</h2> <ul> <li> <p>Euler angles vs Quaternion :<br/> Euler angles는 상속관계이므로 한 번에 계산이 불가능하여 순서대로 회전시켜야 하고, 짐벌락 현상이 발생할 수 있지만<br/> Quaternion은 <code class="language-plaintext highlighter-rouge">한 번에 계산 가능</code>하여 <code class="language-plaintext highlighter-rouge">동시에 회전</code>시킬 수 있으며, 짐벌락 현상이 없다!</p> </li> <li>2D rotation : <ul> <li>real, rectangular form : 2D rotation matrix 복잡</li> <li>complex, polar form : 단순히 크기 곱하고, 각도 더하고!</li> </ul> </li> <li>3D rotation : <ul> <li>real, xyz form : 3D rotation matrix 복잡</li> <li>quaternion : only need <code class="language-plaintext highlighter-rouge">FOUR</code> coordinates!(one real, three imaginary)<br/> \(H\) = span(\(\{1, i, j, k\}\))<br/> \(q = a + bi + cj + dk \in H\)<br/> \(i^2 = j^2 = k^2 = ijk = -1\) \(\leftarrow\) <code class="language-plaintext highlighter-rouge">new property!</code><br/> \(ij = k\), \(ji = -k\)<br/> \(jk = i\), \(kj = -i\)<br/> \(ki = j\), , \(ik = -j\)</li> </ul> </li> <li>Quaternion : <ul> <li>distributive and associative</li> <li><code class="language-plaintext highlighter-rouge">not commutative</code> : \(qp \neq pq\) for \(q, p \in H\)</li> <li>quaternion is <code class="language-plaintext highlighter-rouge">a pair of scalar and vector</code><br/> \(q = a + bi + cj + dk\)<br/> \(= (a, \boldsymbol u) = (a, (b, c, d)) \in H\)<br/> where \(a \in Re(H) = R\) and \(\boldsymbol u \in Im(H) = R^3\)</li> <li><code class="language-plaintext highlighter-rouge">quaternion product</code> :<br/> \((a, \boldsymbol u)(b, \boldsymbol v) = (ab - \boldsymbol u \cdot \boldsymbol v, a \boldsymbol v + b \boldsymbol u + \boldsymbol u \times \boldsymbol v)\)<br/> \(\boldsymbol u \boldsymbol v = \boldsymbol u \times \boldsymbol v - \boldsymbol u \cdot \boldsymbol v\)</li> <li><code class="language-plaintext highlighter-rouge">quaternion conjugate</code> :<br/> \(q = (w, x, y, z)\)<br/> \(q^{\ast} = (w, -x, -y, -z)\)<br/> \(\| q \| = \sqrt{w^2 + x^2 + y^2 + z^2}\)<br/> \(q \cdot q^{\ast} = (w, x, y, z) \cdot (w, -x, -y, -z) = w^2 + x^2 + y^2 + z^2 = \| q \|^2\)<br/> \(q^{-1} = \frac{q^{\ast}}{\| q \|^2} = \frac{q^{\ast}}{q \cdot q^{\ast}} = \frac{1}{q}\)<br/> \((q_1 q_2)^{\ast} = q_2^{\ast} q_1^{\ast}\)</li> </ul> </li> <li>3D Transformations via Quaternions : <ul> <li><code class="language-plaintext highlighter-rouge">3D Rotation</code> : \(q x \bar q\) \(\leftrightarrow\) \(x\)를 \(u\)에 대해 \(\theta\)만큼 회전<br/> for \(q = cos(\frac{\theta}{2}) + sin(\frac{\theta}{2})u\)<br/> where pure imaginary 3D vector \(x, u \in Im(H) = R^3\)<br/> where unit quaternion \(q \in H = (R, R^3)\) where \(\| q \|^2 = 1\)<br/> where \(\bar q\) 는 \(q\)의 conjugate</li> <li><code class="language-plaintext highlighter-rouge">Interpolating Rotation</code> :<br/> interpolating Euler angles는 strange-looking paths 및 non-uniform rotation speed를 야기할 수 있음<br/> 대신 Quaternion으로 나타내면,<br/> <code class="language-plaintext highlighter-rouge">spherical linear interpolation (SLERP)</code> :<br/> Slerp(\(q_0, q_1, t\)) = \(q_0(q_0^{-1} q_1)^t\)<br/> where \(t \in [0, 1]\)</li> <li>Generating Coordinates for <code class="language-plaintext highlighter-rouge">Texture Maps</code> :<br/> (hyper)complex numbers는 <code class="language-plaintext highlighter-rouge">angle-preserving(conformal)</code> maps에 쓰임!<br/> texture에서 angle-preserving 특성은 사람 눈으로 보기에 매우 그럴 듯하게 보이게 함</li> </ul> </li> </ul> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-01-Quaternion/4-480.webp 480w,/assets/img/2024-07-01-Quaternion/4-800.webp 800w,/assets/img/2024-07-01-Quaternion/4-1400.webp 1400w," sizes="95vw" type="image/webp"/> <img src="/assets/img/2024-07-01-Quaternion/4.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"/> </picture> </figure> </div> </div> <ul> <li> <p>Beyond Quaternion … :<br/> <code class="language-plaintext highlighter-rouge">Lie algebras</code> and <code class="language-plaintext highlighter-rouge">Lie Groups</code> 으로도 3D rotations를 나타낼 수 있으며,<br/> 특히 <code class="language-plaintext highlighter-rouge">statistics(averages) of rotations</code> 를 구할 때 매우 유용!<br/> <code class="language-plaintext highlighter-rouge">exponential map</code> : axis/angle \(\rightarrow\) rotation matrix<br/> <code class="language-plaintext highlighter-rouge">logarithmic map</code> : rotation matrix \(\rightarrow\) axis/angle</p> </li> <li> <p>4 \(\times\) 1 <code class="language-plaintext highlighter-rouge">quaternion</code> \(q\) 으로 3 \(\times\) 3 <code class="language-plaintext highlighter-rouge">rotation matrix</code> 만드는 방법 : <a href="https://github.com/graphdeco-inria/gaussian-splatting/blob/b2ada78a779ba0455dfdc2b718bdf1726b05a1b6/utils/general_utils.py#L78">build_rotation(r)</a></p> <pre><code class="language-Python">def build_rotation(r):
+</code></pre>]]></content><author><name></name></author><category term="generative"/><category term="generative"/><category term="LLM"/><summary type="html"><![CDATA[Upstage Solar LLM]]></summary></entry><entry><title type="html">3D Rotation-Quaternion</title><link href="https://semyeong-yu.github.io/blog/2024/Quaternion/" rel="alternate" type="text/html" title="3D Rotation-Quaternion"/><published>2024-07-01T14:00:00+00:00</published><updated>2024-07-01T14:00:00+00:00</updated><id>https://semyeong-yu.github.io/blog/2024/Quaternion</id><content type="html" xml:base="https://semyeong-yu.github.io/blog/2024/Quaternion/"><![CDATA[<h2 id="lecture-06-3d-rotations-and-complex-representations-cmu-15-462662">Lecture 06: 3D Rotations and Complex Representations (CMU 15-462/662)</h2> <blockquote> <p>referenced video :<br/> <a href="https://www.youtube.com/watch?v=YF5ZUlKxSgE&amp;list=PL9_jI1bdZmz2emSh0UQ5iOdT2xRHFHL7E&amp;index=7">3D Rotations and Quaternion</a><br/> referenced blog :<br/> <a href="https://blog.naver.com/hblee4119/223188806834">Quaternion</a></p> </blockquote> <h2 id="3d-rotation">3D Rotation</h2> <ul> <li>2D rotation에서는 order of rotations 노상관, but<br/> 3D rotation에서는 <code class="language-plaintext highlighter-rouge">order of rotations 중요</code></li> </ul> <h2 id="gimbal-lock">Gimbal Lock</h2> <ul> <li>Gimbal Lock :<br/> Euler angles \(\theta_{x}, \theta_{y}, \theta_{z}\) 로 회전시킬 때 두 축이 맞물려서 <code class="language-plaintext highlighter-rouge">한 축이 소실</code>되는 상황</li> </ul> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-01-Quaternion/2-480.webp 480w,/assets/img/2024-07-01-Quaternion/2-800.webp 800w,/assets/img/2024-07-01-Quaternion/2-1400.webp 1400w," sizes="95vw" type="image/webp"/> <img src="/assets/img/2024-07-01-Quaternion/2.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"/> </picture> </figure> </div> </div> <div class="caption"> 1 -&gt; 2번째 그림 : x축(초록) 회전 / 2 -&gt; 3번째 그림 : z축(파랑) 회전 / 3 -&gt; 4번째 그림 : y축(빨강) 회전 </div> <ul> <li>위의 그림에 따르면 Euler angles는 \(x\)(초록), \(y\)(빨강), \(z\)(파랑) 순으로 <code class="language-plaintext highlighter-rouge">상속관계</code>여서<br/> \(x\)축(초록)을 회전시키면 그의 자식들인 \(y, z\)축(빨강, 파랑)도 같이 회전한다.</li> </ul> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-01-Quaternion/3-480.webp 480w,/assets/img/2024-07-01-Quaternion/3-800.webp 800w,/assets/img/2024-07-01-Quaternion/3-1400.webp 1400w," sizes="95vw" type="image/webp"/> <img src="/assets/img/2024-07-01-Quaternion/3.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"/> </picture> </figure> </div> </div> <ul> <li>이 때, <code class="language-plaintext highlighter-rouge">Gimbal Lock</code>은 위의 그림과 같이<br/> <code class="language-plaintext highlighter-rouge">상속관계에서의 2번째 축(빨강)이 -90도 혹은 90도 회전</code>했을 때<br/> <code class="language-plaintext highlighter-rouge">상속관계에서의 1번째 축(초록)과 3번째 축(파랑)이 겹쳐서</code> 같은 방향으로 회전하기 때문에 발생한다.</li> </ul> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-01-Quaternion/1-480.webp 480w,/assets/img/2024-07-01-Quaternion/1-800.webp 800w,/assets/img/2024-07-01-Quaternion/1-1400.webp 1400w," sizes="95vw" type="image/webp"/> <img src="/assets/img/2024-07-01-Quaternion/1.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"/> </picture> </figure> </div> </div> <ul> <li>예를 들어, 만약 \(\theta_{y} = \frac{\pi}{2}\) 로 고정한다면<br/> \(R_x R_y R_z = \begin{bmatrix} 0 &amp; 0 &amp; 1 \\ sin(\theta_{x}+\theta_{z}) &amp; cos(\theta_{x}+\theta_{z}) &amp; 0 \\ - cos(\theta_{x}+\theta_{z}) &amp; sin(\theta_{x}+\theta_{z}) &amp; 0 \end{bmatrix}\)<br/> 이므로 \(\theta_{x}, \theta_{z}\) 값(자유도=2)과 관계없이 <code class="language-plaintext highlighter-rouge">특정 하나의 axis에 대한 회전(자유도=1)으로 제약 생겨버림</code>!</li> </ul> <h2 id="quaternion">Quaternion</h2> <ul> <li> <p>Euler angles vs Quaternion :<br/> Euler angles는 상속관계이므로 한 번에 계산이 불가능하여 순서대로 회전시켜야 하고, 짐벌락 현상이 발생할 수 있지만<br/> Quaternion은 <code class="language-plaintext highlighter-rouge">한 번에 계산 가능</code>하여 <code class="language-plaintext highlighter-rouge">동시에 회전</code>시킬 수 있으며, 짐벌락 현상이 없다!</p> </li> <li>2D rotation : <ul> <li>real, rectangular form : 2D rotation matrix 복잡</li> <li>complex, polar form : 단순히 크기 곱하고, 각도 더하고!</li> </ul> </li> <li>3D rotation : <ul> <li>real, xyz form : 3D rotation matrix 복잡</li> <li>quaternion : only need <code class="language-plaintext highlighter-rouge">FOUR</code> coordinates!(one real, three imaginary)<br/> \(H\) = span(\(\{1, i, j, k\}\))<br/> \(q = a + bi + cj + dk \in H\)<br/> \(i^2 = j^2 = k^2 = ijk = -1\) \(\leftarrow\) <code class="language-plaintext highlighter-rouge">new property!</code><br/> \(ij = k\), \(ji = -k\)<br/> \(jk = i\), \(kj = -i\)<br/> \(ki = j\), , \(ik = -j\)</li> </ul> </li> <li>Quaternion : <ul> <li>distributive and associative</li> <li><code class="language-plaintext highlighter-rouge">not commutative</code> : \(qp \neq pq\) for \(q, p \in H\)</li> <li>quaternion is <code class="language-plaintext highlighter-rouge">a pair of scalar and vector</code><br/> \(q = a + bi + cj + dk\)<br/> \(= (a, \boldsymbol u) = (a, (b, c, d)) \in H\)<br/> where \(a \in Re(H) = R\) and \(\boldsymbol u \in Im(H) = R^3\)</li> <li><code class="language-plaintext highlighter-rouge">quaternion product</code> :<br/> \((a, \boldsymbol u)(b, \boldsymbol v) = (ab - \boldsymbol u \cdot \boldsymbol v, a \boldsymbol v + b \boldsymbol u + \boldsymbol u \times \boldsymbol v)\)<br/> \(\boldsymbol u \boldsymbol v = \boldsymbol u \times \boldsymbol v - \boldsymbol u \cdot \boldsymbol v\)</li> <li><code class="language-plaintext highlighter-rouge">quaternion conjugate</code> :<br/> \(q = (w, x, y, z)\)<br/> \(q^{\ast} = (w, -x, -y, -z)\)<br/> \(\| q \| = \sqrt{w^2 + x^2 + y^2 + z^2}\)<br/> \(q \cdot q^{\ast} = (w, x, y, z) \cdot (w, -x, -y, -z) = w^2 + x^2 + y^2 + z^2 = \| q \|^2\)<br/> \(q^{-1} = \frac{q^{\ast}}{\| q \|^2} = \frac{q^{\ast}}{q \cdot q^{\ast}} = \frac{1}{q}\)<br/> \((q_1 q_2)^{\ast} = q_2^{\ast} q_1^{\ast}\)</li> </ul> </li> <li>3D Transformations via Quaternions : <ul> <li><code class="language-plaintext highlighter-rouge">3D Rotation</code> : \(q x \bar q\) \(\leftrightarrow\) \(x\)를 \(u\)에 대해 \(\theta\)만큼 회전<br/> for \(q = cos(\frac{\theta}{2}) + sin(\frac{\theta}{2})u\)<br/> where pure imaginary 3D vector \(x, u \in Im(H) = R^3\)<br/> where unit quaternion \(q \in H = (R, R^3)\) where \(\| q \|^2 = 1\)<br/> where \(\bar q\) 는 \(q\)의 conjugate</li> <li><code class="language-plaintext highlighter-rouge">Interpolating Rotation</code> :<br/> interpolating Euler angles는 strange-looking paths 및 non-uniform rotation speed를 야기할 수 있음<br/> 대신 Quaternion으로 나타내면,<br/> <code class="language-plaintext highlighter-rouge">spherical linear interpolation (SLERP)</code> :<br/> Slerp(\(q_0, q_1, t\)) = \(q_0(q_0^{-1} q_1)^t\)<br/> where \(t \in [0, 1]\)</li> <li>Generating Coordinates for <code class="language-plaintext highlighter-rouge">Texture Maps</code> :<br/> (hyper)complex numbers는 <code class="language-plaintext highlighter-rouge">angle-preserving(conformal)</code> maps에 쓰임!<br/> texture에서 angle-preserving 특성은 사람 눈으로 보기에 매우 그럴 듯하게 보이게 함</li> </ul> </li> </ul> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-01-Quaternion/4-480.webp 480w,/assets/img/2024-07-01-Quaternion/4-800.webp 800w,/assets/img/2024-07-01-Quaternion/4-1400.webp 1400w," sizes="95vw" type="image/webp"/> <img src="/assets/img/2024-07-01-Quaternion/4.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"/> </picture> </figure> </div> </div> <ul> <li> <p>Beyond Quaternion … :<br/> <code class="language-plaintext highlighter-rouge">Lie algebras</code> and <code class="language-plaintext highlighter-rouge">Lie Groups</code> 으로도 3D rotations를 나타낼 수 있으며,<br/> 특히 <code class="language-plaintext highlighter-rouge">statistics(averages) of rotations</code> 를 구할 때 매우 유용!<br/> <code class="language-plaintext highlighter-rouge">exponential map</code> : axis/angle \(\rightarrow\) rotation matrix<br/> <code class="language-plaintext highlighter-rouge">logarithmic map</code> : rotation matrix \(\rightarrow\) axis/angle</p> </li> <li> <p>4 \(\times\) 1 <code class="language-plaintext highlighter-rouge">quaternion</code> \(q\) 으로 3 \(\times\) 3 <code class="language-plaintext highlighter-rouge">rotation matrix</code> 만드는 방법 : <a href="https://github.com/graphdeco-inria/gaussian-splatting/blob/b2ada78a779ba0455dfdc2b718bdf1726b05a1b6/utils/general_utils.py#L78">build_rotation(r)</a></p> <pre><code class="language-Python">def build_rotation(r):
   norm = torch.sqrt(r[:,0]*r[:,0] + r[:,1]*r[:,1] + r[:,2]*r[:,2] + r[:,3]*r[:,3])
   q = r / norm[:, None] # use normalized quaternion
 
