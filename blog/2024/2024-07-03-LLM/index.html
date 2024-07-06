@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd"> <html><body> <h2 id="solar-llm-by-upstage">Solar LLM by Upstage</h2> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-03-LLM/1-480.webp 480w,/assets/img/2024-07-03-LLM/1-800.webp 800w,/assets/img/2024-07-03-LLM/1-1400.webp 1400w," sizes="95vw" type="image/webp"></source> <img src="/assets/img/2024-07-03-LLM/1.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h3 id="solar-llm-as-personalized-llm">Solar LLM as Personalized LLM</h3> <ul> <li> <p>Referenced Github :<br> <a href="https://github.com/UpstageAI/cookbook/tree/main" rel="external nofollow noopener" target="_blank">UpstageAI-cookbook</a><br> <a href="https://github.com/semyeong-yu/LLM-cookbook" rel="external nofollow noopener" target="_blank">UpstageAI-cookbook</a></p> </li> <li> <p>Solar mini LLM :<br> small-size<br> best LLM for fine-tuning<br> can be used as personalized LLM</p> </li> <li> <p>Future of AI Ecosystem Hierarchy :<br> Domain-specific and self-fine-tuned LLMs<br> Solar LLM O/S<br> O/S<br> AI chips</p> </li> <li> <p>핵심 기능 : 앞으로 아래에서 배울 예정!!</p> <ul> <li>LLM 사용 (query, context)</li> <li>Groundedness Check (팩트체크)</li> <li>Layout Analyzer (PDF 또는 img에서 정보 추출)</li> <li>Define Custom Tools (img 생성, 뉴스 검색, 스케쥴 관리 등)</li> </ul> </li> </ul> <h3 id="chat">Chat</h3> <pre><code class="language-Python">from langchain_upstage import ChatUpstage
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd"> <html><body> <h2 id="solar-llm-by-upstage">Solar LLM by Upstage</h2> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-03-LLM/1-480.webp 480w,/assets/img/2024-07-03-LLM/1-800.webp 800w,/assets/img/2024-07-03-LLM/1-1400.webp 1400w," sizes="95vw" type="image/webp"></source> <img src="/assets/img/2024-07-03-LLM/1.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h3 id="solar-llm-as-personalized-llm">Solar LLM as Personalized LLM</h3> <ul> <li> <p>Referenced Github :<br> <a href="https://github.com/UpstageAI/cookbook/tree/main" rel="external nofollow noopener" target="_blank">UpstageAI-cookbook</a><br> <a href="https://github.com/semyeong-yu/LLM-cookbook" rel="external nofollow noopener" target="_blank">UpstageAI-cookbook</a><br> <a href="https://github.com/iamtaewan/solarllm-oracle-cookbook" rel="external nofollow noopener" target="_blank">OracleDB-cookbook</a></p> </li> <li> <p>Solar mini LLM :<br> small-size<br> best LLM for fine-tuning<br> can be used as personalized LLM</p> </li> <li> <p>Future of AI Ecosystem Hierarchy :<br> Domain-specific and self-fine-tuned LLMs<br> Solar LLM O/S<br> O/S<br> AI chips</p> </li> <li> <p>핵심 기능 : 앞으로 아래에서 배울 예정!!</p> <ul> <li>LLM 사용 (query, context)</li> <li>Groundedness Check (팩트체크)</li> <li>Layout Analyzer (PDF 또는 img에서 정보 추출)</li> <li>Define Custom Tools (img 생성, 뉴스 검색, 스케쥴 관리 등)</li> </ul> </li> </ul> <h3 id="chat">Chat</h3> <pre><code class="language-Python">from langchain_upstage import ChatUpstage
 
 llm = ChatUpstage()
 llm.invoke("What's the best season to get to Korean?") # invoke llm
@@ -233,6 +233,22 @@ chain = prompt_template | llm | StrOutputParser()
 chain.invoke({"question": "What is bug classficiation?", "Context": result_docs})
 </code></pre> <h3 id="oracle-db를-persistent-memory로-쓰기">Oracle DB를 persistent memory로 쓰기</h3> <p>매번 100만 개의 pdf를 load해서 index할 수는 없는 일!</p> <ol> <li>load doc</li> <li>chunking, splits</li> <li>embedding, indexing (vector store with Oracle DB)</li> <li>retrieval, augmenting context</li> <li>split한 text가 이미 Oracle DB vector store에 있는지 체크</li> <li>없다면 embedding, indexing again</li> <li>invoke chain based on the augmented context by retrieval</li> </ol> <pre><code class="language-Python">! pip3 install -qU  markdownify  langchain-upstage rank_bm25
 
+import oracledb
+from langchain_upstage import UpstageLayoutAnalysisLoader
+
+# 0. connect to Oracle DB
+username=os.environ["DB_USER"]
+password=os.environ["DB_PASSWORD"]
+dsn=os.environ["DSN"]
+
+con = oracledb.connect(user=username, password=password, dsn=dsn)
+
+try: 
+    conn23c = oracledb.connect(user=username, password=password, dsn=dsn)
+    print("Connection successful!", conn23c.version)
+except Exception as e:
+    print("Connection failed!")
+
 # 1. load doc
 layzer = UpstageLayoutAnalysisLoader("pdfs/kim-tse-2008.pdf", output_type="html")
 docs = layzer.load()
@@ -251,11 +267,28 @@ def is_in_vectorstore(vectorstore, text):
     else:
         return False
 
-# 3. Embedding &amp; indexing
+# 3. Embedding &amp; indexing 방법 1.
 vectorstore = Chroma(
     persist_directory="./chroma_db",
     embedding_function=UpstageEmbeddings(model="solar-embedding-1-large"),
 )
+
+# 3. Embedding &amp; indexing 방법 2.
+
+knowledge_base = OracleVS.from_documents(docs, upstage_embeddings, client=conn23c, table_name="text_embeddings2", distance_strategy=DistanceStrategy.DOT_PRODUCT)
+
+# result_chunks = knowledge_base.similarity_search(user_question)
+
+vectorstore = OracleVS(client=conn23c, embedding_function=upstage_embeddings, table_name="text_embeddings2", distance_strategy=DistanceStrategy.DOT_PRODUCT) # create vector store
+
+oraclevs.create_index(
+    client=conn23c,
+    vector_store=vectorstore,
+    params={
+        "idx_name": "ivf_idx1",
+        "idx_type": "IVF",
+    },
+) # add index
 
 # 4. retrieve
 retriever = vectorstore.as_retriever()
@@ -289,8 +322,8 @@ prompt_template = PromptTemplate.from_template(
     """
 )
 
-chain = prompt_template | llm | StrOutputParser()
-chain.invoke({"question": "What is bug classficiation?", "Context": result_docs})
+chain = ({"context": retriever, "question": RunnablePassthrough()} | prompt_template | llm | StrOutputParser())
+response = chain.invoke("What is bug classficiation?")
 </code></pre> <h3 id="smart-rag">Smart RAG</h3> <p>local vector store에 검색했을 때</p> <ul> <li>내가 아는 건 <code class="language-plaintext highlighter-rouge">local RAG</code> 로 처리</li> <li>내가 모르는 건 <code class="language-plaintext highlighter-rouge">external search</code> 로 처리</li> </ul> <pre><code class="language-Python"># 주어진 context만으로 주어진 question에 답변할 수 있는지 판단
 # RAG or Search?
 def is_in(question, context):
