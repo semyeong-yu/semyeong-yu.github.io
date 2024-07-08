@@ -78,6 +78,38 @@ class CustomDataset(Dataset):
 
 ### DataLoader
 
+- `rank` :  
+  - 전체 distributed system에서 process 순서  
+  - 4-CPU system이 2개 있을 경우  
+  rank = machine 번호(0~1) * machine 당 process 개수(4) + process 번호(0~3)  
+  - rank = 0인 process에 대해서만 train log 출력
+
+- `world_size` :  
+  - 총 process 개수  
+  - 4-GPU system이 2개 있을 경우  
+  world_size = machine 개수(2) * machine 당 process 개수(4)  
+
+- torch.distributed.init_process_group() :  
+분산 학습을 하는 각 process 간의 통신을 위해 사용
+
+- torch.utils.data.distributed.DistributedSampler() :  
+  - world_size(총 process 개수)만큼 dataset을 분할하여 모든 process가 동일한 양의 dataset을 갖도록 함  
+  - DistributedSampler는 각 epoch마다 dataset을 무작위로 분할
+
+- torch.utils.data.DataLoader() :  
+  - shuffle=False :  
+  보통 training일 때는 일반화를 위해 shuffle=True로 두지만  
+  분산 학습을 할 때는 같은 epoch 내에서  
+  각 process가 서로 다른 dataset을 처리하기 위해 (중복 방지)  
+  shuffle=False로 설정  
+  - num_workers : cpu data load할 때 multi-processing core 개수  
+  - pin_memory=True :  
+  data load한 장치(CPU)에서 GPU로 data를 옮길 때  
+  host memory가 아닌 CPU의 page-locked memory로 할당하고  
+  GPU는 이를 참조하여 복사하므로 전송 시간을 단축  
+  pin_memory=True와 non_blocking=True는 함께 사용  
+  - drop_last=True : 나눠떨어지지 않는 마지막 batch를 버림
+
 ```Python
 from torch.utils.data import DataLoader
 from torch.utils.data.distributed import DistributedSampler
@@ -90,46 +122,33 @@ def _collate_fn(samples):
 
 # main_worker : 각 process가 실행하는 함수
 def main_worker(process_id, args):
-    '''
-    4-CPU system이 2개 있을 경우
-    rank = 전체 distributed system에서 process 순서 
-    = machine 번호(0~1) * machine 당 process 개수(4) + process 번호(0~3)
-    
-    rank = 0인 process에 대해서만 train log 출력
-    '''
+
     rank = args.machine_id * args.num_processes + process_id
     
-    '''
-    4-GPU system이 2개 있을 경우
-    world_size = 총 process 개수 
-    = machine 개수(2) * machine 당 process 개수(4)
-    '''
     world_size = args.num_machines * args.num_processes
     
-    '''
-    분산 학습을 하는 각 process 간의 통신을 위해 사용
-    backend : 'gloo' for CPU, 'nccl' for GPU, 'mpi' for 고성능
-    init_method : 각 process가 서로 탐색하는 방법(url)
-    world_size : 총 process 개수
-    '''
     dist.init_process_group(backend='nccl', init_method='env://', world_size=world_size, rank=rank)
-
+    # backend : 'gloo' for CPU, 'nccl' for GPU, 'mpi' for 고성능
+    # init_method : 각 process가 서로 탐색하는 방법(url)
+    ################################################################################################
     train_dataset = CustomDataset(dataset_path)
     # train_dataset = datasets.MNIST('../data', train=True, download=True, transform=transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1302,), (0.3069,))]))  
 
-    # world_size(총 process 개수)만큼 dataset을 분할하여 모든 process가 동일한 양의 dataset을 갖도록 함
-    #  DistributedSampler는 각 epoch마다 dataset을 무작위로 분할
     train_sampler = DistributedSampler(train_dataset, num_replicas=world_size, rank=rank)
 
     train_loader = DataLoader(dataset=train_dataset, batch_size=128, shuffle=False, num_workers=8, collate_fn=_collate_fn, pin_memory=True, drop_last=True, sampler=train_sampler)
-    # shuffle=False : 보통 training일 때는 일반화를 위해 shuffle=True로 두지만, 분산 학습을 할 때는 같은 epoch 내에서 각 process가 서로 다른 dataset을 처리하기 위해 (중복 방지) shuffle=False로 설정
-    # num_workers : cpu data load할 때 multi-processing core 개수
-    # pin_memory=True : data load한 장치(CPU)에서 GPU로 data를 옮길 때 host memory가 아닌 CPU의 page-locked memory로 할당하고 GPU는 이를 참조하여 복사하므로 전송 시간을 단축
-    # pin_memory=True와 non_blocking=True는 함께 사용
-    # drop_last=True : 나눠떨어지지 않는 마지막 batch를 버림
 ```
 
 ### Train
+
+1. `initialize`  
+2. `load checkpoint`
+3. `set cuda process_id`
+4. `parallelize model`  
+  - 각 model 복사본은 각자의 optimizer를 이용해 gradient를 구하고  
+  rank=0의 process와 통신하여 gradient의 평균을 구해서 backpropagation 진행  
+  - GIL(global interpreter lock)의 제약을 해결
+5. `train`
 
 ```Python
 import torch
@@ -155,25 +174,23 @@ def main():
     # nprocs : machine 당 process 개수
 
 def main_worker(process_id, args):
-    # initialize
+    # 1. initialize
     model = MyFMANet()
     optimizer = optim.Adadelta(model.parameters(), lr=0.5)
     scheduler = # ...
 
-    # load checkpoint
+    # 2. load checkpoint
     start_epoch, model, optimizer, scheduler = load_checkpoint(checkpoint_path, model, optimizer, scheduler)
 
-    # set cuda process_id
+    # 3. set cuda process_id
     torch.cuda.set_device(process_id)
     model.cuda(process_id)
     criterion = nn.NLLLoss().cuda(process_id)
 
-    # parallelize model
-    # 각 model 복사본은 각자의 optimizer를 이용해 gradient를 구하고
-    # rank=0의 process와 통신하여 gradient의 평균을 구해서 backpropagation 진행
-    # GIL(global interpreter lock)의 제약을 해결
+    # 4. parallelize model
     model = nn.parallel.DistributedDataParallel(model, device_ids=[process_id])
     
+    # 5. train
     model.train()
 
     for epoch in range(start_epoch, args.epochs):
