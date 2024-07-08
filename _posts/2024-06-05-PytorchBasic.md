@@ -1,11 +1,11 @@
 ---
 layout: distill
 title: Pytorch Basic Code
-date: 2024-07-08 17:00:00
+date: 2024-06-05 17:00:00
 description: Dataset, DataLoader, Train, ...
 tags: pytorch
 categories: cv-tasks
-# thumbnail: assets/img/2024-07-08-PytorchBasic/1.png
+# thumbnail: assets/img/2024-06-05-PytorchBasic/1.png
 giscus_comments: true
 related_posts: true
 _styles: >
