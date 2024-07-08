@@ -1,11 +1,11 @@
 ---
 layout: distill
 title: Pytorch Basic Code
-date: 2024-03-25 17:00:00
-description: DataLoader, Train, ...
+date: 2024-07-08 17:00:00
+description: Dataset, DataLoader, Train, ...
 tags: pytorch
 categories: cv-tasks
-# thumbnail: assets/img/2024-03-25-PytorchBasic/1.png
+# thumbnail: assets/img/2024-07-08-PytorchBasic/1.png
 giscus_comments: true
 related_posts: true
 _styles: >
@@ -124,7 +124,8 @@ def main_worker(process_id, args):
     train_loader = DataLoader(dataset=train_dataset, batch_size=128, shuffle=False, num_workers=8, collate_fn=_collate_fn, pin_memory=True, drop_last=True, sampler=train_sampler)
     # shuffle=False : 보통 training일 때는 일반화를 위해 shuffle=True로 두지만, 분산 학습을 할 때는 같은 epoch 내에서 각 process가 서로 다른 dataset을 처리하기 위해 (중복 방지) shuffle=False로 설정
     # num_workers : cpu data load할 때 multi-processing core 개수
-    # pin_memory=True : data samples를 host memory가 아닌 page-locked memory로 할당해서 data를 GPU로 옮길 때의 전송 시간을 단축
+    # pin_memory=True : data load한 장치(CPU)에서 GPU로 data를 옮길 때 host memory가 아닌 CPU의 page-locked memory로 할당하고 GPU는 이를 참조하여 복사하므로 전송 시간을 단축
+    # pin_memory=True와 non_blocking=True는 함께 사용
     # drop_last=True : 나눠떨어지지 않는 마지막 batch를 버림
 ```
 
@@ -143,8 +144,11 @@ def main():
     args = arg_parse()
     fix_seed(args.random_seed)
     
-    os.environ['MASTER_ADDR'] = '127.0.0.1' # ???             
-    os.environ['MASTER_PORT'] = '8892' # ???
+    # rank=0인 process를 실행하는 system의 IP 주소
+    # rank=0인 system이 모든 backend 통신을 설정!
+    os.environ['MASTER_ADDR'] = '127.0.0.1'
+    # 해당 system에서 사용 가능한 PORT           
+    os.environ['MASTER_PORT'] = '8892'
 
     mp.spawn(main_worker, nprocs=args.num_processes, args=(args,))
     # main_worker : 각 process가 실행하는 함수
@@ -165,6 +169,9 @@ def main_worker(process_id, args):
     criterion = nn.NLLLoss().cuda(process_id)
 
     # parallelize model
+    # 각 model 복사본은 각자의 optimizer를 이용해 gradient를 구하고
+    # rank=0의 process와 통신하여 gradient의 평균을 구해서 backpropagation 진행
+    # GIL(global interpreter lock)의 제약을 해결
     model = nn.parallel.DistributedDataParallel(model, device_ids=[process_id])
     
     model.train()
@@ -172,6 +179,7 @@ def main_worker(process_id, args):
     for epoch in range(start_epoch, args.epochs):
         for batch_i, (x, y) in enumerate(train_loader):
             x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
+            # pin_memory=True와 non_blocking=True는 함께 사용
 
             if batch_i % 10 == 0 and process_id == 0:
                 # ...
