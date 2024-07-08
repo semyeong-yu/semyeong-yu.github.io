@@ -1,11 +1,11 @@
 ---
 layout: distill
 title: Pytorch Basic Code
-date: 2024-06-05 17:00:00
+date: 2024-07-08 11:00:00
 description: Dataset, DataLoader, Train, ...
 tags: pytorch
 categories: cv-tasks
-# thumbnail: assets/img/2024-06-05-PytorchBasic/1.png
+# thumbnail: assets/img/2024-07-08-PytorchBasic/1.png
 giscus_comments: true
 related_posts: true
 _styles: >
@@ -82,21 +82,24 @@ class CustomDataset(Dataset):
   - 전체 distributed system에서 process 순서  
   - 4-CPU system이 2개 있을 경우  
   rank = machine 번호(0~1) * machine 당 process 개수(4) + process 번호(0~3)  
-  - rank = 0인 process에 대해서만 train log 출력
+  - rank = 0인 process에 대해서만 wandb로 train log 출력
 
 - `world_size` :  
-  - 총 process 개수  
+  - 전체 distributed system에서 총 process 개수  
   - 4-GPU system이 2개 있을 경우  
   world_size = machine 개수(2) * machine 당 process 개수(4)  
 
-- torch.distributed.init_process_group() :  
-분산 학습을 하는 각 process 간의 통신을 위해 사용
+- `torch.distributed.init_process_group()` :  
+  - 분산 학습을 하는 각 process 간의 통신을 위해 사용  
+  - backend : 'gloo' for CPU, 'nccl' for GPU, 'mpi' for 고성능  
+  - init_method : 각 process가 서로 탐색하는 방법(url)  
+  예시 : 'env://', f'tcp://127.0.0.1:11203'
 
-- torch.utils.data.distributed.DistributedSampler() :  
+- `torch.utils.data.distributed.DistributedSampler()` :  
   - world_size(총 process 개수)만큼 dataset을 분할하여 모든 process가 동일한 양의 dataset을 갖도록 함  
   - DistributedSampler는 각 epoch마다 dataset을 무작위로 분할
 
-- torch.utils.data.DataLoader() :  
+- `torch.utils.data.DataLoader()` :  
   - shuffle=False :  
   보통 training일 때는 일반화를 위해 shuffle=True로 두지만  
   분산 학습을 할 때는 같은 epoch 내에서  
@@ -114,9 +117,10 @@ class CustomDataset(Dataset):
 from torch.utils.data import DataLoader
 from torch.utils.data.distributed import DistributedSampler
 import torch.distributed as dist
+from datetime import timedelta
 
-# 길이가 다른 input들을 batch로 묶기 위해
-# padding해주는 함수
+# 길이가 다른 input들을 batch로 묶기 위해 padding해주는 함수
+# DataLoader()에서 사용
 def _collate_fn(samples):
     # ...
 
@@ -127,20 +131,34 @@ def main_worker(process_id, args):
     
     world_size = args.num_machines * args.num_processes
     
-    dist.init_process_group(backend='nccl', init_method='env://', world_size=world_size, rank=rank)
-    # backend : 'gloo' for CPU, 'nccl' for GPU, 'mpi' for 고성능
-    # init_method : 각 process가 서로 탐색하는 방법(url)
+    dist.init_process_group(backend='nccl', init_method='env://', world_size=world_size, rank=rank, timeout=timedelta(300))
+    
     ################################################################################################
+    
     train_dataset = CustomDataset(dataset_path)
     # train_dataset = datasets.MNIST('../data', train=True, download=True, transform=transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1302,), (0.3069,))]))  
 
+    # machine 당 process 수로 나눔
+    batch_size = int(args.batch_size / args.num_processes) 
+    num_workers = int(args.num_workers / args.num_processes)
+
     train_sampler = DistributedSampler(train_dataset, num_replicas=world_size, rank=rank)
 
-    train_loader = DataLoader(dataset=train_dataset, batch_size=128, shuffle=False, num_workers=8, collate_fn=_collate_fn, pin_memory=True, drop_last=True, sampler=train_sampler)
+    train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers, collate_fn=_collate_fn, pin_memory=True, drop_last=True, sampler=train_sampler)
 ```
 
 ### Train
 
+- `torch.multiprocessing.spawn()` :  
+  - main_worker : 각 process가 실행하는 함수
+  - nprocs : machine 당 process 개수인 4로 설정  
+  main_worker()의 첫 번째 argument는 process_id인 0~3이 됨 
+  - args : main_worker()에 추가로 전달할 tuple 형태의 argument  
+  - join  
+  - daemon  
+  - start_method
+
+- `main_worker()` : 각 process가 실행하는 함수  
 1. `initialize`  
 2. `load checkpoint`
 3. `set cuda process_id`
@@ -148,7 +166,8 @@ def main_worker(process_id, args):
   - 각 model 복사본은 각자의 optimizer를 이용해 gradient를 구하고  
   rank=0의 process와 통신하여 gradient의 평균을 구해서 backpropagation 진행  
   - GIL(global interpreter lock)의 제약을 해결
-5. `train`
+5. `wandb init`
+6. `train`
 
 ```Python
 import torch
@@ -170,10 +189,11 @@ def main():
     os.environ['MASTER_PORT'] = '8892'
 
     mp.spawn(main_worker, nprocs=args.num_processes, args=(args,))
-    # main_worker : 각 process가 실행하는 함수
-    # nprocs : machine 당 process 개수
 
 def main_worker(process_id, args):
+    global best_acc
+    best_acc = 0.0
+
     # 1. initialize
     model = MyFMANet()
     optimizer = optim.Adadelta(model.parameters(), lr=0.5)
@@ -186,11 +206,17 @@ def main_worker(process_id, args):
     torch.cuda.set_device(process_id)
     model.cuda(process_id)
     criterion = nn.NLLLoss().cuda(process_id)
+    # criterion = nn.CrossEntropyLoss(reduction='mean').cuda(process_id)
 
     # 4. parallelize model
     model = nn.parallel.DistributedDataParallel(model, device_ids=[process_id])
     
-    # 5. train
+    # 5. wandb init
+    if rank == 0:
+        wandb.init(project=args.prj_name, name=f"{args.exp_name}", entity="semyeongyu", config=vars(args)) # vars()는 객체의 __dict__ 속성을 반환 / {'transforms' : 'BaseTransform', 'crop_size' : 224}과 같이 반환
+        wandb.watch(model, log='all', log_freq=args.log_interval) # 모든 param.의 gradient를 기록 / arg.log_interval-번째 batch마다 log 기록
+
+    # 6. train
     model.train()
 
     for epoch in range(start_epoch, args.epochs):
@@ -269,6 +295,29 @@ def load_checkpoint(checkpoint_path, model, optimizer, scheduler, rank=-1):
         scheduler.load_state_dict(checkpoint['scheduler'])
 
     return start_epoch, model, optimizer, scheduler
+```
+
+- `augmentation`
+
+```Python
+import albumentations as A
+from albumentations.pytorch.transforms import ToTensorV2
+
+class BaseTransform(object):
+    def __init__(self, crop_size = 224):
+        self.transform = A.Compose(
+            [   
+                A.RandomResizedCrop(crop_size, crop_size),
+                A.HorizontalFlip(),
+                A.Normalize(),
+                ToTensorV2() # albumentations에서는 normalize 이후에 ToTensorV2를 사용해줘야 함 (여기서 어차피 shape (C,H,W)로 변경)
+            ]
+        )
+
+    def __call__(self, img):
+        # BaseTransform()은 nn.Module을 상속한 게 아니므로 forward를 구현해도 __call__과 연결되어 있지 않음
+        # 따라서 __call__()을 직접 구현해줘야 함
+        return self.transform(image=img)
 ```
 
 ### Transformer
