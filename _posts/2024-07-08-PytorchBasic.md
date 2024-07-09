@@ -1,6 +1,6 @@
 ---
 layout: distill
-title: Pytorch Basic Code
+title: Pytorch Basic Code (DDP)
 date: 2024-07-08 11:00:00
 description: Dataset, DataLoader, Train, ...
 tags: pytorch
@@ -25,7 +25,7 @@ _styles: >
   }
 ---
 
-## Pytorch Basic Code
+## Pytorch Basic Code (DDP)
 
 ### Deal with json, csv
 
@@ -77,6 +77,16 @@ class CustomDataset(Dataset):
 ```
 
 ### DataLoader
+
+- DataParallel(DP) vs DistributedDataParallel(DDP) :  
+[Pytorch DP and DDP](https://tkayyoo.tistory.com/27#tktag2)  
+  - DataParallel(DP) :  
+  single-process  
+  multi-thread  
+  single-machine  
+  - DistributedDataParallel(DDP) :  
+  multi-process  
+  single-machine과 multi-machine 모두 가능  
 
 - `rank` :  
   - 전체 distributed system에서 process 순서  
@@ -181,7 +191,11 @@ def main_worker(process_id, args):
   더 이상 사용하지 않는 tensor들을 GPU cached memory에서 해제  
   장점 : GPU memory 확보  
   단점 : 너무 자주 호출하면 메모리 할당/해제에 따른 성능 저하 발생  
-  - backpropagation : args.accumulation_steps만큼 loss를 누적한 뒤 backward  
+  - train :  
+  args.accumulation_steps만큼 loss를 누적한 뒤 backward  
+  args.accumulation_steps마다 gradient 및 measurement 초기화, rank=0 logging  
+  - validation :  
+  with torch.no_grad(): 로 gradient 누적 안 함!  
 6. `wandb` and `distributed` finish  
 
 ```Python
@@ -248,7 +262,8 @@ def main_worker(process_id, args):
 
         if rank == 0:
             val_acc, val_loss = validate(val_loader, model, criterion, epoch, args)
-
+            
+            # best acc일 때마다 save checkpoint
             if (best_top1 < val_acc):
                 best_top1 = val_acc # best_top1은 global var.
                 save_checkpoint(
@@ -271,10 +286,12 @@ def main_worker(process_id, args):
 ```
 
 ```Python
-def train():
+def train(train_loader, model, criterion, optimizer, scheduler, epoch, args):
     model.train()
     train_acc, train_loss = AverageMeter(), AverageMeter() # measurement of acc and loss
-    for step, (x, y_gt) in tqdm(enumerate(train_loader), total=len(train_loader)):
+
+    pbar = tqdm(enumerate(train_loader), total=len(train_loader))
+    for step, (x, y_gt) in pbar:
         x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True) # cuda device에 올려야 함
         # pin_memory=True와 non_blocking=True는 함께 사용
 
@@ -290,7 +307,6 @@ def train():
         train_loss.update(loss.item() * args.accumulation_steps, x.size(0))
 
         # args.accumulation_steps만큼 loss를 누적한 뒤 backward
-        # backward 이후 gradient 및 measurement 초기화
         if (step+1) % args.accumulation_steps == 0:
             # gradient clipping
             nn.utils.clip_grad_norm_(model.parameters(), max_norm=args.max_norm)
@@ -305,6 +321,7 @@ def train():
             # logging
             dist.barrier()
             if rank == 0:
+                # wandb log
                 wandb.log(
                     {
                         "Training Loss": round(train_loss.avg, 4),
@@ -312,16 +329,49 @@ def train():
                         "Learning Rate": optimizer.param_groups[0]['lr']
                     }
                 )
-                
+
+                # tqdm log
+                description = f'Epoch: {epoch+1}/{args.n_epochs} || Step: {(step+1)//args.accumulation_steps}/{len(train_loader)//args.accumulation_steps} || Training Loss: {round(train_loss.avg, 4)}'
+                pbar.set_description(description)
+
                 # measurement 초기화
                 train_loss.init()
                 train_acc.init()
-
-                description = f'Epoch: {epoch+1}/{args.n_epochs} || Step: {(step+1)}
+    
+    return train_loss.avg
 ```
 
 ```Python
-def validate():
+def validate(val_loader, model, criterion, epoch, args):
+    model.eval()
+    val_acc, val_loss = AverageMeter(), AverageMeter() # measurement of acc and loss
+
+    pbar = tqdm(enumerate(val_loader), total=len(val_loader))
+    with torch.no_grad(): # validation은 gradient 누적 안 함!!
+        for step, (x, y_gt) in pbar:
+            x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
+            
+            # forward
+            y_pred = model(x)
+            loss = criterion(y_pred, y_gt)
+            
+            # measurement
+            val_acc.update(topk_accuracy(y_pred.clone().detach(), y_gt).item(), x.size(0))
+            val_loss.update(loss.item(), x.size(0))
+
+            # tqdm log
+            description = f'Epoch: {epoch+1}/{args.n_epochs} || Step: {step+1}/{len(val_loader)} || Validation Loss: {round(loss.item(), 4)} || Validation Accuracy: {round(val_acc.avg, 4)}'
+            pbar.set_description(description)
+
+    # wandb log
+    wandb.log(
+        {
+            'Validation Loss': round(val_loss.avg, 4),
+            'Validation Accuracy': round(val_acc.avg, 4)
+        }
+    )
+
+    return val_acc.avg, val_loss.avg
 ```
 
 ### Utils
@@ -434,7 +484,80 @@ class AverageMeter(object):
         self.sum += val*n
         self.count += n
         self.avg = self.sum / self.count
+
+def topk_accuracy(pred, gt, k=1):
+    # pred : shape (N, class)
+    # gt : shape (N,)
+    _, pred_topk = pred.topk(k, dim=1)
+    n_correct = torch.sum(pred_topk.squeeze() == gt)
+
+    return n_correct / len(gt)
 ```
 
 ### Transformer
 
+```Python
+class Attention(nn.Module):
+    # Restormer (CVPR 2022) transposed-attention block
+    # original source code: https://github.com/swz30/Restormer
+    def __init__(self, dim, num_heads, bias):
+        super(Attention, self).__init__()
+        self.num_heads = num_heads
+        self.temperature = nn.Parameter(torch.ones(num_heads, 1, 1))
+
+        self.q = nn.Conv2d(dim, dim, kernel_size=1, bias=bias)
+        self.q_dwconv = nn.Conv2d(dim, dim, kernel_size=3, stride=1, padding=1, groups=dim, bias=bias)
+        self.kv_conv = nn.Conv2d(dim, dim*2, kernel_size=1, bias=bias)
+        self.kv_dwconv = nn.Conv2d(dim*2, dim*2, kernel_size=3, stride=1, padding=1, groups=dim*2, bias=bias)
+
+        self.project_out = nn.Conv2d(dim, dim, kernel_size=1, bias=bias)
+
+    def forward(self, x, f):
+        b, c, h, w = x.shape
+
+        q = self.q_dwconv(self.q(f))
+        kv = self.kv_dwconv(self.kv_conv(x))
+        k, v = kv.chunk(2, dim=1)
+
+        q = rearrange(q, 'b (head c) h w -> b head c (h w)', head=self.num_heads)
+        k = rearrange(k, 'b (head c) h w -> b head c (h w)', head=self.num_heads)
+        v = rearrange(v, 'b (head c) h w -> b head c (h w)', head=self.num_heads)
+
+        q = torch.nn.functional.normalize(q, dim=-1)
+        k = torch.nn.functional.normalize(k, dim=-1)
+
+        attn = (q @ k.transpose(-2, -1)) * self.temperature
+        attn = attn.softmax(dim=-1)
+
+        out = (attn @ v)
+        out = rearrange(out, 'b head c (h w) -> b (head c) h w', head=self.num_heads, h=h, w=w)
+        out = self.project_out(out)
+
+        return out
+
+
+class MultiAttentionBlock(torch.nn.Module):
+    def __init__(self, dim, num_heads, LayerNorm_type, ffn_expansion_factor, bias, is_DA):
+        super(MultiAttentionBlock, self).__init__()
+        self.norm1 = LayerNorm(dim, LayerNorm_type)
+        self.co_attn = Attention(dim, num_heads, bias)
+        self.norm2 = LayerNorm(dim, LayerNorm_type)
+        self.ffn1 = FeedForward(dim, ffn_expansion_factor, bias)
+
+        if is_DA:
+            self.norm3 = LayerNorm(dim, LayerNorm_type)
+            self.da_attn = Attention(dim, num_heads, bias)
+            self.norm4 = LayerNorm(dim, LayerNorm_type)
+            self.ffn2 = FeedForward(dim, ffn_expansion_factor, bias)
+
+    def forward(self, Fw, F0_c, Kd):
+        Fw = Fw + self.co_attn(self.norm1(Fw), F0_c)
+        Fw = Fw + self.ffn1(self.norm2(Fw))
+
+        if Kd is not None:
+            Fw = Fw + self.da_attn(self.norm3(Fw), Kd)
+            Fw = Fw + self.ffn2(self.norm4(Fw))
+
+        return Fw
+
+```
