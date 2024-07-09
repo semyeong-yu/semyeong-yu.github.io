@@ -535,7 +535,6 @@ class Attention(nn.Module):
 
         return out
 
-
 class MultiAttentionBlock(torch.nn.Module):
     def __init__(self, dim, num_heads, LayerNorm_type, ffn_expansion_factor, bias, is_DA):
         super(MultiAttentionBlock, self).__init__()
@@ -559,5 +558,4 @@ class MultiAttentionBlock(torch.nn.Module):
             Fw = Fw + self.ffn2(self.norm4(Fw))
 
         return Fw
-
 ```
