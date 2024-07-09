@@ -90,7 +90,7 @@ class CustomDataset(Dataset):
   world_size = machine 개수(2) * machine 당 process 개수(4)  
 
 - `torch.distributed.init_process_group()` :  
-  - 분산 학습을 하는 각 process 간의 통신을 위해 사용  
+  - 분산 학습 환경 초기화 : 분산 학습하는 각 process 간의 통신을 설정  
   - backend : 'gloo' for CPU, 'nccl' for GPU, 'mpi' for 고성능  
   - init_method : 각 process가 서로 탐색하는 방법(url)  
   예시 : 'env://', f'tcp://127.0.0.1:11203'
@@ -159,21 +159,36 @@ def main_worker(process_id, args):
   - start_method
 
 - `main_worker()` : 각 process가 실행하는 함수  
-1. `initialize`  
-2. `load checkpoint`
-3. `set cuda process_id`
-4. `parallelize model`  
-  - 각 model 복사본은 각자의 optimizer를 이용해 gradient를 구하고  
+1. `model` initialize, and set cuda, and parallelize  
+  - nn.parallel.DistributedDataParallel :  
+  각 model 복사본은 각자의 optimizer를 이용해 gradient를 구하고  
   rank=0의 process와 통신하여 gradient의 평균을 구해서 backpropagation 진행  
-  - GIL(global interpreter lock)의 제약을 해결
-5. `wandb init`
-6. `train`
+  GIL(global interpreter lock)의 제약을 해결 
+2. `wandb` init  
+  - wandb.init() : wandb 초기화  
+  vars(args)는 args 객체의 __dict__ 속성을 반환  
+  {'transforms' : 'BaseTransform', 'crop_size' : 224}과 같이 반환  
+  - wandb.watch() : wandb 기록  
+  모든 param.의 gradient를 기록  
+  arg.log_interval-번째 batch마다 log 기록
+3. `optimizer, scheduler` initialize  
+4. load `checkpoint`  
+5. `train` with `barrier`  
+  - torch.distributed.barrier() :  
+  분산 학습 환경에서  
+  모든 process가 이 장벽에 도달할 때까지 대기하여  
+  모든 process가 synchronize된 상태에서 훈련이 진행되도록 함  
+  - torch.cuda.empty_cache() :  
+  더 이상 사용하지 않는 tensor들을 GPU cached memory에서 해제  
+  장점 : GPU memory 확보  
+  단점 : 너무 자주 호출하면 메모리 할당/해제에 따른 성능 저하 발생
+6. `wandb` and `distributed` finish  
 
 ```Python
+from importlib import import_module
 import torch
 import torch.nn as nn
 import torch.multiprocessing as mp
-import torch.optim as optim
 from utils import *
 from tqdm import tqdm
 import wandb
@@ -194,38 +209,81 @@ def main_worker(process_id, args):
     global best_acc
     best_acc = 0.0
 
-    # 1. initialize
+    # 1. model initialize, and set cuda, and parallelize
     model = MyFMANet()
-    optimizer = optim.Adadelta(model.parameters(), lr=0.5)
-    scheduler = # ...
 
-    # 2. load checkpoint
-    start_epoch, model, optimizer, scheduler = load_checkpoint(checkpoint_path, model, optimizer, scheduler)
-
-    # 3. set cuda process_id
     torch.cuda.set_device(process_id)
     model.cuda(process_id)
-    criterion = nn.NLLLoss().cuda(process_id)
-    # criterion = nn.CrossEntropyLoss(reduction='mean').cuda(process_id)
+    criterion = nn.NLLLoss().cuda(process_id) # criterion = nn.CrossEntropyLoss(reduction='mean').cuda(process_id)
 
-    # 4. parallelize model
     model = nn.parallel.DistributedDataParallel(model, device_ids=[process_id])
-    
-    # 5. wandb init
-    if rank == 0:
-        wandb.init(project=args.prj_name, name=f"{args.exp_name}", entity="semyeongyu", config=vars(args)) # vars()는 객체의 __dict__ 속성을 반환 / {'transforms' : 'BaseTransform', 'crop_size' : 224}과 같이 반환
-        wandb.watch(model, log='all', log_freq=args.log_interval) # 모든 param.의 gradient를 기록 / arg.log_interval-번째 batch마다 log 기록
 
-    # 6. train
+    # 2. wandb init
+    if rank == 0:
+        wandb.init(project=args.prj_name, name=f"{args.exp_name}", entity="semyeongyu", config=vars(args))
+        wandb.watch(model, log='all', log_freq=args.log_interval)
+
+    # 3. optimizer, scheduler initialize
+    optimizer = getattr(import_module("torch.optim"), args.optimizer)(model.parameters(), lr=args.lr, betas=(args.b1, args.b2), weight_decay=args.weight_decay)
+    scheduler = getattr(import_module("torch.optim.lr_scheduler"), args.lr_scheduler)(optimizer, T_max=args.period, eta_min=0, last_epoch=-1, verbose=True)
+    # T_max : 주기 1번 도는 데 걸리는 step 수 / eta_min : lr의 최솟값 / last_epoch : 학습 시작할 때의 epoch
+
+    # 4. load checkpoint
+    if args.resume_from:
+        start_epoch, model, optimizer, scheduler = load_checkpoint(checkpoint_path, model, optimizer, scheduler, rank)
+    else:
+        start_epoch = 0
+
+    # 5. train with barrier
     model.train()
 
-    for epoch in range(start_epoch, args.epochs):
-        for batch_i, (x, y) in enumerate(train_loader):
-            x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
-            # pin_memory=True와 non_blocking=True는 함께 사용
+    dist.barrier()
 
-            if batch_i % 10 == 0 and process_id == 0:
-                # ...
+    for epoch in range(start_epoch, args.epochs):
+        train_sampler.set_epoch(epoch) # train_sampler가 epoch끼리 동일하게 data 분할하는 것을 방지하기 위해
+
+        optimizer.zero_grad() # epoch마다 gradient 초기화
+
+        train_loss = train(train_loader, model, criterion, optimizer, scheduler, epoch, args)
+
+        dist.barrier()
+
+        if rank == 0:
+            val_acc, val_loss = validate(val_loader, model, criterion, epoch, args)
+
+            if (best_top1 < val_acc):
+                best_top1 = val_acc # best_top1은 global var.
+                save_checkpoint(
+                    {
+                        'epoch': epoch,
+                        'model': model.state_dict(),
+                        'best_top1': best_top1,
+                        'optimizer': optimizer.state_dict(),
+                        'scheduler': scheduler.state_dict()
+                    }, os.path.join(args.checkpoint_dir, args.exp_name), f"{epoch}_{round(best_top1, 4)}.pt"
+                )
+        
+        torch.cuda.empty_cache() 
+    
+    # 6. wandb and distributed finish
+    if rank == 0:
+        wandb.run.finish()
+
+    dist.destroy_process_group()
+```
+
+```Python
+def train():
+    for batch_i, (x, y) in enumerate(train_loader):
+        x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
+        # pin_memory=True와 non_blocking=True는 함께 사용
+
+        if batch_i % 10 == 0 and process_id == 0:
+            # ...
+```
+
+```Python
+def validate():
 ```
 
 ### Utils
@@ -278,10 +336,10 @@ def save_checkpoint(checkpoint, saved_dir, file_name):
 
 def load_checkpoint(checkpoint_path, model, optimizer, scheduler, rank=-1):
     # checkpoint_path : ".../240325.pt"
-    if rank != -1: # distributed
+    if rank != -1: # 분산학습 yes
         map_location = {"cuda:%d" % 0 : "cuda:%d" % rank}
         checkpoint = torch.load(checkpoint_path, map_location=map_location)
-    else:
+    else: # 분산학습 no
         checkpoint = torch.load(checkpoint_path)
 
     start_epoch = checkpoint['epoch']
