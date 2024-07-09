@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.3.3">Jekyll</generator><link href="https://semyeong-yu.github.io/feed.xml" rel="self" type="application/atom+xml"/><link href="https://semyeong-yu.github.io/" rel="alternate" type="text/html" hreflang="en"/><updated>2024-07-09T03:04:12+00:00</updated><id>https://semyeong-yu.github.io/feed.xml</id><title type="html">blank</title><subtitle>A simple, whitespace theme for academics. Based on [*folio](https://github.com/bogoli/-folio) design. </subtitle><entry><title type="html">Pytorch Basic Code</title><link href="https://semyeong-yu.github.io/blog/2024/PytorchBasic/" rel="alternate" type="text/html" title="Pytorch Basic Code"/><published>2024-07-08T11:00:00+00:00</published><updated>2024-07-08T11:00:00+00:00</updated><id>https://semyeong-yu.github.io/blog/2024/PytorchBasic</id><content type="html" xml:base="https://semyeong-yu.github.io/blog/2024/PytorchBasic/"><![CDATA[<h2 id="pytorch-basic-code">Pytorch Basic Code</h2> <h3 id="deal-with-json-csv">Deal with json, csv</h3> <pre><code class="language-Python">import os
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.3.3">Jekyll</generator><link href="https://semyeong-yu.github.io/feed.xml" rel="self" type="application/atom+xml"/><link href="https://semyeong-yu.github.io/" rel="alternate" type="text/html" hreflang="en"/><updated>2024-07-09T05:40:58+00:00</updated><id>https://semyeong-yu.github.io/feed.xml</id><title type="html">blank</title><subtitle>A simple, whitespace theme for academics. Based on [*folio](https://github.com/bogoli/-folio) design. </subtitle><entry><title type="html">Pytorch Basic Code</title><link href="https://semyeong-yu.github.io/blog/2024/PytorchBasic/" rel="alternate" type="text/html" title="Pytorch Basic Code"/><published>2024-07-08T11:00:00+00:00</published><updated>2024-07-08T11:00:00+00:00</updated><id>https://semyeong-yu.github.io/blog/2024/PytorchBasic</id><content type="html" xml:base="https://semyeong-yu.github.io/blog/2024/PytorchBasic/"><![CDATA[<h2 id="pytorch-basic-code">Pytorch Basic Code</h2> <h3 id="deal-with-json-csv">Deal with json, csv</h3> <pre><code class="language-Python">import os
 import json
 import pandas as pd
 import csv
@@ -68,7 +68,7 @@ def main_worker(process_id, args):
     train_sampler = DistributedSampler(train_dataset, num_replicas=world_size, rank=rank)
 
     train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers, collate_fn=_collate_fn, pin_memory=True, drop_last=True, sampler=train_sampler)
-</code></pre> <h3 id="train">Train</h3> <ul> <li><code class="language-plaintext highlighter-rouge">torch.multiprocessing.spawn()</code> : <ul> <li>main_worker : 각 process가 실행하는 함수</li> <li>nprocs : machine 당 process 개수인 4로 설정<br/> main_worker()의 첫 번째 argument는 process_id인 0~3이 됨</li> <li>args : main_worker()에 추가로 전달할 tuple 형태의 argument</li> <li>join</li> <li>daemon</li> <li>start_method</li> </ul> </li> <li><code class="language-plaintext highlighter-rouge">main_worker()</code> : 각 process가 실행하는 함수 <ol> <li><code class="language-plaintext highlighter-rouge">model</code> initialize, and set cuda, and parallelize</li> </ol> <ul> <li>nn.parallel.DistributedDataParallel :<br/> 각 model 복사본은 각자의 optimizer를 이용해 gradient를 구하고<br/> rank=0의 process와 통신하여 gradient의 평균을 구해서 backpropagation 진행<br/> GIL(global interpreter lock)의 제약을 해결 2. <code class="language-plaintext highlighter-rouge">wandb</code> init</li> <li>wandb.init() : wandb 초기화<br/> vars(args)는 args 객체의 <strong>dict</strong> 속성을 반환<br/> {‘transforms’ : ‘BaseTransform’, ‘crop_size’ : 224}과 같이 반환</li> <li>wandb.watch() : wandb 기록<br/> 모든 param.의 gradient를 기록<br/> arg.log_interval-번째 batch마다 log 기록 3. <code class="language-plaintext highlighter-rouge">optimizer, scheduler</code> initialize<br/> 4. load <code class="language-plaintext highlighter-rouge">checkpoint</code><br/> 5. <code class="language-plaintext highlighter-rouge">train</code> with <code class="language-plaintext highlighter-rouge">barrier</code></li> <li>torch.distributed.barrier() :<br/> 분산 학습 환경에서<br/> 모든 process가 이 장벽에 도달할 때까지 대기하여<br/> 모든 process가 synchronize된 상태에서 훈련이 진행되도록 함</li> <li>torch.cuda.empty_cache() :<br/> 더 이상 사용하지 않는 tensor들을 GPU cached memory에서 해제<br/> 장점 : GPU memory 확보<br/> 단점 : 너무 자주 호출하면 메모리 할당/해제에 따른 성능 저하 발생 6. <code class="language-plaintext highlighter-rouge">wandb</code> and <code class="language-plaintext highlighter-rouge">distributed</code> finish</li> </ul> </li> </ul> <pre><code class="language-Python">from importlib import import_module
+</code></pre> <h3 id="train">Train</h3> <ul> <li><code class="language-plaintext highlighter-rouge">torch.multiprocessing.spawn()</code> : <ul> <li>main_worker : 각 process가 실행하는 함수</li> <li>nprocs : machine 당 process 개수인 4로 설정<br/> main_worker()의 첫 번째 argument는 process_id인 0~3이 됨</li> <li>args : main_worker()에 추가로 전달할 tuple 형태의 argument</li> <li>join</li> <li>daemon</li> <li>start_method</li> </ul> </li> </ul> <ol> <li><code class="language-plaintext highlighter-rouge">model</code> initialize, and set cuda, and parallelize <ul> <li>nn.parallel.DistributedDataParallel :<br/> 각 model 복사본은 각자의 optimizer를 이용해 gradient를 구하고<br/> rank=0의 process와 통신하여 gradient의 평균을 구해서 backpropagation 진행<br/> GIL(global interpreter lock)의 제약을 해결</li> </ul> </li> <li><code class="language-plaintext highlighter-rouge">wandb</code> init <ul> <li>wandb.init() : wandb 초기화<br/> vars(args)는 args 객체의 <strong>dict</strong> 속성을 반환<br/> {‘transforms’ : ‘BaseTransform’, ‘crop_size’ : 224}과 같이 반환</li> <li>wandb.watch() : wandb 기록<br/> 모든 param.의 gradient를 기록<br/> arg.log_interval-번째 batch마다 log 기록</li> </ul> </li> <li><code class="language-plaintext highlighter-rouge">optimizer, scheduler</code> initialize</li> <li>load <code class="language-plaintext highlighter-rouge">checkpoint</code></li> <li><code class="language-plaintext highlighter-rouge">train</code> with <code class="language-plaintext highlighter-rouge">barrier</code> <ul> <li>torch.distributed.barrier() :<br/> 분산 학습 환경에서<br/> 모든 process가 이 장벽에 도달할 때까지 대기하여<br/> 모든 process가 synchronize된 상태에서 훈련이 진행되도록 함</li> <li>torch.cuda.empty_cache() :<br/> 더 이상 사용하지 않는 tensor들을 GPU cached memory에서 해제<br/> 장점 : GPU memory 확보<br/> 단점 : 너무 자주 호출하면 메모리 할당/해제에 따른 성능 저하 발생</li> <li>backpropagation : args.accumulation_steps만큼 loss를 누적한 뒤 backward</li> </ul> </li> <li><code class="language-plaintext highlighter-rouge">wandb</code> and <code class="language-plaintext highlighter-rouge">distributed</code> finish</li> </ol> <pre><code class="language-Python">from importlib import import_module
 import torch
 import torch.nn as nn
 import torch.multiprocessing as mp
@@ -118,11 +118,9 @@ def main_worker(process_id, args):
         start_epoch = 0
 
     # 5. train with barrier
-    model.train()
-
     dist.barrier()
 
-    for epoch in range(start_epoch, args.epochs):
+    for epoch in range(start_epoch, args.n_epochs):
         train_sampler.set_epoch(epoch) # train_sampler가 epoch끼리 동일하게 data 분할하는 것을 방지하기 위해
 
         optimizer.zero_grad() # epoch마다 gradient 초기화
@@ -154,12 +152,52 @@ def main_worker(process_id, args):
 
     dist.destroy_process_group()
 </code></pre> <pre><code class="language-Python">def train():
-    for batch_i, (x, y) in enumerate(train_loader):
-        x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
+    model.train()
+    train_acc, train_loss = AverageMeter(), AverageMeter() # measurement of acc and loss
+    for step, (x, y_gt) in tqdm(enumerate(train_loader), total=len(train_loader)):
+        x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True) # cuda device에 올려야 함
         # pin_memory=True와 non_blocking=True는 함께 사용
 
-        if batch_i % 10 == 0 and process_id == 0:
-            # ...
+        # forward
+        y_pred = model(x)
+        loss = criterion(y_pred, y_gt) / args.accumulation_steps
+
+        # gradient 누적
+        loss.backward()
+        
+        # measurement
+        train_acc.update(topk_accuracy(y_pred.clone().detach(), y_gt).item(), x.size(0))
+        train_loss.update(loss.item() * args.accumulation_steps, x.size(0))
+
+        # args.accumulation_steps만큼 loss를 누적한 뒤 backward
+        # backward 이후 gradient 및 measurement 초기화
+        if (step+1) % args.accumulation_steps == 0:
+            # gradient clipping
+            nn.utils.clip_grad_norm_(model.parameters(), max_norm=args.max_norm)
+
+            # backward
+            optimizer.step()
+            scheduler.step()
+
+            # gradient 초기화
+            optimizer.zero_grad()
+
+            # logging
+            dist.barrier()
+            if rank == 0:
+                wandb.log(
+                    {
+                        "Training Loss": round(train_loss.avg, 4),
+                        "Training Accuracy": round(train_acc.avg, 4),
+                        "Learning Rate": optimizer.param_groups[0]['lr']
+                    }
+                )
+                
+                # measurement 초기화
+                train_loss.init()
+                train_acc.init()
+
+                description = f'Epoch: {epoch+1}/{args.n_epochs} || Step: {(step+1)}
 </code></pre> <pre><code class="language-Python">def validate():
 </code></pre> <h3 id="utils">Utils</h3> <ul> <li><code class="language-plaintext highlighter-rouge">argument parser</code></li> </ul> <pre><code class="language-Python">import argparse
 
@@ -226,6 +264,21 @@ class BaseTransform(object):
         # BaseTransform()은 nn.Module을 상속한 게 아니므로 forward를 구현해도 __call__과 연결되어 있지 않음
         # 따라서 __call__()을 직접 구현해줘야 함
         return self.transform(image=img)
+</code></pre> <ul> <li><code class="language-plaintext highlighter-rouge">measurement</code></li> </ul> <pre><code class="language-Python">class AverageMeter(object):
+    def __init__(self):
+        self.init()
+    
+    def init(self):
+        self.val = 0
+        self.avg = 0
+        self.sum = 0
+        self.count = 0
+
+    def update(self, val, n=1):
+        self.val = val
+        self.sum += val*n
+        self.count += n
+        self.avg = self.sum / self.count
 </code></pre> <h3 id="transformer">Transformer</h3>]]></content><author><name></name></author><category term="cv-tasks"/><category term="pytorch"/><summary type="html"><![CDATA[Dataset, DataLoader, Train, ...]]></summary></entry><entry><title type="html">Solar LLM with Langchain</title><link href="https://semyeong-yu.github.io/blog/2024/LLM/" rel="alternate" type="text/html" title="Solar LLM with Langchain"/><published>2024-07-03T14:00:00+00:00</published><updated>2024-07-03T14:00:00+00:00</updated><id>https://semyeong-yu.github.io/blog/2024/LLM</id><content type="html" xml:base="https://semyeong-yu.github.io/blog/2024/LLM/"><![CDATA[<h2 id="solar-llm-by-upstage">Solar LLM by Upstage</h2> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-03-LLM/1-480.webp 480w,/assets/img/2024-07-03-LLM/1-800.webp 800w,/assets/img/2024-07-03-LLM/1-1400.webp 1400w," sizes="95vw" type="image/webp"/> <img src="/assets/img/2024-07-03-LLM/1.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"/> </picture> </figure> </div> </div> <h3 id="solar-llm-as-personalized-llm">Solar LLM as Personalized LLM</h3> <ul> <li> <p>Referenced Github :<br/> <a href="https://github.com/UpstageAI/cookbook/tree/main">UpstageAI-cookbook</a><br/> <a href="https://github.com/semyeong-yu/LLM-cookbook">UpstageAI-cookbook</a><br/> <a href="https://github.com/iamtaewan/solarllm-oracle-cookbook">OracleDB-cookbook</a></p> </li> <li> <p>Solar mini LLM :<br/> small-size<br/> best LLM for fine-tuning<br/> can be used as personalized LLM</p> </li> <li> <p>Future of AI Ecosystem Hierarchy :<br/> Domain-specific and self-fine-tuned LLMs<br/> Solar LLM O/S<br/> O/S<br/> AI chips</p> </li> <li> <p>Langchain :<br/> LLM과 application의 통합을 간소화하는 SDK</p> </li> <li> <p>핵심 기능 : 앞으로 아래에서 배울 예정!!</p> <ul> <li>LLM 사용 (query, context)</li> <li>Groundedness Check (팩트체크)</li> <li>Layout Analyzer (PDF 또는 img에서 정보 추출)</li> <li>Embedding and DB vector store (embedding vector를 DB에 저장)</li> <li>Define Custom Tools (img 생성, 뉴스 검색, 스케쥴 관리 등)</li> </ul> </li> </ul> <h3 id="chat">Chat</h3> <pre><code class="language-Python">from langchain_upstage import ChatUpstage
 
 llm = ChatUpstage()

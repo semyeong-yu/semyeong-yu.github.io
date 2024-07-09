@@ -91,7 +91,7 @@ def main_worker(process_id, args):
     train_sampler = DistributedSampler(train_dataset, num_replicas=world_size, rank=rank)
 
     train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers, collate_fn=_collate_fn, pin_memory=True, drop_last=True, sampler=train_sampler)
-</code></pre> <h3 id="train">Train</h3> <ul> <li> <code class="language-plaintext highlighter-rouge">torch.multiprocessing.spawn()</code> : <ul> <li>main_worker : 각 process가 실행하는 함수</li> <li>nprocs : machine 당 process 개수인 4로 설정<br> main_worker()의 첫 번째 argument는 process_id인 0~3이 됨</li> <li>args : main_worker()에 추가로 전달할 tuple 형태의 argument</li> <li>join</li> <li>daemon</li> <li>start_method</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">main_worker()</code> : 각 process가 실행하는 함수 <ol> <li> <code class="language-plaintext highlighter-rouge">model</code> initialize, and set cuda, and parallelize</li> </ol> <ul> <li>nn.parallel.DistributedDataParallel :<br> 각 model 복사본은 각자의 optimizer를 이용해 gradient를 구하고<br> rank=0의 process와 통신하여 gradient의 평균을 구해서 backpropagation 진행<br> GIL(global interpreter lock)의 제약을 해결 2. <code class="language-plaintext highlighter-rouge">wandb</code> init</li> <li>wandb.init() : wandb 초기화<br> vars(args)는 args 객체의 <strong>dict</strong> 속성을 반환<br> {‘transforms’ : ‘BaseTransform’, ‘crop_size’ : 224}과 같이 반환</li> <li>wandb.watch() : wandb 기록<br> 모든 param.의 gradient를 기록<br> arg.log_interval-번째 batch마다 log 기록 3. <code class="language-plaintext highlighter-rouge">optimizer, scheduler</code> initialize<br> 4. load <code class="language-plaintext highlighter-rouge">checkpoint</code><br> 5. <code class="language-plaintext highlighter-rouge">train</code> with <code class="language-plaintext highlighter-rouge">barrier</code> </li> <li>torch.distributed.barrier() :<br> 분산 학습 환경에서<br> 모든 process가 이 장벽에 도달할 때까지 대기하여<br> 모든 process가 synchronize된 상태에서 훈련이 진행되도록 함</li> <li>torch.cuda.empty_cache() :<br> 더 이상 사용하지 않는 tensor들을 GPU cached memory에서 해제<br> 장점 : GPU memory 확보<br> 단점 : 너무 자주 호출하면 메모리 할당/해제에 따른 성능 저하 발생 6. <code class="language-plaintext highlighter-rouge">wandb</code> and <code class="language-plaintext highlighter-rouge">distributed</code> finish</li> </ul> </li> </ul> <pre><code class="language-Python">from importlib import import_module
+</code></pre> <h3 id="train">Train</h3> <ul> <li> <code class="language-plaintext highlighter-rouge">torch.multiprocessing.spawn()</code> : <ul> <li>main_worker : 각 process가 실행하는 함수</li> <li>nprocs : machine 당 process 개수인 4로 설정<br> main_worker()의 첫 번째 argument는 process_id인 0~3이 됨</li> <li>args : main_worker()에 추가로 전달할 tuple 형태의 argument</li> <li>join</li> <li>daemon</li> <li>start_method</li> </ul> </li> </ul> <ol> <li> <code class="language-plaintext highlighter-rouge">model</code> initialize, and set cuda, and parallelize <ul> <li>nn.parallel.DistributedDataParallel :<br> 각 model 복사본은 각자의 optimizer를 이용해 gradient를 구하고<br> rank=0의 process와 통신하여 gradient의 평균을 구해서 backpropagation 진행<br> GIL(global interpreter lock)의 제약을 해결</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">wandb</code> init <ul> <li>wandb.init() : wandb 초기화<br> vars(args)는 args 객체의 <strong>dict</strong> 속성을 반환<br> {‘transforms’ : ‘BaseTransform’, ‘crop_size’ : 224}과 같이 반환</li> <li>wandb.watch() : wandb 기록<br> 모든 param.의 gradient를 기록<br> arg.log_interval-번째 batch마다 log 기록</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">optimizer, scheduler</code> initialize</li> <li>load <code class="language-plaintext highlighter-rouge">checkpoint</code> </li> <li> <code class="language-plaintext highlighter-rouge">train</code> with <code class="language-plaintext highlighter-rouge">barrier</code> <ul> <li>torch.distributed.barrier() :<br> 분산 학습 환경에서<br> 모든 process가 이 장벽에 도달할 때까지 대기하여<br> 모든 process가 synchronize된 상태에서 훈련이 진행되도록 함</li> <li>torch.cuda.empty_cache() :<br> 더 이상 사용하지 않는 tensor들을 GPU cached memory에서 해제<br> 장점 : GPU memory 확보<br> 단점 : 너무 자주 호출하면 메모리 할당/해제에 따른 성능 저하 발생</li> <li>backpropagation : args.accumulation_steps만큼 loss를 누적한 뒤 backward</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">wandb</code> and <code class="language-plaintext highlighter-rouge">distributed</code> finish</li> </ol> <pre><code class="language-Python">from importlib import import_module
 import torch
 import torch.nn as nn
 import torch.multiprocessing as mp
@@ -141,11 +141,9 @@ def main_worker(process_id, args):
         start_epoch = 0
 
     # 5. train with barrier
-    model.train()
-
     dist.barrier()
 
-    for epoch in range(start_epoch, args.epochs):
+    for epoch in range(start_epoch, args.n_epochs):
         train_sampler.set_epoch(epoch) # train_sampler가 epoch끼리 동일하게 data 분할하는 것을 방지하기 위해
 
         optimizer.zero_grad() # epoch마다 gradient 초기화
@@ -177,12 +175,52 @@ def main_worker(process_id, args):
 
     dist.destroy_process_group()
 </code></pre> <pre><code class="language-Python">def train():
-    for batch_i, (x, y) in enumerate(train_loader):
-        x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
+    model.train()
+    train_acc, train_loss = AverageMeter(), AverageMeter() # measurement of acc and loss
+    for step, (x, y_gt) in tqdm(enumerate(train_loader), total=len(train_loader)):
+        x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True) # cuda device에 올려야 함
         # pin_memory=True와 non_blocking=True는 함께 사용
 
-        if batch_i % 10 == 0 and process_id == 0:
-            # ...
+        # forward
+        y_pred = model(x)
+        loss = criterion(y_pred, y_gt) / args.accumulation_steps
+
+        # gradient 누적
+        loss.backward()
+        
+        # measurement
+        train_acc.update(topk_accuracy(y_pred.clone().detach(), y_gt).item(), x.size(0))
+        train_loss.update(loss.item() * args.accumulation_steps, x.size(0))
+
+        # args.accumulation_steps만큼 loss를 누적한 뒤 backward
+        # backward 이후 gradient 및 measurement 초기화
+        if (step+1) % args.accumulation_steps == 0:
+            # gradient clipping
+            nn.utils.clip_grad_norm_(model.parameters(), max_norm=args.max_norm)
+
+            # backward
+            optimizer.step()
+            scheduler.step()
+
+            # gradient 초기화
+            optimizer.zero_grad()
+
+            # logging
+            dist.barrier()
+            if rank == 0:
+                wandb.log(
+                    {
+                        "Training Loss": round(train_loss.avg, 4),
+                        "Training Accuracy": round(train_acc.avg, 4),
+                        "Learning Rate": optimizer.param_groups[0]['lr']
+                    }
+                )
+                
+                # measurement 초기화
+                train_loss.init()
+                train_acc.init()
+
+                description = f'Epoch: {epoch+1}/{args.n_epochs} || Step: {(step+1)}
 </code></pre> <pre><code class="language-Python">def validate():
 </code></pre> <h3 id="utils">Utils</h3> <ul> <li><code class="language-plaintext highlighter-rouge">argument parser</code></li> </ul> <pre><code class="language-Python">import argparse
 
@@ -249,4 +287,19 @@ class BaseTransform(object):
         # BaseTransform()은 nn.Module을 상속한 게 아니므로 forward를 구현해도 __call__과 연결되어 있지 않음
         # 따라서 __call__()을 직접 구현해줘야 함
         return self.transform(image=img)
+</code></pre> <ul> <li><code class="language-plaintext highlighter-rouge">measurement</code></li> </ul> <pre><code class="language-Python">class AverageMeter(object):
+    def __init__(self):
+        self.init()
+    
+    def init(self):
+        self.val = 0
+        self.avg = 0
+        self.sum = 0
+        self.count = 0
+
+    def update(self, val, n=1):
+        self.val = val
+        self.sum += val*n
+        self.count += n
+        self.avg = self.sum / self.count
 </code></pre> <h3 id="transformer">Transformer</h3> </d-article> <d-appendix> <d-footnote-list></d-footnote-list> <d-citation-list></d-citation-list> </d-appendix> <d-bibliography src="/assets/bibliography/"></d-bibliography> <div id="giscus_thread" style="max-width: 800px; margin: 0 auto;"> <script>let giscusTheme=determineComputedTheme(),giscusAttributes={src:"https://giscus.app/client.js","data-repo":"semyeong-yu/semyeong-yu.github.io","data-repo-id":"R_kgDOLmVJXQ","data-category":"Comments","data-category-id":"DIC_kwDOLmVJXc4CeSwc","data-mapping":"title","data-strict":"1","data-reactions-enabled":"1","data-emit-metadata":"0","data-input-position":"bottom","data-theme":giscusTheme,"data-lang":"en",crossorigin:"anonymous",async:""},giscusScript=document.createElement("script");Object.entries(giscusAttributes).forEach(([t,e])=>giscusScript.setAttribute(t,e)),document.getElementById("giscus_thread").appendChild(giscusScript);</script> <noscript>Please enable JavaScript to view the <a href="http://giscus.app/?ref_noscript" rel="external nofollow noopener" target="_blank">comments powered by giscus.</a> </noscript> </div> </div> <footer class="fixed-bottom" role="contentinfo"> <div class="container mt-0"> © Copyright 2024 Semyeong Yu. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>. Photos from <a href="https://unsplash.com" target="_blank" rel="external nofollow noopener">Unsplash</a>. </div> </footer> <script src="/assets/js/bootstrap.bundle.min.js"></script> <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script> <script async src="https://www.googletagmanager.com/gtag/js?id=G-5YMLX9VHFX"></script> <script>function gtag(){window.dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","G-5YMLX9VHFX");</script> <script type="text/javascript">function progressBarSetup(){"max"in document.createElement("progress")?(initializeProgressElement(),$(document).on("scroll",function(){progressBar.attr({value:getCurrentScrollPosition()})}),$(window).on("resize",initializeProgressElement)):(resizeProgressBar(),$(document).on("scroll",resizeProgressBar),$(window).on("resize",resizeProgressBar))}function getCurrentScrollPosition(){return $(window).scrollTop()}function initializeProgressElement(){let e=$("#navbar").outerHeight(!0);$("body").css({"padding-top":e}),$("progress-container").css({"padding-top":e}),progressBar.css({top:e}),progressBar.attr({max:getDistanceToScroll(),value:getCurrentScrollPosition()})}function getDistanceToScroll(){return $(document).height()-$(window).height()}function resizeProgressBar(){progressBar.css({width:getWidthPercentage()+"%"})}function getWidthPercentage(){return getCurrentScrollPosition()/getDistanceToScroll()*100}const progressBar=$("#progress");window.onload=function(){setTimeout(progressBarSetup,50)};</script> </body> </html>
