@@ -60,7 +60,7 @@ class CustomDataset(Dataset):
 
     def __len__(self):
         return len(self.x)
-</code></pre> <h3 id="dataloader">DataLoader</h3> <ul> <li> <code class="language-plaintext highlighter-rouge">rank</code> : <ul> <li>전체 distributed system에서 process 순서</li> <li>4-CPU system이 2개 있을 경우<br> rank = machine 번호(0~1) * machine 당 process 개수(4) + process 번호(0~3)</li> <li>rank = 0인 process에 대해서만 wandb로 train log 출력</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">world_size</code> : <ul> <li>전체 distributed system에서 총 process 개수</li> <li>4-GPU system이 2개 있을 경우<br> world_size = machine 개수(2) * machine 당 process 개수(4)</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">torch.distributed.init_process_group()</code> : <ul> <li>분산 학습을 하는 각 process 간의 통신을 위해 사용</li> <li>backend : ‘gloo’ for CPU, ‘nccl’ for GPU, ‘mpi’ for 고성능</li> <li>init_method : 각 process가 서로 탐색하는 방법(url)<br> 예시 : ‘env://’, f’tcp://127.0.0.1:11203’</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">torch.utils.data.distributed.DistributedSampler()</code> : <ul> <li>world_size(총 process 개수)만큼 dataset을 분할하여 모든 process가 동일한 양의 dataset을 갖도록 함</li> <li>DistributedSampler는 각 epoch마다 dataset을 무작위로 분할</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">torch.utils.data.DataLoader()</code> : <ul> <li>shuffle=False :<br> 보통 training일 때는 일반화를 위해 shuffle=True로 두지만<br> 분산 학습을 할 때는 같은 epoch 내에서<br> 각 process가 서로 다른 dataset을 처리하기 위해 (중복 방지)<br> shuffle=False로 설정</li> <li>num_workers : cpu data load할 때 multi-processing core 개수</li> <li>pin_memory=True :<br> data load한 장치(CPU)에서 GPU로 data를 옮길 때<br> host memory가 아닌 CPU의 page-locked memory로 할당하고<br> GPU는 이를 참조하여 복사하므로 전송 시간을 단축<br> pin_memory=True와 non_blocking=True는 함께 사용</li> <li>drop_last=True : 나눠떨어지지 않는 마지막 batch를 버림</li> </ul> </li> </ul> <pre><code class="language-Python">from torch.utils.data import DataLoader
+</code></pre> <h3 id="dataloader">DataLoader</h3> <ul> <li> <code class="language-plaintext highlighter-rouge">rank</code> : <ul> <li>전체 distributed system에서 process 순서</li> <li>4-CPU system이 2개 있을 경우<br> rank = machine 번호(0~1) * machine 당 process 개수(4) + process 번호(0~3)</li> <li>rank = 0인 process에 대해서만 wandb로 train log 출력</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">world_size</code> : <ul> <li>전체 distributed system에서 총 process 개수</li> <li>4-GPU system이 2개 있을 경우<br> world_size = machine 개수(2) * machine 당 process 개수(4)</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">torch.distributed.init_process_group()</code> : <ul> <li>분산 학습 환경 초기화 : 분산 학습하는 각 process 간의 통신을 설정</li> <li>backend : ‘gloo’ for CPU, ‘nccl’ for GPU, ‘mpi’ for 고성능</li> <li>init_method : 각 process가 서로 탐색하는 방법(url)<br> 예시 : ‘env://’, f’tcp://127.0.0.1:11203’</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">torch.utils.data.distributed.DistributedSampler()</code> : <ul> <li>world_size(총 process 개수)만큼 dataset을 분할하여 모든 process가 동일한 양의 dataset을 갖도록 함</li> <li>DistributedSampler는 각 epoch마다 dataset을 무작위로 분할</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">torch.utils.data.DataLoader()</code> : <ul> <li>shuffle=False :<br> 보통 training일 때는 일반화를 위해 shuffle=True로 두지만<br> 분산 학습을 할 때는 같은 epoch 내에서<br> 각 process가 서로 다른 dataset을 처리하기 위해 (중복 방지)<br> shuffle=False로 설정</li> <li>num_workers : cpu data load할 때 multi-processing core 개수</li> <li>pin_memory=True :<br> data load한 장치(CPU)에서 GPU로 data를 옮길 때<br> host memory가 아닌 CPU의 page-locked memory로 할당하고<br> GPU는 이를 참조하여 복사하므로 전송 시간을 단축<br> pin_memory=True와 non_blocking=True는 함께 사용</li> <li>drop_last=True : 나눠떨어지지 않는 마지막 batch를 버림</li> </ul> </li> </ul> <pre><code class="language-Python">from torch.utils.data import DataLoader
 from torch.utils.data.distributed import DistributedSampler
 import torch.distributed as dist
 from datetime import timedelta
@@ -91,10 +91,10 @@ def main_worker(process_id, args):
     train_sampler = DistributedSampler(train_dataset, num_replicas=world_size, rank=rank)
 
     train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers, collate_fn=_collate_fn, pin_memory=True, drop_last=True, sampler=train_sampler)
-</code></pre> <h3 id="train">Train</h3> <ul> <li> <code class="language-plaintext highlighter-rouge">torch.multiprocessing.spawn()</code> : <ul> <li>main_worker : 각 process가 실행하는 함수</li> <li>nprocs : machine 당 process 개수인 4로 설정<br> main_worker()의 첫 번째 argument는 process_id인 0~3이 됨</li> <li>args : main_worker()에 추가로 전달할 tuple 형태의 argument</li> <li>join</li> <li>daemon</li> <li>start_method</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">main_worker()</code> : 각 process가 실행하는 함수 <ol> <li><code class="language-plaintext highlighter-rouge">initialize</code></li> <li><code class="language-plaintext highlighter-rouge">load checkpoint</code></li> <li><code class="language-plaintext highlighter-rouge">set cuda process_id</code></li> <li><code class="language-plaintext highlighter-rouge">parallelize model</code></li> </ol> <ul> <li>각 model 복사본은 각자의 optimizer를 이용해 gradient를 구하고<br> rank=0의 process와 통신하여 gradient의 평균을 구해서 backpropagation 진행</li> <li>GIL(global interpreter lock)의 제약을 해결 5. <code class="language-plaintext highlighter-rouge">wandb init</code> 6. <code class="language-plaintext highlighter-rouge">train</code> </li> </ul> </li> </ul> <pre><code class="language-Python">import torch
+</code></pre> <h3 id="train">Train</h3> <ul> <li> <code class="language-plaintext highlighter-rouge">torch.multiprocessing.spawn()</code> : <ul> <li>main_worker : 각 process가 실행하는 함수</li> <li>nprocs : machine 당 process 개수인 4로 설정<br> main_worker()의 첫 번째 argument는 process_id인 0~3이 됨</li> <li>args : main_worker()에 추가로 전달할 tuple 형태의 argument</li> <li>join</li> <li>daemon</li> <li>start_method</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">main_worker()</code> : 각 process가 실행하는 함수 <ol> <li> <code class="language-plaintext highlighter-rouge">model</code> initialize, and set cuda, and parallelize</li> </ol> <ul> <li>nn.parallel.DistributedDataParallel :<br> 각 model 복사본은 각자의 optimizer를 이용해 gradient를 구하고<br> rank=0의 process와 통신하여 gradient의 평균을 구해서 backpropagation 진행<br> GIL(global interpreter lock)의 제약을 해결 2. <code class="language-plaintext highlighter-rouge">wandb</code> init</li> <li>wandb.init() : wandb 초기화<br> vars(args)는 args 객체의 <strong>dict</strong> 속성을 반환<br> {‘transforms’ : ‘BaseTransform’, ‘crop_size’ : 224}과 같이 반환</li> <li>wandb.watch() : wandb 기록<br> 모든 param.의 gradient를 기록<br> arg.log_interval-번째 batch마다 log 기록 3. <code class="language-plaintext highlighter-rouge">optimizer, scheduler</code> initialize<br> 4. load <code class="language-plaintext highlighter-rouge">checkpoint</code><br> 5. <code class="language-plaintext highlighter-rouge">train</code> with <code class="language-plaintext highlighter-rouge">barrier</code> </li> <li>torch.distributed.barrier() :<br> 분산 학습 환경에서<br> 모든 process가 이 장벽에 도달할 때까지 대기하여<br> 모든 process가 synchronize된 상태에서 훈련이 진행되도록 함</li> <li>torch.cuda.empty_cache() :<br> 더 이상 사용하지 않는 tensor들을 GPU cached memory에서 해제<br> 장점 : GPU memory 확보<br> 단점 : 너무 자주 호출하면 메모리 할당/해제에 따른 성능 저하 발생 6. <code class="language-plaintext highlighter-rouge">wandb</code> and <code class="language-plaintext highlighter-rouge">distributed</code> finish</li> </ul> </li> </ul> <pre><code class="language-Python">from importlib import import_module
+import torch
 import torch.nn as nn
 import torch.multiprocessing as mp
-import torch.optim as optim
 from utils import *
 from tqdm import tqdm
 import wandb
@@ -115,38 +115,75 @@ def main_worker(process_id, args):
     global best_acc
     best_acc = 0.0
 
-    # 1. initialize
+    # 1. model initialize, and set cuda, and parallelize
     model = MyFMANet()
-    optimizer = optim.Adadelta(model.parameters(), lr=0.5)
-    scheduler = # ...
 
-    # 2. load checkpoint
-    start_epoch, model, optimizer, scheduler = load_checkpoint(checkpoint_path, model, optimizer, scheduler)
-
-    # 3. set cuda process_id
     torch.cuda.set_device(process_id)
     model.cuda(process_id)
-    criterion = nn.NLLLoss().cuda(process_id)
-    # criterion = nn.CrossEntropyLoss(reduction='mean').cuda(process_id)
+    criterion = nn.NLLLoss().cuda(process_id) # criterion = nn.CrossEntropyLoss(reduction='mean').cuda(process_id)
 
-    # 4. parallelize model
     model = nn.parallel.DistributedDataParallel(model, device_ids=[process_id])
-    
-    # 5. wandb init
-    if rank == 0:
-        wandb.init(project=args.prj_name, name=f"{args.exp_name}", entity="semyeongyu", config=vars(args)) # vars()는 객체의 __dict__ 속성을 반환 / {'transforms' : 'BaseTransform', 'crop_size' : 224}과 같이 반환
-        wandb.watch(model, log='all', log_freq=args.log_interval) # 모든 param.의 gradient를 기록 / arg.log_interval-번째 batch마다 log 기록
 
-    # 6. train
+    # 2. wandb init
+    if rank == 0:
+        wandb.init(project=args.prj_name, name=f"{args.exp_name}", entity="semyeongyu", config=vars(args))
+        wandb.watch(model, log='all', log_freq=args.log_interval)
+
+    # 3. optimizer, scheduler initialize
+    optimizer = getattr(import_module("torch.optim"), args.optimizer)(model.parameters(), lr=args.lr, betas=(args.b1, args.b2), weight_decay=args.weight_decay)
+    scheduler = getattr(import_module("torch.optim.lr_scheduler"), args.lr_scheduler)(optimizer, T_max=args.period, eta_min=0, last_epoch=-1, verbose=True)
+    # T_max : 주기 1번 도는 데 걸리는 step 수 / eta_min : lr의 최솟값 / last_epoch : 학습 시작할 때의 epoch
+
+    # 4. load checkpoint
+    if args.resume_from:
+        start_epoch, model, optimizer, scheduler = load_checkpoint(checkpoint_path, model, optimizer, scheduler, rank)
+    else:
+        start_epoch = 0
+
+    # 5. train with barrier
     model.train()
 
-    for epoch in range(start_epoch, args.epochs):
-        for batch_i, (x, y) in enumerate(train_loader):
-            x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
-            # pin_memory=True와 non_blocking=True는 함께 사용
+    dist.barrier()
 
-            if batch_i % 10 == 0 and process_id == 0:
-                # ...
+    for epoch in range(start_epoch, args.epochs):
+        train_sampler.set_epoch(epoch) # train_sampler가 epoch끼리 동일하게 data 분할하는 것을 방지하기 위해
+
+        optimizer.zero_grad() # epoch마다 gradient 초기화
+
+        train_loss = train(train_loader, model, criterion, optimizer, scheduler, epoch, args)
+
+        dist.barrier()
+
+        if rank == 0:
+            val_acc, val_loss = validate(val_loader, model, criterion, epoch, args)
+
+            if (best_top1 &lt; val_acc):
+                best_top1 = val_acc # best_top1은 global var.
+                save_checkpoint(
+                    {
+                        'epoch': epoch,
+                        'model': model.state_dict(),
+                        'best_top1': best_top1,
+                        'optimizer': optimizer.state_dict(),
+                        'scheduler': scheduler.state_dict()
+                    }, os.path.join(args.checkpoint_dir, args.exp_name), f"{epoch}_{round(best_top1, 4)}.pt"
+                )
+        
+        torch.cuda.empty_cache() 
+    
+    # 6. wandb and distributed finish
+    if rank == 0:
+        wandb.run.finish()
+
+    dist.destroy_process_group()
+</code></pre> <pre><code class="language-Python">def train():
+    for batch_i, (x, y) in enumerate(train_loader):
+        x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
+        # pin_memory=True와 non_blocking=True는 함께 사용
+
+        if batch_i % 10 == 0 and process_id == 0:
+            # ...
+</code></pre> <pre><code class="language-Python">def validate():
 </code></pre> <h3 id="utils">Utils</h3> <ul> <li><code class="language-plaintext highlighter-rouge">argument parser</code></li> </ul> <pre><code class="language-Python">import argparse
 
 def arg_parse():
@@ -177,10 +214,10 @@ def fix_seed(random_seed):
 
 def load_checkpoint(checkpoint_path, model, optimizer, scheduler, rank=-1):
     # checkpoint_path : ".../240325.pt"
-    if rank != -1: # distributed
+    if rank != -1: # 분산학습 yes
         map_location = {"cuda:%d" % 0 : "cuda:%d" % rank}
         checkpoint = torch.load(checkpoint_path, map_location=map_location)
-    else:
+    else: # 분산학습 no
         checkpoint = torch.load(checkpoint_path)
 
     start_epoch = checkpoint['epoch']
