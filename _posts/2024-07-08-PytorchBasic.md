@@ -158,19 +158,18 @@ def main_worker(process_id, args):
   - daemon  
   - start_method
 
-- `main_worker()` : 각 process가 실행하는 함수  
 1. `model` initialize, and set cuda, and parallelize  
   - nn.parallel.DistributedDataParallel :  
   각 model 복사본은 각자의 optimizer를 이용해 gradient를 구하고  
   rank=0의 process와 통신하여 gradient의 평균을 구해서 backpropagation 진행  
-  GIL(global interpreter lock)의 제약을 해결 
+  GIL(global interpreter lock)의 제약을 해결  
 2. `wandb` init  
   - wandb.init() : wandb 초기화  
   vars(args)는 args 객체의 __dict__ 속성을 반환  
   {'transforms' : 'BaseTransform', 'crop_size' : 224}과 같이 반환  
   - wandb.watch() : wandb 기록  
   모든 param.의 gradient를 기록  
-  arg.log_interval-번째 batch마다 log 기록
+  arg.log_interval-번째 batch마다 log 기록  
 3. `optimizer, scheduler` initialize  
 4. load `checkpoint`  
 5. `train` with `barrier`  
@@ -181,7 +180,8 @@ def main_worker(process_id, args):
   - torch.cuda.empty_cache() :  
   더 이상 사용하지 않는 tensor들을 GPU cached memory에서 해제  
   장점 : GPU memory 확보  
-  단점 : 너무 자주 호출하면 메모리 할당/해제에 따른 성능 저하 발생
+  단점 : 너무 자주 호출하면 메모리 할당/해제에 따른 성능 저하 발생  
+  - backpropagation : args.accumulation_steps만큼 loss를 누적한 뒤 backward  
 6. `wandb` and `distributed` finish  
 
 ```Python
@@ -235,11 +235,9 @@ def main_worker(process_id, args):
         start_epoch = 0
 
     # 5. train with barrier
-    model.train()
-
     dist.barrier()
 
-    for epoch in range(start_epoch, args.epochs):
+    for epoch in range(start_epoch, args.n_epochs):
         train_sampler.set_epoch(epoch) # train_sampler가 epoch끼리 동일하게 data 분할하는 것을 방지하기 위해
 
         optimizer.zero_grad() # epoch마다 gradient 초기화
@@ -274,12 +272,52 @@ def main_worker(process_id, args):
 
 ```Python
 def train():
-    for batch_i, (x, y) in enumerate(train_loader):
-        x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
+    model.train()
+    train_acc, train_loss = AverageMeter(), AverageMeter() # measurement of acc and loss
+    for step, (x, y_gt) in tqdm(enumerate(train_loader), total=len(train_loader)):
+        x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True) # cuda device에 올려야 함
         # pin_memory=True와 non_blocking=True는 함께 사용
 
-        if batch_i % 10 == 0 and process_id == 0:
-            # ...
+        # forward
+        y_pred = model(x)
+        loss = criterion(y_pred, y_gt) / args.accumulation_steps
+
+        # gradient 누적
+        loss.backward()
+        
+        # measurement
+        train_acc.update(topk_accuracy(y_pred.clone().detach(), y_gt).item(), x.size(0))
+        train_loss.update(loss.item() * args.accumulation_steps, x.size(0))
+
+        # args.accumulation_steps만큼 loss를 누적한 뒤 backward
+        # backward 이후 gradient 및 measurement 초기화
+        if (step+1) % args.accumulation_steps == 0:
+            # gradient clipping
+            nn.utils.clip_grad_norm_(model.parameters(), max_norm=args.max_norm)
+
+            # backward
+            optimizer.step()
+            scheduler.step()
+
+            # gradient 초기화
+            optimizer.zero_grad()
+
+            # logging
+            dist.barrier()
+            if rank == 0:
+                wandb.log(
+                    {
+                        "Training Loss": round(train_loss.avg, 4),
+                        "Training Accuracy": round(train_acc.avg, 4),
+                        "Learning Rate": optimizer.param_groups[0]['lr']
+                    }
+                )
+                
+                # measurement 초기화
+                train_loss.init()
+                train_acc.init()
+
+                description = f'Epoch: {epoch+1}/{args.n_epochs} || Step: {(step+1)}
 ```
 
 ```Python
@@ -376,6 +414,26 @@ class BaseTransform(object):
         # BaseTransform()은 nn.Module을 상속한 게 아니므로 forward를 구현해도 __call__과 연결되어 있지 않음
         # 따라서 __call__()을 직접 구현해줘야 함
         return self.transform(image=img)
+```
+
+- `measurement`
+
+```Python
+class AverageMeter(object):
+    def __init__(self):
+        self.init()
+    
+    def init(self):
+        self.val = 0
+        self.avg = 0
+        self.sum = 0
+        self.count = 0
+
+    def update(self, val, n=1):
+        self.val = val
+        self.sum += val*n
+        self.count += n
+        self.avg = self.sum / self.count
 ```
 
 ### Transformer
