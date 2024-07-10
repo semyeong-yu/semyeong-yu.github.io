@@ -498,6 +498,7 @@ def topk_accuracy(pred, gt, k=1):
 ### Multi-Attention
 
 - FMA-Net (2024) <d-cite key="FMANet">[1]</d-cite>의 Multi-Attention 구현  
+출처 : [FMA-Net Code](https://github.com/KAIST-VICLab/FMA-Net)  
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
@@ -560,8 +561,9 @@ class Attention(nn.Module):
         self.project_out = nn.Conv2d(dim, dim, kernel_size=1, bias=bias)
 
     def forward(self, x, f):
-        N, C, H, W = x.shape # first input : shape (N, C, H, W) -> makes key and value
-        N, C, H, W = f.shape # second input : shape (N, C, H, W) -> makes query
+        # first input x : shape (N, C, H, W) -> makes key and value
+        # second input f : shape (N, C, H, W) -> makes query
+        N, C, H, W = x.shape
 
         # Apply W_q and W_kv
         q = self.q_dwconv(self.q(f)) # query q : shape (N, C, H, W)
@@ -569,41 +571,55 @@ class Attention(nn.Module):
         k, v = kv.chunk(2, dim=1) # key k and value v : shape (N, C, H, W)
 
         # Multi-Head Attention
-        q = einops.rearrange(q, 'b (head c) h w -> b head c (h w)', head=self.n_head) # query q : shape (N, C, H, W) -> shape (N, M, C / M, H * W)
-        k = einops.rearrange(k, 'b (head c) h w -> b head c (h w)', head=self.n_head) # key k : shape (N, C, H, W) -> shape (N, M, C / M, H * W)
-        v = einops.rearrange(v, 'b (head c) h w -> b head c (h w)', head=self.n_head) # value v : shape (N, C, H, W) -> shape (N, M, C / M, H * W)
+        q = einops.rearrange(q, 'b (head c) h w -> b head c (h w)', head=self.n_head) # query q : shape (N, C, H, W) -> shape (N, M, C/M, H * W)
+        k = einops.rearrange(k, 'b (head c) h w -> b head c (h w)', head=self.n_head) # key k : shape (N, C, H, W) -> shape (N, M, C/M, H * W)
+        v = einops.rearrange(v, 'b (head c) h w -> b head c (h w)', head=self.n_head) # value v : shape (N, C, H, W) -> shape (N, M, C/M, H * W)
 
         q = torch.nn.functional.normalize(q, dim=-1) # matrix mul.을 할 spatial dim.을 normalize
         k = torch.nn.functional.normalize(k, dim=-1) # matrix mul.을 할 spatial dim.을 normalize
 
-        # q @ k.transpose(-2, -1) : shape (N, M, C / M, C / M) # similarity
-        # self.temperature : shape (M, 1, 1) -> shape (N, M, C / M, C / M) # scale factor for each head
+        # q @ k.transpose(-2, -1) : shape (N, M, C/M, C/M) # similarity
+        # self.temperature : shape (M, 1, 1) -> shape (N, M, C/M, C/M) # scale factor for each head
         attn = (q @ k.transpose(-2, -1)) * self.temperature 
         attn = attn.softmax(dim=-1) # convert to probability distribution
 
-        out = (attn @ v) # shape (N, M, C / M, H * W)
+        out = (attn @ v) # shape (N, M, C/M, H*W)
         
         # Multi-Head Attention - concatenation
-        out = rearrange(out, 'b head c (h w) -> b (head c) h w', head=self.n_head, h=H, w=W) # shape (N, C, H, W)
+        out = einops.rearrange(out, 'b head c (h w) -> b (head c) h w', head=self.n_head, h=H, w=W) # shape (N, C, H, W)
 
         # Apply W_o
         out = self.project_out(out) # shape (N, C, H, W)
 
         return out
 
-class MultiAttentionBlock(torch.nn.Module):
-    def __init__(self, dim, num_heads, LayerNorm_type, ffn_expansion_factor, bias, is_DA):
+class LayerNorm(nn.Module):
+    def __init__(self, normalized_shape):
+        super(LayerNorm, self).__init__()
+        
+        # learnable param.
+        self.weight = nn.Parameter(torch.ones(normalized_shape)) # shape (C,)
+        self.bias = nn.Parameter(torch.zeros(normalized_shape)) # shape (C,)
+    
+    def forward(self, x):
+        # x : shape (N, C, H, W)
+        mu = x.mean(1, keepdim=True) # LayerNorm : dim. C에 대해 normalize
+        sigma = x.var(1, keepdim=True, unbiased=False)
+        return (x - mu) / torch.sqrt(sigma + 1e-5) * self.weight + self.bias
+
+class MultiAttentionBlock(nn.Module):
+    def __init__(self, dim, n_head, ffn_expansion_factor, bias, is_DA):
         super(MultiAttentionBlock, self).__init__()
-        self.norm1 = LayerNorm(dim, LayerNorm_type)
-        self.co_attn = Attention(dim, num_heads, bias)
-        self.norm2 = LayerNorm(dim, LayerNorm_type)
-        self.ffn1 = FeedForward(dim, ffn_expansion_factor, bias)
+        self.norm1 = LayerNorm(dim)
+        self.co_attn = Attention(dim, n_head, bias) # center-oriented attention
+        self.norm2 = LayerNorm(dim)
+        self.ffn1 = FeedForward(dim, bias)
 
         if is_DA:
-            self.norm3 = LayerNorm(dim, LayerNorm_type)
-            self.da_attn = Attention(dim, num_heads, bias)
-            self.norm4 = LayerNorm(dim, LayerNorm_type)
-            self.ffn2 = FeedForward(dim, ffn_expansion_factor, bias)
+            self.norm3 = LayerNorm(dim)
+            self.da_attn = Attention(dim, n_head, bias) # degradation-aware attention
+            self.norm4 = LayerNorm(dim)
+            self.ffn2 = FeedForward(dim, bias)
 
     def forward(self, Fw, F0_c, Kd):
         Fw = Fw + self.co_attn(self.norm1(Fw), F0_c)
@@ -614,10 +630,4 @@ class MultiAttentionBlock(torch.nn.Module):
             Fw = Fw + self.ffn2(self.norm4(Fw))
 
         return Fw
-```
-
-### Transformer
-
-```Python
-ddd
 ```
