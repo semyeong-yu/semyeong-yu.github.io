@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.3.3">Jekyll</generator><link href="https://semyeong-yu.github.io/feed.xml" rel="self" type="application/atom+xml"/><link href="https://semyeong-yu.github.io/" rel="alternate" type="text/html" hreflang="en"/><updated>2024-07-09T07:09:39+00:00</updated><id>https://semyeong-yu.github.io/feed.xml</id><title type="html">blank</title><subtitle>A simple, whitespace theme for academics. Based on [*folio](https://github.com/bogoli/-folio) design. </subtitle><entry><title type="html">Pytorch Basic Code (DDP)</title><link href="https://semyeong-yu.github.io/blog/2024/PytorchBasic/" rel="alternate" type="text/html" title="Pytorch Basic Code (DDP)"/><published>2024-07-08T11:00:00+00:00</published><updated>2024-07-08T11:00:00+00:00</updated><id>https://semyeong-yu.github.io/blog/2024/PytorchBasic</id><content type="html" xml:base="https://semyeong-yu.github.io/blog/2024/PytorchBasic/"><![CDATA[<h2 id="pytorch-basic-code-ddp">Pytorch Basic Code (DDP)</h2> <h3 id="deal-with-json-csv">Deal with json, csv</h3> <pre><code class="language-Python">import os
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.3.3">Jekyll</generator><link href="https://semyeong-yu.github.io/feed.xml" rel="self" type="application/atom+xml"/><link href="https://semyeong-yu.github.io/" rel="alternate" type="text/html" hreflang="en"/><updated>2024-07-10T08:32:47+00:00</updated><id>https://semyeong-yu.github.io/feed.xml</id><title type="html">blank</title><subtitle>A simple, whitespace theme for academics. Based on [*folio](https://github.com/bogoli/-folio) design. </subtitle><entry><title type="html">Pytorch Basic Code (DDP)</title><link href="https://semyeong-yu.github.io/blog/2024/PytorchBasic/" rel="alternate" type="text/html" title="Pytorch Basic Code (DDP)"/><published>2024-07-08T11:00:00+00:00</published><updated>2024-07-08T11:00:00+00:00</updated><id>https://semyeong-yu.github.io/blog/2024/PytorchBasic</id><content type="html" xml:base="https://semyeong-yu.github.io/blog/2024/PytorchBasic/"><![CDATA[<h2 id="pytorch-basic-code-distributeddataparallel-ver">Pytorch Basic Code (DistributedDataParallel ver.)</h2> <h3 id="deal-with-json-csv">Deal with json, csv</h3> <pre><code class="language-Python">import os
 import json
 import pandas as pd
 import csv
@@ -323,41 +323,57 @@ def topk_accuracy(pred, gt, k=1):
     n_correct = torch.sum(pred_topk.squeeze() == gt)
 
     return n_correct / len(gt)
-</code></pre> <h3 id="transformer">Transformer</h3> <pre><code class="language-Python">class Attention(nn.Module):
+</code></pre> <h3 id="multi-attention">Multi-Attention</h3> <ul> <li>FMA-Net (2024) <d-cite key="FMANet">[1]</d-cite>의 Multi-Attention 구현</li> </ul> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-08-PytorchBasic/2-480.webp 480w,/assets/img/2024-07-08-PytorchBasic/2-800.webp 800w,/assets/img/2024-07-08-PytorchBasic/2-1400.webp 1400w," sizes="95vw" type="image/webp"/> <img src="/assets/img/2024-07-08-PytorchBasic/2.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"/> </picture> </figure> </div> </div> <blockquote> <p>Multi-Attention :</p> <ul> <li><code class="language-plaintext highlighter-rouge">CO(center-oriented)</code> attention :<br/> better align \(\tilde F_{w}^{i}\) to \(F_{c}^{0}\) (center feature map of initial temporally-anchored feature)</li> <li><code class="language-plaintext highlighter-rouge">DA(degradation-aware)</code> attention :<br/> \(\tilde F_{w}^{i}\) becomes globally adaptive to spatio-temporally variant degradation by using degradation kernels \(K^{D}\)</li> </ul> </blockquote> <ul> <li> <p>CO attention :<br/> \(Q=W_{q} F_{c}^{0}\)<br/> \(K=W_{k} \tilde F_{w}^{i}\)<br/> \(V=W_{v} \tilde F_{w}^{i}\)<br/> \(COAttn(Q, K, V) = softmax(\frac{QK^{T}}{\sqrt{d}})V\)<br/> 실험 결과, \(\tilde F_{w}^{i}\)가 자기 자신(self-attention)이 아니라 \(F_{c}^{0}\)과의 relation에 집중할 때 better performance</p> </li> <li> <p>DA attention :<br/> CO attention과 비슷하지만,<br/> Query 만들 때 \(F_{c}^{0}\) 대신 \(k^{D, i}\) 사용<br/> \(\tilde F_{w}^{i}\) becomes globally adaptive to spatio-temporally-variant degradation<br/> \(k^{D, i} \in R^{H \times W \times C}\) : degradation features adjusted by conv. with \(K^{D}\) (motion-aware spatio-temporally-variant degradation kernels) 에 대해<br/> \(Q=W_{q} k^{D, i}\)<br/> DA attention은 \(Net^{D}\) 말고 \(Net^{R}\) 에서만 사용</p> </li> <li> <p><code class="language-plaintext highlighter-rouge">nn.Conv2d()</code> :</p> <ul> <li> \[H_{out} = \lfloor 1 + \frac{H_{in} + 2 \times pad - dilation \times (K-1) - 1}{stride} \rfloor\] </li> <li>argument : <ul> <li>groups :<br/> shape (\(C_{in}\), \(C_{out}\), K, K) 대신 \(C_{in}\) 을 groups-개로 쪼개서<br/> shape (\(\frac{C_{in}}{groups}\), \(\frac{C_{out}}{groups}\), K, K)를 groups-번 실행</li> </ul> </li> <li>variable : <ul> <li>weight : shape (\(C_{out}\), \(\frac{C_{in}}{groups}\), K, K)</li> <li>bias : shape (\(C_{out}\),)</li> </ul> </li> </ul> </li> </ul> <pre><code class="language-Python">import torch
+import torch.nn as nn
+
+class Attention(nn.Module):
     # Restormer (CVPR 2022) transposed-attention block
     # original source code: https://github.com/swz30/Restormer
-    def __init__(self, dim, num_heads, bias):
+    def __init__(self, dim, n_head, bias):
         super(Attention, self).__init__()
-        self.num_heads = num_heads
-        self.temperature = nn.Parameter(torch.ones(num_heads, 1, 1))
+        self.n_head = n_head # multi-head for channel dim.
+        self.temperature = nn.Parameter(torch.ones(n_head, 1, 1)) # multi-head 별로 scale factor를 parameterize
 
+        # W_q
         self.q = nn.Conv2d(dim, dim, kernel_size=1, bias=bias)
         self.q_dwconv = nn.Conv2d(dim, dim, kernel_size=3, stride=1, padding=1, groups=dim, bias=bias)
+
+        # W_kv
         self.kv_conv = nn.Conv2d(dim, dim*2, kernel_size=1, bias=bias)
         self.kv_dwconv = nn.Conv2d(dim*2, dim*2, kernel_size=3, stride=1, padding=1, groups=dim*2, bias=bias)
 
+        # W_o
         self.project_out = nn.Conv2d(dim, dim, kernel_size=1, bias=bias)
 
     def forward(self, x, f):
-        b, c, h, w = x.shape
+        N, C, H, W = x.shape # first input : shape (N, C, H, W) -&gt; makes key and value
+        N, C, H, W = f.shape # second input : shape (N, C, H, W) -&gt; makes query
 
-        q = self.q_dwconv(self.q(f))
-        kv = self.kv_dwconv(self.kv_conv(x))
-        k, v = kv.chunk(2, dim=1)
+        # Apply W_q and W_kv
+        q = self.q_dwconv(self.q(f)) # query q : shape (N, C, H, W)
+        kv = self.kv_dwconv(self.kv_conv(x)) # kv : shape (N, 2*C, H, W)
+        k, v = kv.chunk(2, dim=1) # key k and value v : shape (N, C, H, W)
 
-        q = rearrange(q, 'b (head c) h w -&gt; b head c (h w)', head=self.num_heads)
-        k = rearrange(k, 'b (head c) h w -&gt; b head c (h w)', head=self.num_heads)
-        v = rearrange(v, 'b (head c) h w -&gt; b head c (h w)', head=self.num_heads)
+        # Multi-Head Attention
+        q = einops.rearrange(q, 'b (head c) h w -&gt; b head c (h w)', head=self.n_head) # query q : shape (N, C, H, W) -&gt; shape (N, M, C / M, H * W)
+        k = einops.rearrange(k, 'b (head c) h w -&gt; b head c (h w)', head=self.n_head) # key k : shape (N, C, H, W) -&gt; shape (N, M, C / M, H * W)
+        v = einops.rearrange(v, 'b (head c) h w -&gt; b head c (h w)', head=self.n_head) # value v : shape (N, C, H, W) -&gt; shape (N, M, C / M, H * W)
 
-        q = torch.nn.functional.normalize(q, dim=-1)
-        k = torch.nn.functional.normalize(k, dim=-1)
+        q = torch.nn.functional.normalize(q, dim=-1) # matrix mul.을 할 spatial dim.을 normalize
+        k = torch.nn.functional.normalize(k, dim=-1) # matrix mul.을 할 spatial dim.을 normalize
 
-        attn = (q @ k.transpose(-2, -1)) * self.temperature
-        attn = attn.softmax(dim=-1)
+        # q @ k.transpose(-2, -1) : shape (N, M, C / M, C / M) # similarity
+        # self.temperature : shape (M, 1, 1) -&gt; shape (N, M, C / M, C / M) # scale factor for each head
+        attn = (q @ k.transpose(-2, -1)) * self.temperature 
+        attn = attn.softmax(dim=-1) # convert to probability distribution
 
-        out = (attn @ v)
-        out = rearrange(out, 'b head c (h w) -&gt; b (head c) h w', head=self.num_heads, h=h, w=w)
-        out = self.project_out(out)
+        out = (attn @ v) # shape (N, M, C / M, H * W)
+        
+        # Multi-Head Attention - concatenation
+        out = rearrange(out, 'b head c (h w) -&gt; b (head c) h w', head=self.n_head, h=H, w=W) # shape (N, C, H, W)
+
+        # Apply W_o
+        out = self.project_out(out) # shape (N, C, H, W)
 
         return out
 
@@ -384,7 +400,8 @@ class MultiAttentionBlock(torch.nn.Module):
             Fw = Fw + self.ffn2(self.norm4(Fw))
 
         return Fw
-</code></pre>]]></content><author><name></name></author><category term="cv-tasks"/><category term="pytorch"/><summary type="html"><![CDATA[Dataset, DataLoader, Train, ...]]></summary></entry><entry><title type="html">Solar LLM with Langchain</title><link href="https://semyeong-yu.github.io/blog/2024/LLM/" rel="alternate" type="text/html" title="Solar LLM with Langchain"/><published>2024-07-03T14:00:00+00:00</published><updated>2024-07-03T14:00:00+00:00</updated><id>https://semyeong-yu.github.io/blog/2024/LLM</id><content type="html" xml:base="https://semyeong-yu.github.io/blog/2024/LLM/"><![CDATA[<h2 id="solar-llm-by-upstage">Solar LLM by Upstage</h2> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-03-LLM/1-480.webp 480w,/assets/img/2024-07-03-LLM/1-800.webp 800w,/assets/img/2024-07-03-LLM/1-1400.webp 1400w," sizes="95vw" type="image/webp"/> <img src="/assets/img/2024-07-03-LLM/1.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"/> </picture> </figure> </div> </div> <h3 id="solar-llm-as-personalized-llm">Solar LLM as Personalized LLM</h3> <ul> <li> <p>Referenced Github :<br/> <a href="https://github.com/UpstageAI/cookbook/tree/main">UpstageAI-cookbook</a><br/> <a href="https://github.com/semyeong-yu/LLM-cookbook">UpstageAI-cookbook</a><br/> <a href="https://github.com/iamtaewan/solarllm-oracle-cookbook">OracleDB-cookbook</a></p> </li> <li> <p>Solar mini LLM :<br/> small-size<br/> best LLM for fine-tuning<br/> can be used as personalized LLM</p> </li> <li> <p>Future of AI Ecosystem Hierarchy :<br/> Domain-specific and self-fine-tuned LLMs<br/> Solar LLM O/S<br/> O/S<br/> AI chips</p> </li> <li> <p>Langchain :<br/> LLM과 application의 통합을 간소화하는 SDK</p> </li> <li> <p>핵심 기능 : 앞으로 아래에서 배울 예정!!</p> <ul> <li>LLM 사용 (query, context)</li> <li>Groundedness Check (팩트체크)</li> <li>Layout Analyzer (PDF 또는 img에서 정보 추출)</li> <li>Embedding and DB vector store (embedding vector를 DB에 저장)</li> <li>Define Custom Tools (img 생성, 뉴스 검색, 스케쥴 관리 등)</li> </ul> </li> </ul> <h3 id="chat">Chat</h3> <pre><code class="language-Python">from langchain_upstage import ChatUpstage
+</code></pre> <h3 id="transformer">Transformer</h3> <pre><code class="language-Python">ddd
+</code></pre>]]></content><author><name></name></author><category term="cv-tasks"/><category term="pytorch"/><summary type="html"><![CDATA[Dataset, DataLoader, Train, Attention, ...]]></summary></entry><entry><title type="html">Solar LLM with Langchain</title><link href="https://semyeong-yu.github.io/blog/2024/LLM/" rel="alternate" type="text/html" title="Solar LLM with Langchain"/><published>2024-07-03T14:00:00+00:00</published><updated>2024-07-03T14:00:00+00:00</updated><id>https://semyeong-yu.github.io/blog/2024/LLM</id><content type="html" xml:base="https://semyeong-yu.github.io/blog/2024/LLM/"><![CDATA[<h2 id="solar-llm-by-upstage">Solar LLM by Upstage</h2> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-03-LLM/1-480.webp 480w,/assets/img/2024-07-03-LLM/1-800.webp 800w,/assets/img/2024-07-03-LLM/1-1400.webp 1400w," sizes="95vw" type="image/webp"/> <img src="/assets/img/2024-07-03-LLM/1.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"/> </picture> </figure> </div> </div> <h3 id="solar-llm-as-personalized-llm">Solar LLM as Personalized LLM</h3> <ul> <li> <p>Referenced Github :<br/> <a href="https://github.com/UpstageAI/cookbook/tree/main">UpstageAI-cookbook</a><br/> <a href="https://github.com/semyeong-yu/LLM-cookbook">UpstageAI-cookbook</a><br/> <a href="https://github.com/iamtaewan/solarllm-oracle-cookbook">OracleDB-cookbook</a></p> </li> <li> <p>Solar mini LLM :<br/> small-size<br/> best LLM for fine-tuning<br/> can be used as personalized LLM</p> </li> <li> <p>Future of AI Ecosystem Hierarchy :<br/> Domain-specific and self-fine-tuned LLMs<br/> Solar LLM O/S<br/> O/S<br/> AI chips</p> </li> <li> <p>Langchain :<br/> LLM과 application의 통합을 간소화하는 SDK</p> </li> <li> <p>핵심 기능 : 앞으로 아래에서 배울 예정!!</p> <ul> <li>LLM 사용 (query, context)</li> <li>Groundedness Check (팩트체크)</li> <li>Layout Analyzer (PDF 또는 img에서 정보 추출)</li> <li>Embedding and DB vector store (embedding vector를 DB에 저장)</li> <li>Define Custom Tools (img 생성, 뉴스 검색, 스케쥴 관리 등)</li> </ul> </li> </ul> <h3 id="chat">Chat</h3> <pre><code class="language-Python">from langchain_upstage import ChatUpstage
 
 llm = ChatUpstage()
 llm.invoke("What's the best season to get to Korean?") # invoke llm
