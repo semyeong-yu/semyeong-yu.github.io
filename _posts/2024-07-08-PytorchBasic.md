@@ -2,10 +2,11 @@
 layout: distill
 title: Pytorch Basic Code (DDP)
 date: 2024-07-08 11:00:00
-description: Dataset, DataLoader, Train, ...
+description: Dataset, DataLoader, Train, Attention, ...
 tags: pytorch
 categories: cv-tasks
-# thumbnail: assets/img/2024-07-08-PytorchBasic/1.png
+thumbnail: assets/img/2024-07-08-PytorchBasic/1.png
+bibliography: 2024-07-08-PytorchBasic.bib
 giscus_comments: true
 related_posts: true
 _styles: >
@@ -25,7 +26,7 @@ _styles: >
   }
 ---
 
-## Pytorch Basic Code (DDP)
+## Pytorch Basic Code (DistributedDataParallel ver.)
 
 ### Deal with json, csv
 
@@ -494,44 +495,99 @@ def topk_accuracy(pred, gt, k=1):
     return n_correct / len(gt)
 ```
 
-### Transformer
+### Multi-Attention
+
+- FMA-Net (2024) <d-cite key="FMANet">[1]</d-cite>의 Multi-Attention 구현  
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
+> Multi-Attention :  
+- `CO(center-oriented)` attention :  
+better align $$\tilde F_{w}^{i}$$ to $$F_{c}^{0}$$ (center feature map of initial temporally-anchored feature)  
+- `DA(degradation-aware)` attention :  
+$$\tilde F_{w}^{i}$$ becomes globally adaptive to spatio-temporally variant degradation by using degradation kernels $$K^{D}$$  
+
+- CO attention :  
+$$Q=W_{q} F_{c}^{0}$$  
+$$K=W_{k} \tilde F_{w}^{i}$$  
+$$V=W_{v} \tilde F_{w}^{i}$$  
+$$COAttn(Q, K, V) = softmax(\frac{QK^{T}}{\sqrt{d}})V$$  
+실험 결과, $$\tilde F_{w}^{i}$$가 자기 자신(self-attention)이 아니라 $$F_{c}^{0}$$과의 relation에 집중할 때 better performance  
+
+- DA attention :  
+CO attention과 비슷하지만,  
+Query 만들 때 $$F_{c}^{0}$$ 대신 $$k^{D, i}$$ 사용  
+$$\tilde F_{w}^{i}$$ becomes globally adaptive to spatio-temporally-variant degradation  
+$$k^{D, i} \in R^{H \times W \times C}$$ : degradation features adjusted by conv. with $$K^{D}$$ (motion-aware spatio-temporally-variant degradation kernels) 에 대해  
+$$Q=W_{q} k^{D, i}$$  
+DA attention은 $$Net^{D}$$ 말고 $$Net^{R}$$ 에서만 사용  
+
+- `nn.Conv2d()` :  
+  - $$H_{out} = \lfloor 1 + \frac{H_{in} + 2 \times pad - dilation \times (K-1) - 1}{stride} \rfloor$$  
+  - argument :  
+    - groups :  
+    shape ($$C_{in}$$, $$C_{out}$$, K, K) 대신 $$C_{in}$$ 을 groups-개로 쪼개서  
+    shape ($$\frac{C_{in}}{groups}$$, $$\frac{C_{out}}{groups}$$, K, K)를 groups-번 실행  
+  - variable :  
+    - weight : shape ($$C_{out}$$, $$\frac{C_{in}}{groups}$$, K, K)  
+    - bias : shape ($$C_{out}$$,)
 
 ```Python
+import torch
+import torch.nn as nn
+
 class Attention(nn.Module):
     # Restormer (CVPR 2022) transposed-attention block
     # original source code: https://github.com/swz30/Restormer
-    def __init__(self, dim, num_heads, bias):
+    def __init__(self, dim, n_head, bias):
         super(Attention, self).__init__()
-        self.num_heads = num_heads
-        self.temperature = nn.Parameter(torch.ones(num_heads, 1, 1))
+        self.n_head = n_head # multi-head for channel dim.
+        self.temperature = nn.Parameter(torch.ones(n_head, 1, 1)) # multi-head 별로 scale factor를 parameterize
 
+        # W_q
         self.q = nn.Conv2d(dim, dim, kernel_size=1, bias=bias)
         self.q_dwconv = nn.Conv2d(dim, dim, kernel_size=3, stride=1, padding=1, groups=dim, bias=bias)
+
+        # W_kv
         self.kv_conv = nn.Conv2d(dim, dim*2, kernel_size=1, bias=bias)
         self.kv_dwconv = nn.Conv2d(dim*2, dim*2, kernel_size=3, stride=1, padding=1, groups=dim*2, bias=bias)
 
+        # W_o
         self.project_out = nn.Conv2d(dim, dim, kernel_size=1, bias=bias)
 
     def forward(self, x, f):
-        b, c, h, w = x.shape
+        N, C, H, W = x.shape # first input : shape (N, C, H, W) -> makes key and value
+        N, C, H, W = f.shape # second input : shape (N, C, H, W) -> makes query
 
-        q = self.q_dwconv(self.q(f))
-        kv = self.kv_dwconv(self.kv_conv(x))
-        k, v = kv.chunk(2, dim=1)
+        # Apply W_q and W_kv
+        q = self.q_dwconv(self.q(f)) # query q : shape (N, C, H, W)
+        kv = self.kv_dwconv(self.kv_conv(x)) # kv : shape (N, 2*C, H, W)
+        k, v = kv.chunk(2, dim=1) # key k and value v : shape (N, C, H, W)
 
-        q = rearrange(q, 'b (head c) h w -> b head c (h w)', head=self.num_heads)
-        k = rearrange(k, 'b (head c) h w -> b head c (h w)', head=self.num_heads)
-        v = rearrange(v, 'b (head c) h w -> b head c (h w)', head=self.num_heads)
+        # Multi-Head Attention
+        q = einops.rearrange(q, 'b (head c) h w -> b head c (h w)', head=self.n_head) # query q : shape (N, C, H, W) -> shape (N, M, C / M, H * W)
+        k = einops.rearrange(k, 'b (head c) h w -> b head c (h w)', head=self.n_head) # key k : shape (N, C, H, W) -> shape (N, M, C / M, H * W)
+        v = einops.rearrange(v, 'b (head c) h w -> b head c (h w)', head=self.n_head) # value v : shape (N, C, H, W) -> shape (N, M, C / M, H * W)
 
-        q = torch.nn.functional.normalize(q, dim=-1)
-        k = torch.nn.functional.normalize(k, dim=-1)
+        q = torch.nn.functional.normalize(q, dim=-1) # matrix mul.을 할 spatial dim.을 normalize
+        k = torch.nn.functional.normalize(k, dim=-1) # matrix mul.을 할 spatial dim.을 normalize
 
-        attn = (q @ k.transpose(-2, -1)) * self.temperature
-        attn = attn.softmax(dim=-1)
+        # q @ k.transpose(-2, -1) : shape (N, M, C / M, C / M) # similarity
+        # self.temperature : shape (M, 1, 1) -> shape (N, M, C / M, C / M) # scale factor for each head
+        attn = (q @ k.transpose(-2, -1)) * self.temperature 
+        attn = attn.softmax(dim=-1) # convert to probability distribution
 
-        out = (attn @ v)
-        out = rearrange(out, 'b head c (h w) -> b (head c) h w', head=self.num_heads, h=h, w=w)
-        out = self.project_out(out)
+        out = (attn @ v) # shape (N, M, C / M, H * W)
+        
+        # Multi-Head Attention - concatenation
+        out = rearrange(out, 'b head c (h w) -> b (head c) h w', head=self.n_head, h=H, w=W) # shape (N, C, H, W)
+
+        # Apply W_o
+        out = self.project_out(out) # shape (N, C, H, W)
 
         return out
 
@@ -558,4 +614,10 @@ class MultiAttentionBlock(torch.nn.Module):
             Fw = Fw + self.ffn2(self.norm4(Fw))
 
         return Fw
+```
+
+### Transformer
+
+```Python
+ddd
 ```
