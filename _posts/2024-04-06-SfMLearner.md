@@ -40,6 +40,16 @@ _styles: >
 code :  
 [https://github.com/tinghuiz/SfMLearner](https://github.com/tinghuiz/SfMLearner)  
 
+> 핵심 요약 :  
+- monocular camera  
+- unsupervised learning by reconstruction loss (view synthesis)  
+- view synthesis (reconstruct target view from source view) by projection and warping  
+- projection할 때 아래에서 구한 depth와 pose 이용  
+- use 3 networks  
+  - single-view depth CNN
+  - multi-view pose CNN
+  - explainability soft mask
+
 ## Introduction
 
 - SfM : Structure from Motion  

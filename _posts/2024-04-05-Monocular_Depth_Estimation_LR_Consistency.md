@@ -42,8 +42,9 @@ referenced blog :
 
 > 핵심 요약 :  
 - unsupervised mono (single image as input) depth estimation  
+- unsupervised learning by reconstruction loss  
 - need for binocular stereo image pairs at training  
-- novel loss function : left-right consistency b.w. disparity maps  
+- novel loss function : left-right consistency loss b.w. disparity maps  
 
 ## Backgrounds
 
