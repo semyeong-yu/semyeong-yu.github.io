@@ -30,6 +30,12 @@ _styles: >
 
 ### Deal with json, csv
 
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/3.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
 ```Python
 import os
 import json
@@ -44,6 +50,7 @@ if os.path.exists(json_path):
 
 # read csv 방법 1. general case
 data = pd.read_csv(csv_path, sep="|", index_col=0, skiprows=[1], na_values=['?', 'nan']).values # 0-th column (1-th row는 제외) ('?'와 'nan'은 결측값으로 인식)
+
 # read csv 방법 2. special case : csv가 row별로 dictionary 형태일 때
 if os.path.exists(csv_path):
     with open(csv_path, "r") as f:
@@ -58,6 +65,13 @@ pd.DataFrame(dataset).to_csv(output_path, index=False) # output_path : ".../data
 
 ### Create Dataset
 
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/4.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
+
 ```Python
 import os
 import torch
@@ -65,6 +79,7 @@ from torch.utils.data import Dataset
 import cv2
 import numpy as np
 import glob
+import random
 
 # Create Dataset
 class CustomDataset(Dataset):
@@ -80,9 +95,11 @@ class CustomDataset(Dataset):
         elif mode == 'test':
             self.data_path = os.path.join(args.data_path, 'test_blur')
         
-        self.blur_path_list = sorted(glob.glob(os.path.join(self.data_path, '*.png'))) # a list of data/train_blur/*.png
+        # a list of data/train_blur/*.png
+        self.blur_path_list = sorted(glob.glob(os.path.join(self.data_path, '*.png')))
         
-        self.sharp_path_list = [os.path.normpath(path.replace('blur', 'sharp') for path in self.blur_path_list)] # a list of data/train_sharp/*.png
+        # a list of data/train_sharp/*.png
+        self.sharp_path_list = [os.path.normpath(path.replace('blur', 'sharp') for path in self.blur_path_list)]
 
     def __getitem__(self, idx):
         # should return float tensor!!
@@ -93,9 +110,10 @@ class CustomDataset(Dataset):
             sharp_path = self.sharp_path_list[idx]
             sharp_img = cv2.imread(sharp_path)
             
-            blur_img, sharp_img = self.augment(self.get_random_patch(blur_img, sharp_img))
+            # np.ndarray of shape (pat, pat, C) where pat is patch_size
+            blur_img, sharp_img = self.augment(self.get_random_patch(blur_img, sharp_img)) 
             
-            return self.np2tensor(blur_img), self.np2tensor(sharp_img) # tensor of shape (C, H, W) in range [0, 1]
+            return self.np2tensor(blur_img), self.np2tensor(sharp_img) # tensor of shape (C, pat, pat) in range [0, 1]
         
         elif self.mode == 'val':
             sharp_path = self.sharp_path_list[idx]
@@ -108,45 +126,45 @@ class CustomDataset(Dataset):
     def np2tensor(self, x):
         # input : shape (H, W, C) / range [0, 255]
         # output : shape (C, H, W) / range [0, 1]
-        ts = (, 0, 1)
+        ts = (2, 0, 1)
         x = torch.Tensor(x.transpose(ts).astype(float)).mul_(1.0) # in-place
         x = x / 255.0 # normalize
         return x
 
-    def get_random_patch(self, lr_blur_seq, hr_sharp_seq, lr_sharp_seq, flow):
-        ih, iw, c = lr_blur_seq[0].shape
+    def get_random_patch(self, blur_img, sharp_img):
+        H, W, C = blur_img.shape # shape (H, W, C)
 
-        tp = self.config.patch_size
-        ip = tp // self.config.scale
-        ix = random.randrange(0, iw - ip + 1)
-        iy = random.randrange(0, ih - ip + 1)
-        (tx, ty) = (self.config.scale * ix, self.config.scale * iy)
+        pat = self.args.patch_size # pat : patch size
+        iw = random.randrange(0, W - pat + 1) # iw : range [0, W - pat]
+        ih = random.randrange(0, H - pat + 1) # ih : range [0, H - pat]
 
-        lr_blur_seq = lr_blur_seq[:, iy:iy + ip, ix:ix + ip, :]
-        hr_sharp_seq = hr_sharp_seq[:, ty:ty + tp, tx:tx + tp, :]
-        lr_sharp_seq = lr_sharp_seq[:, iy:iy + ip, ix:ix + ip, :]
-        flow = flow[:, iy:iy + ip, ix:ix + ip, :]
+        blur_img = blur_img[ih:ih + pat, iw:iw + pat, :] # shape (pat, pat, C)
+        sharp_img = sharp_img[ih:ih + pat, iw:iw + pat, :]
 
-        return lr_blur_seq, hr_sharp_seq, lr_sharp_seq, flow
+        return blur_img, sharp_img # shape (pat, pat, C)
 
-    def augment(self, lr_blur_seq, hr_sharp_seq, lr_sharp_seq, flow):
+    def augment(self, blur_img, sharp_img):
         # random horizontal flip
         if random.random() < 0.5:
-            lr_blur_seq = lr_blur_seq[:, :, ::-1, :]
-            hr_sharp_seq = hr_sharp_seq[:, :, ::-1, :]
-            lr_sharp_seq = lr_sharp_seq[:, :, ::-1, :]
+            blur_img = blur_img[:, ::-1, :] # Width-axis를 flip
+            sharp_img = sharp_img[:, ::-1, :]
+            '''
+            flow-mask pair의 경우 C-dim.이 3 = 2(optical flow x, y) + 1(occlusion mask) 이므로
+            shape (T, H, W, 3)의 flow-mask pair를 horizontal flip을 하려면
             flow = flow[:, :, ::-1, :]
             flow[:, :, :, 0] *= -1
-
+            '''
+            
         # random vertical flip
         if random.random() < 0.5:
-            lr_blur_seq = lr_blur_seq[:, ::-1, :, :]
-            hr_sharp_seq = hr_sharp_seq[:, ::-1, :, :]
-            lr_sharp_seq = lr_sharp_seq[:, ::-1, :, :]
+            blur_img = blur_img[::-1, :, :] # Height-axis를 flip
+            sharp_img = sharp_img[::-1, :, :]
+            '''
             flow = flow[:, ::-1, :, :]
             flow[:, :, :, 1] *= -1
+            '''
 
-        return lr_blur_seq, hr_sharp_seq, lr_sharp_seq, flow
+        return blur_img, sharp_img
 
     def __len__(self):
         return len(self.path_list)
@@ -199,6 +217,13 @@ class CustomDataset(Dataset):
   pin_memory=True와 non_blocking=True는 함께 사용  
   - drop_last=True : 나눠떨어지지 않는 마지막 batch를 버림
 
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/5.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
+
 ```Python
 from torch.utils.data import DataLoader
 from torch.utils.data.distributed import DistributedSampler
@@ -222,7 +247,13 @@ def main_worker(process_id, args):
     ################################################################################################
     
     train_dataset = CustomDataset(args, 'train')
-    # train_dataset = datasets.MNIST('../data', train=True, download=True, transform=transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1302,), (0.3069,))]))  
+    '''
+    train_dataset = datasets.MNIST('../data', train=True, download=True, transform=transforms.Compose(
+        [
+        transforms.ToTensor(), 
+        transforms.Normalize((0.1302,), (0.3069,))
+        ]))  
+    '''
 
     # machine 당 process 수로 나눔
     batch_size = int(args.batch_size / args.num_processes) 
@@ -273,6 +304,13 @@ def main_worker(process_id, args):
   - validation :  
   with torch.no_grad(): 로 gradient 누적 안 함!  
 6. `wandb` and `distributed` finish  
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/6.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
 
 ```Python
 from importlib import import_module
@@ -373,6 +411,13 @@ def main_worker(process_id, args):
     dist.destroy_process_group()
 ```
 
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/7.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
+
 ```Python
 def train(train_loader, model, criterion, optimizer, scheduler, epoch, args):
     model.train()
@@ -429,6 +474,13 @@ def train(train_loader, model, criterion, optimizer, scheduler, epoch, args):
     return train_loss.avg
 ```
 
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/8.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
+
 ```Python
 def validate(val_loader, model, criterion, epoch, args):
     model.eval()
@@ -466,6 +518,13 @@ def validate(val_loader, model, criterion, epoch, args):
 
 - `argument parser`
 
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/9.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
+
 ```Python
 import argparse
 
@@ -481,6 +540,13 @@ def arg_parse():
 ```
 
 - `seed`
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/10.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
 
 ```Python
 import random
@@ -503,6 +569,13 @@ def fix_seed(random_seed):
   - best_acc
   - optimizer.state_dict()
   - scheduler.state_dict()
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/11.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
 
 ```Python
 def save_checkpoint(checkpoint, saved_dir, file_name):
@@ -533,6 +606,12 @@ def load_checkpoint(checkpoint_path, model, optimizer, scheduler, rank=-1):
 
 - `augmentation`
 
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/12.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
 ```Python
 import albumentations as A
 from albumentations.pytorch.transforms import ToTensorV2
@@ -544,17 +623,24 @@ class BaseTransform(object):
                 A.RandomResizedCrop(crop_size, crop_size),
                 A.HorizontalFlip(),
                 A.Normalize(),
-                ToTensorV2() # albumentations에서는 normalize 이후에 ToTensorV2를 사용해줘야 함 (여기서 어차피 shape (C,H,W)로 변경)
+                ToTensorV2() 
+# albumentations에서는 normalize 이후에 ToTensorV2를 사용해줘야 함 (여기서 어차피 shape (C,H,W)로 변경)
             ]
         )
 
     def __call__(self, img):
-        # BaseTransform()은 nn.Module을 상속한 게 아니므로 forward를 구현해도 __call__과 연결되어 있지 않음
-        # 따라서 __call__()을 직접 구현해줘야 함
+# BaseTransform()은 nn.Module을 상속한 게 아니므로 forward를 구현해도 __call__과 연결되어 있지 않음
+# 따라서 __call__()을 직접 구현해줘야 함
         return self.transform(image=img)
 ```
 
 - `measurement`
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/13.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
 
 ```Python
 class AverageMeter(object):
@@ -623,6 +709,13 @@ DA attention은 $$Net^{D}$$ 말고 $$Net^{R}$$ 에서만 사용
   - variable :  
     - weight : shape ($$C_{out}$$, $$\frac{C_{in}}{groups}$$, K, K)  
     - bias : shape ($$C_{out}$$,)
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/14.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
 
 ```Python
 import torch
