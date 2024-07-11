@@ -59,22 +59,97 @@ pd.DataFrame(dataset).to_csv(output_path, index=False) # output_path : ".../data
 ### Create Dataset
 
 ```Python
+import os
 import torch
 from torch.utils.data import Dataset
+import cv2
+import numpy as np
+import glob
 
 # Create Dataset
 class CustomDataset(Dataset):
-    def __init__(self, dataset_path):
-        super(CustomDataset, self).__init__()
-        self.x = #...
-        self.y = #...
-        # 만약 load할 data가 너무 크다면 __init__()에서는 load할 파일명만 저장해놓고 __getitem__()에서 필요할 때마다 load
+    def __init__(self, args, mode):
+        # load할 data가 너무 크다면 __init__()에서는 load할 파일명만 저장해놓고 __getitem__()에서 필요할 때마다 load
+        self.args = args
+        self.mode = mode
+        
+        if mode == 'train':
+            self.data_path = os.path.join(args.data_path, 'train_blur')
+        elif mode == 'val':
+            self.data_path = os.path.join(args.data_path, 'val_blur')
+        elif mode == 'test':
+            self.data_path = os.path.join(args.data_path, 'test_blur')
+        
+        self.blur_path_list = sorted(glob.glob(os.path.join(self.data_path, '*.png'))) # a list of data/train_blur/*.png
+        
+        self.sharp_path_list = [os.path.normpath(path.replace('blur', 'sharp') for path in self.blur_path_list)] # a list of data/train_sharp/*.png
 
-    def __getitem__(self, index): # should return float tensor
-        return self.x[index], self.y[index]
+    def __getitem__(self, idx):
+        # should return float tensor!!
+        blur_path = self.blur_path_list[idx]
+        blur_img = cv2.imread(blur_path) # np.ndarray of shape (H, W, C) in range [0, 255]
+
+        if self.mode == 'train':
+            sharp_path = self.sharp_path_list[idx]
+            sharp_img = cv2.imread(sharp_path)
+            
+            blur_img, sharp_img = self.augment(self.get_random_patch(blur_img, sharp_img))
+            
+            return self.np2tensor(blur_img), self.np2tensor(sharp_img) # tensor of shape (C, H, W) in range [0, 1]
+        
+        elif self.mode == 'val':
+            sharp_path = self.sharp_path_list[idx]
+            sharp_img = cv2.imread(sharp_path)
+            return self.np2tensor(blur_img), self.np2tensor(sharp_img)
+        
+        elif self.mode == 'test':
+            return self.np2tensor(blur_img), blur_path
+
+    def np2tensor(self, x):
+        # input : shape (H, W, C) / range [0, 255]
+        # output : shape (C, H, W) / range [0, 1]
+        ts = (, 0, 1)
+        x = torch.Tensor(x.transpose(ts).astype(float)).mul_(1.0) # in-place
+        x = x / 255.0 # normalize
+        return x
+
+    def get_random_patch(self, lr_blur_seq, hr_sharp_seq, lr_sharp_seq, flow):
+        ih, iw, c = lr_blur_seq[0].shape
+
+        tp = self.config.patch_size
+        ip = tp // self.config.scale
+        ix = random.randrange(0, iw - ip + 1)
+        iy = random.randrange(0, ih - ip + 1)
+        (tx, ty) = (self.config.scale * ix, self.config.scale * iy)
+
+        lr_blur_seq = lr_blur_seq[:, iy:iy + ip, ix:ix + ip, :]
+        hr_sharp_seq = hr_sharp_seq[:, ty:ty + tp, tx:tx + tp, :]
+        lr_sharp_seq = lr_sharp_seq[:, iy:iy + ip, ix:ix + ip, :]
+        flow = flow[:, iy:iy + ip, ix:ix + ip, :]
+
+        return lr_blur_seq, hr_sharp_seq, lr_sharp_seq, flow
+
+    def augment(self, lr_blur_seq, hr_sharp_seq, lr_sharp_seq, flow):
+        # random horizontal flip
+        if random.random() < 0.5:
+            lr_blur_seq = lr_blur_seq[:, :, ::-1, :]
+            hr_sharp_seq = hr_sharp_seq[:, :, ::-1, :]
+            lr_sharp_seq = lr_sharp_seq[:, :, ::-1, :]
+            flow = flow[:, :, ::-1, :]
+            flow[:, :, :, 0] *= -1
+
+        # random vertical flip
+        if random.random() < 0.5:
+            lr_blur_seq = lr_blur_seq[:, ::-1, :, :]
+            hr_sharp_seq = hr_sharp_seq[:, ::-1, :, :]
+            lr_sharp_seq = lr_sharp_seq[:, ::-1, :, :]
+            flow = flow[:, ::-1, :, :]
+            flow[:, :, :, 1] *= -1
+
+        return lr_blur_seq, hr_sharp_seq, lr_sharp_seq, flow
 
     def __len__(self):
-        return len(self.x)
+        return len(self.path_list)
 ```
 
 ### DataLoader
@@ -146,7 +221,7 @@ def main_worker(process_id, args):
     
     ################################################################################################
     
-    train_dataset = CustomDataset(dataset_path)
+    train_dataset = CustomDataset(args, 'train')
     # train_dataset = datasets.MNIST('../data', train=True, download=True, transform=transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1302,), (0.3069,))]))  
 
     # machine 당 process 수로 나눔
@@ -219,6 +294,18 @@ def main():
     os.environ['MASTER_PORT'] = '8892'
 
     mp.spawn(main_worker, nprocs=args.num_processes, args=(args,))
+    # DDP가 아니라면, main.py에 def main_worker()의 내용을 넣고, train.py에 class Runner 만들자
+    '''
+    class Runner:
+        def __init__(self, args, model):
+            pass
+        def train(self, dataloader, epoch, args):
+            pass
+        def validate(self, dataloader, epoch, args):
+            pass
+        def test(self, dataloader, args):
+            pass
+    '''
 
 def main_worker(process_id, args):
     global best_acc
