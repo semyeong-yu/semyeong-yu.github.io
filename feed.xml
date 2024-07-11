@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.3.3">Jekyll</generator><link href="https://semyeong-yu.github.io/feed.xml" rel="self" type="application/atom+xml"/><link href="https://semyeong-yu.github.io/" rel="alternate" type="text/html" hreflang="en"/><updated>2024-07-11T03:36:40+00:00</updated><id>https://semyeong-yu.github.io/feed.xml</id><title type="html">blank</title><subtitle>A simple, whitespace theme for academics. Based on [*folio](https://github.com/bogoli/-folio) design. </subtitle><entry><title type="html">Pytorch Basic Code (DDP)</title><link href="https://semyeong-yu.github.io/blog/2024/PytorchBasic/" rel="alternate" type="text/html" title="Pytorch Basic Code (DDP)"/><published>2024-07-08T11:00:00+00:00</published><updated>2024-07-08T11:00:00+00:00</updated><id>https://semyeong-yu.github.io/blog/2024/PytorchBasic</id><content type="html" xml:base="https://semyeong-yu.github.io/blog/2024/PytorchBasic/"><![CDATA[<h2 id="pytorch-basic-code-distributeddataparallel-ver">Pytorch Basic Code (DistributedDataParallel ver.)</h2> <h3 id="deal-with-json-csv">Deal with json, csv</h3> <pre><code class="language-Python">import os
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.3.3">Jekyll</generator><link href="https://semyeong-yu.github.io/feed.xml" rel="self" type="application/atom+xml"/><link href="https://semyeong-yu.github.io/" rel="alternate" type="text/html" hreflang="en"/><updated>2024-07-11T06:31:46+00:00</updated><id>https://semyeong-yu.github.io/feed.xml</id><title type="html">blank</title><subtitle>A simple, whitespace theme for academics. Based on [*folio](https://github.com/bogoli/-folio) design. </subtitle><entry><title type="html">Pytorch Basic Code (DDP)</title><link href="https://semyeong-yu.github.io/blog/2024/PytorchBasic/" rel="alternate" type="text/html" title="Pytorch Basic Code (DDP)"/><published>2024-07-08T11:00:00+00:00</published><updated>2024-07-08T11:00:00+00:00</updated><id>https://semyeong-yu.github.io/blog/2024/PytorchBasic</id><content type="html" xml:base="https://semyeong-yu.github.io/blog/2024/PytorchBasic/"><![CDATA[<h2 id="pytorch-basic-code-distributeddataparallel-ver">Pytorch Basic Code (DistributedDataParallel ver.)</h2> <h3 id="deal-with-json-csv">Deal with json, csv</h3> <pre><code class="language-Python">import os
 import json
 import pandas as pd
 import csv
@@ -21,22 +21,97 @@ if os.path.exists(csv_path):
 dataset = [] # list of dictionaries
 dataset.append({"id":id, "w":w, "h":h, "class":i})
 pd.DataFrame(dataset).to_csv(output_path, index=False) # output_path : ".../dataset.csv"
-</code></pre> <h3 id="create-dataset">Create Dataset</h3> <pre><code class="language-Python">import torch
+</code></pre> <h3 id="create-dataset">Create Dataset</h3> <pre><code class="language-Python">import os
+import torch
 from torch.utils.data import Dataset
+import cv2
+import numpy as np
+import glob
 
 # Create Dataset
 class CustomDataset(Dataset):
-    def __init__(self, dataset_path):
-        super(CustomDataset, self).__init__()
-        self.x = #...
-        self.y = #...
-        # 만약 load할 data가 너무 크다면 __init__()에서는 load할 파일명만 저장해놓고 __getitem__()에서 필요할 때마다 load
+    def __init__(self, args, mode):
+        # load할 data가 너무 크다면 __init__()에서는 load할 파일명만 저장해놓고 __getitem__()에서 필요할 때마다 load
+        self.args = args
+        self.mode = mode
+        
+        if mode == 'train':
+            self.data_path = os.path.join(args.data_path, 'train_blur')
+        elif mode == 'val':
+            self.data_path = os.path.join(args.data_path, 'val_blur')
+        elif mode == 'test':
+            self.data_path = os.path.join(args.data_path, 'test_blur')
+        
+        self.blur_path_list = sorted(glob.glob(os.path.join(self.data_path, '*.png'))) # a list of data/train_blur/*.png
+        
+        self.sharp_path_list = [os.path.normpath(path.replace('blur', 'sharp') for path in self.blur_path_list)] # a list of data/train_sharp/*.png
 
-    def __getitem__(self, index): # should return float tensor
-        return self.x[index], self.y[index]
+    def __getitem__(self, idx):
+        # should return float tensor!!
+        blur_path = self.blur_path_list[idx]
+        blur_img = cv2.imread(blur_path) # np.ndarray of shape (H, W, C) in range [0, 255]
+
+        if self.mode == 'train':
+            sharp_path = self.sharp_path_list[idx]
+            sharp_img = cv2.imread(sharp_path)
+            
+            blur_img, sharp_img = self.augment(self.get_random_patch(blur_img, sharp_img))
+            
+            return self.np2tensor(blur_img), self.np2tensor(sharp_img) # tensor of shape (C, H, W) in range [0, 1]
+        
+        elif self.mode == 'val':
+            sharp_path = self.sharp_path_list[idx]
+            sharp_img = cv2.imread(sharp_path)
+            return self.np2tensor(blur_img), self.np2tensor(sharp_img)
+        
+        elif self.mode == 'test':
+            return self.np2tensor(blur_img), blur_path
+
+    def np2tensor(self, x):
+        # input : shape (H, W, C) / range [0, 255]
+        # output : shape (C, H, W) / range [0, 1]
+        ts = (, 0, 1)
+        x = torch.Tensor(x.transpose(ts).astype(float)).mul_(1.0) # in-place
+        x = x / 255.0 # normalize
+        return x
+
+    def get_random_patch(self, lr_blur_seq, hr_sharp_seq, lr_sharp_seq, flow):
+        ih, iw, c = lr_blur_seq[0].shape
+
+        tp = self.config.patch_size
+        ip = tp // self.config.scale
+        ix = random.randrange(0, iw - ip + 1)
+        iy = random.randrange(0, ih - ip + 1)
+        (tx, ty) = (self.config.scale * ix, self.config.scale * iy)
+
+        lr_blur_seq = lr_blur_seq[:, iy:iy + ip, ix:ix + ip, :]
+        hr_sharp_seq = hr_sharp_seq[:, ty:ty + tp, tx:tx + tp, :]
+        lr_sharp_seq = lr_sharp_seq[:, iy:iy + ip, ix:ix + ip, :]
+        flow = flow[:, iy:iy + ip, ix:ix + ip, :]
+
+        return lr_blur_seq, hr_sharp_seq, lr_sharp_seq, flow
+
+    def augment(self, lr_blur_seq, hr_sharp_seq, lr_sharp_seq, flow):
+        # random horizontal flip
+        if random.random() &lt; 0.5:
+            lr_blur_seq = lr_blur_seq[:, :, ::-1, :]
+            hr_sharp_seq = hr_sharp_seq[:, :, ::-1, :]
+            lr_sharp_seq = lr_sharp_seq[:, :, ::-1, :]
+            flow = flow[:, :, ::-1, :]
+            flow[:, :, :, 0] *= -1
+
+        # random vertical flip
+        if random.random() &lt; 0.5:
+            lr_blur_seq = lr_blur_seq[:, ::-1, :, :]
+            hr_sharp_seq = hr_sharp_seq[:, ::-1, :, :]
+            lr_sharp_seq = lr_sharp_seq[:, ::-1, :, :]
+            flow = flow[:, ::-1, :, :]
+            flow[:, :, :, 1] *= -1
+
+        return lr_blur_seq, hr_sharp_seq, lr_sharp_seq, flow
 
     def __len__(self):
-        return len(self.x)
+        return len(self.path_list)
 </code></pre> <h3 id="dataloader">DataLoader</h3> <ul> <li>DataParallel(DP) vs DistributedDataParallel(DDP) :<br/> <a href="https://tkayyoo.tistory.com/27#tktag2">Pytorch DP and DDP</a> <ul> <li>DataParallel(DP) :<br/> single-process<br/> multi-thread<br/> single-machine</li> <li>DistributedDataParallel(DDP) :<br/> multi-process<br/> single-machine과 multi-machine 모두 가능</li> </ul> </li> <li><code class="language-plaintext highlighter-rouge">rank</code> : <ul> <li>전체 distributed system에서 process 순서</li> <li>4-CPU system이 2개 있을 경우<br/> rank = machine 번호(0~1) * machine 당 process 개수(4) + process 번호(0~3)</li> <li>rank = 0인 process에 대해서만 wandb로 train log 출력</li> </ul> </li> <li><code class="language-plaintext highlighter-rouge">world_size</code> : <ul> <li>전체 distributed system에서 총 process 개수</li> <li>4-GPU system이 2개 있을 경우<br/> world_size = machine 개수(2) * machine 당 process 개수(4)</li> </ul> </li> <li><code class="language-plaintext highlighter-rouge">torch.distributed.init_process_group()</code> : <ul> <li>분산 학습 환경 초기화 : 분산 학습하는 각 process 간의 통신을 설정</li> <li>backend : ‘gloo’ for CPU, ‘nccl’ for GPU, ‘mpi’ for 고성능</li> <li>init_method : 각 process가 서로 탐색하는 방법(url)<br/> 예시 : ‘env://’, f’tcp://127.0.0.1:11203’</li> </ul> </li> <li><code class="language-plaintext highlighter-rouge">torch.utils.data.distributed.DistributedSampler()</code> : <ul> <li>world_size(총 process 개수)만큼 dataset을 분할하여 모든 process가 동일한 양의 dataset을 갖도록 함</li> <li>DistributedSampler는 각 epoch마다 dataset을 무작위로 분할</li> </ul> </li> <li><code class="language-plaintext highlighter-rouge">torch.utils.data.DataLoader()</code> : <ul> <li>shuffle=False :<br/> 보통 training일 때는 일반화를 위해 shuffle=True로 두지만<br/> 분산 학습을 할 때는 같은 epoch 내에서<br/> 각 process가 서로 다른 dataset을 처리하기 위해 (중복 방지)<br/> shuffle=False로 설정</li> <li>num_workers : cpu data load할 때 multi-processing core 개수</li> <li>pin_memory=True :<br/> data load한 장치(CPU)에서 GPU로 data를 옮길 때<br/> host memory가 아닌 CPU의 page-locked memory로 할당하고<br/> GPU는 이를 참조하여 복사하므로 전송 시간을 단축<br/> pin_memory=True와 non_blocking=True는 함께 사용</li> <li>drop_last=True : 나눠떨어지지 않는 마지막 batch를 버림</li> </ul> </li> </ul> <pre><code class="language-Python">from torch.utils.data import DataLoader
 from torch.utils.data.distributed import DistributedSampler
 import torch.distributed as dist
@@ -58,7 +133,7 @@ def main_worker(process_id, args):
     
     ################################################################################################
     
-    train_dataset = CustomDataset(dataset_path)
+    train_dataset = CustomDataset(args, 'train')
     # train_dataset = datasets.MNIST('../data', train=True, download=True, transform=transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1302,), (0.3069,))]))  
 
     # machine 당 process 수로 나눔
@@ -87,6 +162,18 @@ def main():
     os.environ['MASTER_PORT'] = '8892'
 
     mp.spawn(main_worker, nprocs=args.num_processes, args=(args,))
+    # DDP가 아니라면, main.py에 def main_worker()의 내용을 넣고, train.py에 class Runner 만들자
+    '''
+    class Runner:
+        def __init__(self, args, model):
+            pass
+        def train(self, dataloader, epoch, args):
+            pass
+        def validate(self, dataloader, epoch, args):
+            pass
+        def test(self, dataloader, args):
+            pass
+    '''
 
 def main_worker(process_id, args):
     global best_acc
