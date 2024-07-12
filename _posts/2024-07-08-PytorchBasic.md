@@ -104,7 +104,8 @@ class CustomDataset(Dataset):
     def __getitem__(self, idx):
         # should return float tensor!!
         blur_path = self.blur_path_list[idx]
-        blur_img = cv2.imread(blur_path) # np.ndarray of shape (H, W, C) in range [0, 255]
+        # np.ndarray of shape (H, W, C) in range [0, 255]
+        blur_img = cv2.imread(blur_path) 
 
         if self.mode == 'train':
             sharp_path = self.sharp_path_list[idx]
@@ -113,7 +114,8 @@ class CustomDataset(Dataset):
             # np.ndarray of shape (pat, pat, C) where pat is patch_size
             blur_img, sharp_img = self.augment(self.get_random_patch(blur_img, sharp_img)) 
             
-            return self.np2tensor(blur_img), self.np2tensor(sharp_img) # tensor of shape (C, pat, pat) in range [0, 1]
+            # tensor of shape (C, pat, pat) in range [0, 1]
+            return self.np2tensor(blur_img), self.np2tensor(sharp_img) 
         
         elif self.mode == 'val':
             sharp_path = self.sharp_path_list[idx]
@@ -244,7 +246,7 @@ def main_worker(process_id, args):
     
     dist.init_process_group(backend='nccl', init_method='env://', world_size=world_size, rank=rank, timeout=timedelta(300))
     
-    ################################################################################################
+    ###################################################################
     
     train_dataset = CustomDataset(args, 'train')
     '''
@@ -421,11 +423,13 @@ def main_worker(process_id, args):
 ```Python
 def train(train_loader, model, criterion, optimizer, scheduler, epoch, args):
     model.train()
-    train_acc, train_loss = AverageMeter(), AverageMeter() # measurement of acc and loss
+    train_acc, train_loss = AverageMeter(), AverageMeter() 
+    # measurement of acc and loss
 
     pbar = tqdm(enumerate(train_loader), total=len(train_loader))
     for step, (x, y_gt) in pbar:
-        x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True) # cuda device에 올려야 함
+        x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True) 
+        # cuda device에 올려야 함
         # pin_memory=True와 non_blocking=True는 함께 사용
 
         # forward
@@ -436,7 +440,8 @@ def train(train_loader, model, criterion, optimizer, scheduler, epoch, args):
         loss.backward()
         
         # measurement
-        train_acc.update(topk_accuracy(y_pred.clone().detach(), y_gt).item(), x.size(0))
+        train_acc.update(
+            topk_accuracy(y_pred.clone().detach(), y_gt).item(), x.size(0))
         train_loss.update(loss.item() * args.accumulation_steps, x.size(0))
 
         # args.accumulation_steps만큼 loss를 누적한 뒤 backward
@@ -496,7 +501,7 @@ def validate(val_loader, model, criterion, epoch, args):
             loss = criterion(y_pred, y_gt)
             
             # measurement
-            val_acc.update(topk_accuracy(y_pred.clone().detach(), y_gt).item(), x.size(0))
+            val_acc.update(topk_accuracy(y_pred.clone().detach(), y_gt).item(), x.size(0)) 
             val_loss.update(loss.item(), x.size(0))
 
             # tqdm log
@@ -581,7 +586,8 @@ def fix_seed(random_seed):
 def save_checkpoint(checkpoint, saved_dir, file_name):
     os.makedirs(saved_dir, exist_ok=True)
     output_path = os.path.join(saved_dir, file_name)
-    torch.save(checkpoint, output_path) # checkpoint : dictionary
+    torch.save(checkpoint, output_path) 
+    # checkpoint : dictionary
 
 def load_checkpoint(checkpoint_path, model, optimizer, scheduler, rank=-1):
     # checkpoint_path : ".../240325.pt"
@@ -727,7 +733,8 @@ class Attention(nn.Module):
     def __init__(self, dim, n_head, bias):
         super(Attention, self).__init__()
         self.n_head = n_head # multi-head for channel dim.
-        self.temperature = nn.Parameter(torch.ones(n_head, 1, 1)) # multi-head 별로 scale factor를 parameterize
+        self.temperature = nn.Parameter(torch.ones(n_head, 1, 1)) 
+        # multi-head 별로 scale factor를 parameterize
 
         # W_q
         self.q = nn.Conv2d(dim, dim, kernel_size=1, bias=bias)
@@ -751,22 +758,31 @@ class Attention(nn.Module):
         k, v = kv.chunk(2, dim=1) # key k and value v : shape (N, C, H, W)
 
         # Multi-Head Attention
-        q = einops.rearrange(q, 'b (head c) h w -> b head c (h w)', head=self.n_head) # query q : shape (N, C, H, W) -> shape (N, M, C/M, H * W)
-        k = einops.rearrange(k, 'b (head c) h w -> b head c (h w)', head=self.n_head) # key k : shape (N, C, H, W) -> shape (N, M, C/M, H * W)
-        v = einops.rearrange(v, 'b (head c) h w -> b head c (h w)', head=self.n_head) # value v : shape (N, C, H, W) -> shape (N, M, C/M, H * W)
+        q = einops.rearrange(q, 'b (head c) h w -> b head c (h w)', head=self.n_head)
+        # query q : shape (N, C, H, W) -> shape (N, M, C/M, H * W)
+        k = einops.rearrange(k, 'b (head c) h w -> b head c (h w)', head=self.n_head)
+        # key k : shape (N, C, H, W) -> shape (N, M, C/M, H * W)
+        v = einops.rearrange(v, 'b (head c) h w -> b head c (h w)', head=self.n_head)
+        # value v : shape (N, C, H, W) -> shape (N, M, C/M, H * W)
 
-        q = torch.nn.functional.normalize(q, dim=-1) # matrix mul.을 할 spatial dim.을 normalize
-        k = torch.nn.functional.normalize(k, dim=-1) # matrix mul.을 할 spatial dim.을 normalize
+        # matrix mul.을 할 spatial dim.을 normalize
+        q = torch.nn.functional.normalize(q, dim=-1)
+        k = torch.nn.functional.normalize(k, dim=-1)
 
-        # q @ k.transpose(-2, -1) : shape (N, M, C/M, C/M) # similarity
-        # self.temperature : shape (M, 1, 1) -> shape (N, M, C/M, C/M) # scale factor for each head
+        '''
+        - q @ k.transpose(-2, -1) = similarity :
+          shape (N, M, C/M, C/M)
+        - self.temperature = scale factor for each head :
+          shape (M, 1, 1) -> shape (N, M, C/M, C/M) 
+        '''
         attn = (q @ k.transpose(-2, -1)) * self.temperature 
         attn = attn.softmax(dim=-1) # convert to probability distribution
 
         out = (attn @ v) # shape (N, M, C/M, H*W)
         
         # Multi-Head Attention - concatenation
-        out = einops.rearrange(out, 'b head c (h w) -> b (head c) h w', head=self.n_head, h=H, w=W) # shape (N, C, H, W)
+        out = einops.rearrange(out, 'b head c (h w) -> b (head c) h w', head=self.n_head, h=H, w=W) 
+        # shape (N, C, H, W)
 
         # Apply W_o
         out = self.project_out(out) # shape (N, C, H, W)
@@ -783,7 +799,8 @@ class LayerNorm(nn.Module):
     
     def forward(self, x):
         # x : shape (N, C, H, W)
-        mu = x.mean(1, keepdim=True) # LayerNorm : dim. C에 대해 normalize
+        # LayerNorm : dim. C에 대해 normalize
+        mu = x.mean(1, keepdim=True)
         sigma = x.var(1, keepdim=True, unbiased=False)
         return (x - mu) / torch.sqrt(sigma + 1e-5) * self.weight + self.bias
 
@@ -791,13 +808,15 @@ class MultiAttentionBlock(nn.Module):
     def __init__(self, dim, n_head, ffn_expansion_factor, bias, is_DA):
         super(MultiAttentionBlock, self).__init__()
         self.norm1 = LayerNorm(dim)
-        self.co_attn = Attention(dim, n_head, bias) # center-oriented attention
+        # center-oriented attention
+        self.co_attn = Attention(dim, n_head, bias) 
         self.norm2 = LayerNorm(dim)
         self.ffn1 = FeedForward(dim, bias)
 
         if is_DA:
             self.norm3 = LayerNorm(dim)
-            self.da_attn = Attention(dim, n_head, bias) # degradation-aware attention
+            # degradation-aware attention
+            self.da_attn = Attention(dim, n_head, bias) 
             self.norm4 = LayerNorm(dim)
             self.ffn2 = FeedForward(dim, bias)
 
