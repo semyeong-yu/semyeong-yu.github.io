@@ -99,6 +99,7 @@ $$x_L = P_LX$$  where  $$P_L = K_L[R \vert t]$$
 
 ### Fundamental matrix
 
+우선 $$\circledast$$ 로 외적을 표시하자.  
 1. $$x_R = H x_L$$
 2. $$e_R$$과 $$x_R$$은 직선 $$l_R$$ 위에 있으므로 $$e_{R}^{T} l_R = 0$$ and $$x_{R}^{T} l_R = 0$$  
 예를 들어, 직선 2x+y-2z = 0에 대해 $$l_R$$은 (2, 1, -2)이고, $$e_R$$ 및 $$x_R$$은 직선 위에 있는 점 (x, y, z)이다.
@@ -122,6 +123,7 @@ essential matrix는 fundamental matrix의 specialization으로, pixel coordinate
 즉, essential matrix와 관련된 식을 정리하면
 - `essential matrix` : $$E = t \circledast R$$
 - `correspondence condition` : $$x_R^{\ast T} E x_L^{\ast} = 0$$  
+- 특징 : 3 $$\times$$ 3 matrix, rank = 2, null space = 1
 
 ### ​Relationship between fundamental matrix and essential matrix
 
@@ -240,8 +242,15 @@ Image rectification을 수행하기 위해서는 projective transformation을 �
     </div>
 </div>
 
-우선 left camera에 world origin이 있다고 가정하여 이에 대해 상대적인 right camera의 위치를 R, t로 지정하자. 그러면 $$O_{L} = 0, O_{R} = -R^{t} t$$ 라 쓸 수 있고, $$P_{L} = K_{L}[I \vert 0], P_{R} = K_{R}[R \vert t]$$ 라 쓸 수 있다.  
-`(왜 OR = -R^t t 이지?)`
+우선 left camera에 world origin이 있다고 가정하여 이에 대해 상대적인 right camera의 위치를 R, t로 지정하자.  
+right-camera-coordinate에서의 점 $$X_R$$ 을 left-camera-coordinate (world-coordinate)에서 나타내려면 $$[R \vert t] X_R = R X_{R} + t$$ 이고,  
+반대로 left-camera-coordinate (world-coordinate) 에서의 점 $$X_L$$을 right-camera-coordinate에서 나타내려면 $$R^{T}(X_{L} - t)$$ 이다.  
+따라서 left-camera-coordinate (world-coordinate) 에서의 world origin $$O_{L} = 0$$을 right-camera-coordinate에서 나타내려면 $$R^{T}(0 - t) = -R^{T} t$$ 이다.  
+
+따라서 $$O_{L} = 0, O_{R} = -R^{T} t$$ 라 쓸 수 있고,  
+3D 상의 점 $$X_{L}, X_{R}$$을 2D 상의 점 $$x_{L}, x_{R}$$으로 project시키는  
+projection matrix는 $$P_{L} = K_{L}[I \vert 0], P_{R} = K_{R}[R \vert t]$$ 라 쓸 수 있다.  
+
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
@@ -260,9 +269,12 @@ $$e_{R} = P_{R} [O_{L} ; 1] = P_{R} [0 ; 1] =  K_{R}[R \vert t][0 ; 1] = K_{R} t
 One strategy is to pick a plane parallel to the line where the two original optical axes intersect to minimize distortion from the reprojection process. 또는 We simply define as $$H_{R} = H_{L} R^{t}$$  
 (`위의 두 가지 strategy 이해 못 했음. 추가 공부 필요`)  
 - 마지막으로, two images가 same resolution을 갖도록 `scale`해준다. 그러면 horizontal epipoles가 align되어 매칭되는 점들이 같은 `vertical coordinates를 가지므로 매칭되는 점들을 찾기 위해 horizontal scan만 하면 되는 쉬운 문제로 바뀐다`.  
-추가로, 꼭 $$K_{L}, K_{R}$$ `intrinsic parameter를 모르더라도 a set of seven or more image-to-image correspondences만 알면 fundamental matrix와 epipoles를 계산할 수 있어서 image rectification을 수행할 수 있다고 한다.`  
-(`a set of seven or more correspondences로 fundamental matrix, epipole 구해서 rectification 하는 거 이해 못 했음. 추가 공부 필요`)  
-(fundamental matrix와 epipole 알면 image rectification 수행 가능)
+추가로, 꼭 $$K_{L}, K_{R}$$ `intrinsic parameter를 모르더라도` `a set of seven or more image-to-image correspondences`만 알면 `fundamental matrix와 epipoles를 계산`할 수 있어서 `image rectification을 수행`할 수 있다고 한다.  
+
+`????? 마지막 문장 이해 못 했음. 8 image-to-image correspondence 공부 필요`  
+
+- Why Eight? :  
+`?????`
 
 > 참고 사이트 :  
 [https://blog.naver.com/hms4913/220043661788](https://blog.naver.com/hms4913/220043661788)  
