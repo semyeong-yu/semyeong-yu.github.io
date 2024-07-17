@@ -169,7 +169,7 @@ $$b(K_R^{-1}x_R)^{T}v = 0$$을 정리하면 $$x_R^{T} (K_R^{-T} (t \circledast R
 $$bx_{R}^{T}w = 0$$을 정리하면 $$x_{R}^{T} (K_{R} t \circledast K_{R}RK_{L}^{-1}) x_L = 0$$ 이다.  
 3. 위의 1., 2.에서 유도한 $$x_R^{T} (K_R^{-T} (t \circledast R) K_L^{-1}) x_L = 0$$과 $$x_{R}^{T} (K_{R} t \circledast K_{R}RK_{L}^{-1}) x_L = 0$$을 통해  
 $$F = K_{R}^{-T} t \circledast R K_{L}^{-1}$$ 임을 유도할 수 있다.  
-(F 유도에 $$x_R^{T} (K_R^{-T} (t \circledast R) K_L^{-1}) x_L = 0$$ 은 왜 필요한 거지..? `조금 더 공부 필요`)  
+(F 유도에 $$x_{R}^{T} (K_{R} t \circledast K_{R}RK_{L}^{-1}) x_L = 0$$ 은 왜 필요한 거지..? `????? 조금 더 공부 필요`)  
 
 ## Image Rectification
 
@@ -243,8 +243,8 @@ Image rectification을 수행하기 위해서는 projective transformation을 �
 </div>
 
 우선 left camera에 world origin이 있다고 가정하여 이에 대해 상대적인 right camera의 위치를 R, t로 지정하자.  
-right-camera-coordinate에서의 점 $$X_R$$ 을 left-camera-coordinate (world-coordinate)에서 나타내려면 $$[R \vert t] X_R = R X_{R} + t$$ 이고,  
-반대로 left-camera-coordinate (world-coordinate) 에서의 점 $$X_L$$을 right-camera-coordinate에서 나타내려면 $$R^{T}(X_{L} - t)$$ 이다.  
+`right-camera-coordinate`에서의 점 $$X_R$$ 을 `left-camera-coordinate (world-coordinate)`에서 나타내려면 $$[R \vert t] X_R = R X_{R} + t$$ 이고,  
+반대로 `left-camera-coordinate (world-coordinate)` 에서의 점 $$X_L$$을 `right-camera-coordinate`에서 나타내려면 $$R^{T}(X_{L} - t)$$ 이다.  
 따라서 left-camera-coordinate (world-coordinate) 에서의 world origin $$O_{L} = 0$$을 right-camera-coordinate에서 나타내려면 $$R^{T}(0 - t) = -R^{T} t$$ 이다.  
 
 따라서 $$O_{L} = 0, O_{R} = -R^{T} t$$ 라 쓸 수 있고,  
