@@ -710,8 +710,8 @@ DA attention은 $$Net^{D}$$ 말고 $$Net^{R}$$ 에서만 사용
   - $$H_{out} = \lfloor 1 + \frac{H_{in} + 2 \times pad - dilation \times (K-1) - 1}{stride} \rfloor$$  
   - argument :  
     - groups :  
-    shape ($$C_{in}$$, $$C_{out}$$, K, K) 대신 $$C_{in}$$ 을 groups-개로 쪼개서  
-    shape ($$\frac{C_{in}}{groups}$$, $$\frac{C_{out}}{groups}$$, K, K)를 groups-번 실행  
+    shape ($$C_{in}$$, $$C_{out}$$, K, K) 대신 $$C_{in}$$, $$C_{out}$$ 을 groups-개로 쪼개서  
+    shape ($$\frac{C_{in}}{groups}$$, $$\frac{C_{out}}{groups}$$, K, K)를 groups-번 실행하여 concat  
   - variable :  
     - weight : shape ($$C_{out}$$, $$\frac{C_{in}}{groups}$$, K, K)  
     - bias : shape ($$C_{out}$$,)
