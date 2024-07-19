@@ -161,12 +161,13 @@ $$bx_R = K_{R}(RX^{\ast}+t)$$
 $$X^{\ast} = aK_{L}^{-1}x_L$$을  $$bK_{R}^{-1}x_R = RX^{\ast}+t$$에 대입하면, 
 
 1. $$bK_{R}^{-1}x_R = aRK_{L}^{-1}x_L + t$$  
-이 때, vector $$bK_{R}^{-1}x_R$$은 vector $$aRK_{L}^{-1}x_L$$와 vector t의 합이므로 기하학적으로 $$bK_{R}^{-1}x_R$$과 $$aRK_{L}^{-1}x_L$$과 t는 `같은 평면 위에 있다. (그리고 그 평면은 epipolar plane이다.)`  
-따라서 vector $$v = t \circledast RK_{L}^{-1}x_L$$ 는 epipolar plane에 수직이므로 $$b(K_{R}^{-1}x_R)^{T}v = a(RK_{L}^{-1}x_L)^{T}v + t^{T}v = 0$$ 이라 쓸 수 있다.  
-$$b(K_R^{-1}x_R)^{T}v = 0$$을 정리하면 $$x_R^{T} (K_R^{-T} (t \circledast R) K_L^{-1}) x_L = 0$$ 이다.
+이 때, vector $$bK_{R}^{-1}x_R$$은 vector $$aRK_{L}^{-1}x_L$$와 vector $$t$$의 합이므로 기하학적으로 $$bK_{R}^{-1}x_R$$과 $$aRK_{L}^{-1}x_L$$과 $$t$$는 `같은 평면 위에 있다. (그리고 그 평면은 epipolar plane이다.)`  
+따라서 vector $$v = t \circledast RK_{L}^{-1}x_L$$ 는 epipolar plane에 수직이므로 $$bK_{R}^{-1}x_R$$와 $$v$$의 내적은 0이다.  
+$$b(K_{R}^{-1}x_R)^{T}v = a(RK_{L}^{-1}x_L)^{T}v + t^{T}v = 0$$ 이라 쓸 수 있다.  
+$$b(K_R^{-1}x_R)^{T}v = 0$$에 $$v = t \circledast RK_{L}^{-1}x_L$$ 를 대입하면 $$x_R^{T} (K_R^{-T} (t \circledast R) K_L^{-1}) x_L = 0$$ 이다.
 2. $$bx_R = aK_{R}RK_L^{-1}x_L + K_{R}t$$  
 이와 비슷하게 vector $$w = K_{R}t \circledast K_{R}RK_{L}^{-1}x_L$$는 $$bx_R = aK_{R}RK_{L}^{-1}x_L + K_{R}t$$ 에 수직이므로 $$bx_{R}^{T}w = a(K_{R}RK_{L}^{-1}x_L)^{T}w + (K_{R}t)^{T}w = 0$$ 이라 쓸 수 있다.  
-$$bx_{R}^{T}w = 0$$을 정리하면 $$x_{R}^{T} (K_{R} t \circledast K_{R}RK_{L}^{-1}) x_L = 0$$ 이다.  
+$$bx_{R}^{T}w = 0$$에 $$w = K_{R}t \circledast K_{R}RK_{L}^{-1}x_L$$ 를 대입하면 $$x_{R}^{T} (K_{R} t \circledast K_{R}RK_{L}^{-1}) x_L = 0$$ 이다.  
 3. 위의 1., 2.에서 유도한 $$x_R^{T} (K_R^{-T} (t \circledast R) K_L^{-1}) x_L = 0$$과 $$x_{R}^{T} (K_{R} t \circledast K_{R}RK_{L}^{-1}) x_L = 0$$을 통해  
 $$F = K_{R}^{-T} t \circledast R K_{L}^{-1}$$ 임을 유도할 수 있다.  
 (F 유도에 $$x_{R}^{T} (K_{R} t \circledast K_{R}RK_{L}^{-1}) x_L = 0$$ 은 왜 필요한 거지..? `????? 조금 더 공부 필요`)  

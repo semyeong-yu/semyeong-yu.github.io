@@ -80,9 +80,10 @@ where $$\beta_t$$ : noise 주입 정도 (상수값)
 t가 증가할수록 $$\beta_t$$가 증가하여 다른 pixel($$I$$)을 선택하므로 noise가 강해진다  
 
 - backward process ($$p_{\theta}$$) :  
-image prior $$q(X_t)$$를 모르기 때문에 $$q(X_{t-1} | X_t)$$를 계산할 수 없으므로  
-목표 : $$q(X_{t-1} | X_t)$$를 근사하는 $$p_{\theta}(X_{t-1} | X_t)$$ 학습  
-즉, 확률분포 $$q$$에서 관측한 값 $$x$$로 $$p_{\theta | x}$$의 likelihood를 구했을 때 그 값이 최대가 되도록 하는 `MLE Problem`  
+inference 할 때 image prior $$q(X_t)$$를 모르기 때문에 $$q(X_{t-1} | X_t)$$를 계산할 수 없다. (intractable)  
+하지만 train 할 때는 forward process에서 더해지는 noise 정보 (GT) 를 알고 있으므로 $$q(X_{t-1} | X_t, X_0)$$를 계산할 수 있다. (tractable)  
+목표 : $$q(X_{t-1} | X_t, X_0)$$를 근사하는 $$p_{\theta}(X_{t-1} | X_t)$$를 학습하여 inference할 때 사용하자!  
+즉, 확률분포 $$q$$에서 관측한 값 $$x$$로 $$p_{\theta | x}$$의 likelihood (그럴 듯한 정도) 를 구했을 때 그 값이 최대가 되도록 하는 `MLE Problem`  
 즉, minimize $$E_q [- log p_{\theta} (x_0)]$$  
 
 - `Diffusion Model` Naive Loss 수식 :  
@@ -147,7 +148,7 @@ $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log \
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log \frac{q(x_t|x_{t-1}, x_0)}{p_{\theta}(x_{t-1}|x_t)} + log \frac{q(x_1|x_0)}{p_{\theta}(x_0|x_1)}]$$  
 
 by memoryless `Markov property`  
-`tractable`하도록 만들기 위해 $$q(x_t|x_{t-1})$$ 의 조건부에 $$x_0$$ 추가  
+어떻게든 계산 가능하도록 (`tractable`하도록) 만들기 위해 $$q(x_t|x_{t-1})$$ 의 조건부에 $$x_0$$ 추가  
 
 $$= E_{x_{1:T} \sim q(x_{1:T}|x_0)}[- log p_{\theta}(x_T) + \sum_{t=2}^{T} log (\frac{q(x_{t-1}|x_t, x_0)}{p_{\theta}(x_{t-1}|x_t)} \cdot \frac{q(x_t|x_0)}{q(x_{t-1}|x_0)}) + log \frac{q(x_1|x_0)}{p_{\theta}(x_0|x_1)}]$$  
 
@@ -298,7 +299,7 @@ $$= \frac{\sqrt{\alpha_t} x_t (1 - \bar \alpha_{t-1}) + \beta_{t} x_0 \sqrt{\bar
 $$\mu = \frac{\sqrt{\bar \alpha_{t-1}} \beta_{t}}{1 - \bar \alpha_{t}} x_0 + \frac{\sqrt{\alpha_t} (1 - \bar \alpha_{t-1})}{1 - \bar \alpha_{t}} x_t$$  
   
 $$q(x_t | x_0) = N(x_t; \sqrt{\bar \alpha_{t}} x_{0}, (1-\bar \alpha_{t}) \boldsymbol I)$$이므로  
-$$x_0$$ `소거`하기 위해  
+방금 구한 $$\mu$$ 식에서 $$x_0$$ `소거`하기 위해  
 $$x_t = \sqrt{\bar \alpha_{t}} x_{0} + \sqrt{1-\bar \alpha_{t}} \epsilon$$ 대입하면  
 
 $$\mu_{t} = \frac{\sqrt{\bar \alpha_{t-1}} \beta_{t}}{1 - \bar \alpha_{t}} x_0 + \frac{\sqrt{\alpha_t} (1 - \bar \alpha_{t-1})}{1 - \bar \alpha_{t}} x_t$$  
@@ -380,6 +381,19 @@ for (t = T, ..., 1){
 ```
 Sampling :  
 $$x_{t-1} = \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{\theta}(x_t, t)) + \sigma_{t} z$$  
+
+
+### Discussion
+
+- Q1 :  
+image prior $$q(X_t)$$를 모르기 때문에 $$q(X_{t-1} | X_t)$$를 계산할 수 없으므로 $$q(X_{t-1} | X_t)$$를 근사하는 $$p_{\theta}(X_{t-1} | X_t)$$ 학습한다고 처음에 얘기했는데, 수식 유도를 보면 $$q(X_{t-1} | X_t, X_0)$$ 의 분포를 알고 있지 않나?  
+
+- A1 :  
+`training dataset` $$X_0$$ 에 대한 $$q(X_{t-1} | X_t, X_0)$$ 는 알 수 있다! (tractable)  
+forward process에서 $$X_{t-1}$$에서 $$X_t$$로 더하는 noise 정보 (GT) 를 알고 있기 때문에 backward process에서의 $$q(X_{t-1} | X_t, X_0)$$ 분포를 수식으로 구할 수 있다.  
+이 때, 실제 분포 $$q(X_{t-1} | X_t, X_0)$$를 근사하는 $$p_{\theta}(X_{t-1} | X_t)$$를 학습한다면  
+`inference`를 할 때에도 `임의로 Gaussian sampling한 noise`에 대해서도 $$p_{\theta}(X_{t-1} | X_t)$$ 에 의해 image $$X_0$$ 을 생성할 수 있다.  
+수식 유도 과정을 보면 Step 2 에서 intractable $$q$$ 를 계산 가능하도록 (tractable 하도록) 만들기 위해 $$q$$ 분포의 조건부에 $$X_0$$을 추가하는 것을 확인할 수 있다.  
 
 
 > 출처 블로그 :  
