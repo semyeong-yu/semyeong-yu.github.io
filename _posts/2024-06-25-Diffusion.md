@@ -399,4 +399,5 @@ forward process에서 $$X_{t-1}$$에서 $$X_t$$로 더하는 noise 정보 (GT) �
 > 출처 블로그 :  
 [Diffusion Model](https://xoft.tistory.com/32)  
 [DDPM 수식 유도](https://xoft.tistory.com/33?category=1156151)  
-[DDPM 수식 유도](https://woongchan789.tistory.com/12)
+[DDPM 수식 유도](https://woongchan789.tistory.com/12)  
+[DDPM 코드 실습](https://metamath1.github.io/blog/posts/diffusion/ddpm_part1.html?fbclid=IwAR3_AboIfJ-KbHuDhLRGAUuOYRvfG8SkMCyFtt9O7UneWIaMdfePh-jSCJg)
