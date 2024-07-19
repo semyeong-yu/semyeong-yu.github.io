@@ -248,6 +248,7 @@ def main_worker(process_id, args):
     
     ###################################################################
     
+    # for epoch in range ... 밖에서
     train_dataset = CustomDataset(args, 'train')
     '''
     train_dataset = datasets.MNIST('../data', train=True, download=True, transform=transforms.Compose(
@@ -261,6 +262,7 @@ def main_worker(process_id, args):
     batch_size = int(args.batch_size / args.num_processes) 
     num_workers = int(args.num_workers / args.num_processes)
 
+    # for epoch in range ... 안에서
     train_sampler = DistributedSampler(train_dataset, num_replicas=world_size, rank=rank)
 
     train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers, collate_fn=_collate_fn, pin_memory=True, drop_last=True, sampler=train_sampler)
@@ -368,11 +370,11 @@ def main_worker(process_id, args):
     # 3. optimizer, scheduler initialize
     optimizer = getattr(import_module("torch.optim"), args.optimizer)(model.parameters(), lr=args.lr, betas=(args.b1, args.b2), weight_decay=args.weight_decay)
     scheduler = getattr(import_module("torch.optim.lr_scheduler"), args.lr_scheduler)(optimizer, T_max=args.period, eta_min=0, last_epoch=-1, verbose=True)
-    # T_max : 주기 1번 도는 데 걸리는 step 수 / eta_min : lr의 최솟값 / last_epoch : 학습 시작할 때의 epoch
+    # T_max : 주기 1번 도는 데 걸리는 최대 iter. 수 / eta_min : lr의 최솟값 / last_epoch : 학습 시작할 때의 epoch
 
     # 4. load checkpoint
     if args.resume_from:
-        start_epoch, model, optimizer, scheduler = load_checkpoint(checkpoint_path, model, optimizer, scheduler, rank)
+        start_epoch, model, optimizer, scheduler = load_checkpoint(args.checkpoint_path, model, optimizer, scheduler, rank)
     else:
         start_epoch = 0
 
