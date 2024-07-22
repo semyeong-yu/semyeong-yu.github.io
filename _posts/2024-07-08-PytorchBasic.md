@@ -65,6 +65,20 @@ pd.DataFrame(dataset).to_csv(output_path, index=False) # output_path : ".../data
 
 ### Create Dataset
 
+- `data augmentation` :  
+  - Resize
+  - ToTensor
+  - RandomHorizontalFlip
+  - RandomVerticalFlip
+  - Normalize
+  - RandomRotation
+  - RandomAffine  
+    - shear
+    - scale (zoom-in/out)
+  - RandomResizedCrop
+  - ColorJitter
+  - GaussianBlur
+
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
         {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/4.png" class="img-fluid rounded z-depth-1" zoomable=true %}
@@ -219,6 +233,11 @@ class CustomDataset(Dataset):
   pin_memory=True와 non_blocking=True는 함께 사용  
   - drop_last=True : 나눠떨어지지 않는 마지막 batch를 버림
 
+- `_collate_fn(samples)` :  
+  - DataLoader()에서 1개의 batch로 묶을 때 사용하는 custom 전처리 함수  
+  - samples : 1개의 batch에 해당하는 입력  
+  - 예 : 길이가 다른 input들을 batch로 묶기 위해 padding, tokenization  
+
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
         {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/5.png" class="img-fluid rounded z-depth-1" zoomable=true %}
@@ -232,8 +251,6 @@ from torch.utils.data.distributed import DistributedSampler
 import torch.distributed as dist
 from datetime import timedelta
 
-# 길이가 다른 input들을 batch로 묶기 위해 padding해주는 함수
-# DataLoader()에서 사용
 def _collate_fn(samples):
     # ...
 
@@ -340,12 +357,14 @@ def main():
     '''
     class Runner:
         def __init__(self, args, model):
+            self.args = args
+            self.model = model
             pass
-        def train(self, dataloader, epoch, args):
+        def train(self, dataloader, epoch):
             pass
-        def validate(self, dataloader, epoch, args):
+        def validate(self, dataloader, epoch):
             pass
-        def test(self, dataloader, args):
+        def test(self, dataloader):
             pass
     '''
 
@@ -430,12 +449,14 @@ def train(train_loader, model, criterion, optimizer, scheduler, epoch, args):
 
     pbar = tqdm(enumerate(train_loader), total=len(train_loader))
     for step, (x, y_gt) in pbar:
-        x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True) 
+        x, y_gt = x.cuda(non_blocking=True), y_gt.cuda(non_blocking=True) 
         # cuda device에 올려야 함
         # pin_memory=True와 non_blocking=True는 함께 사용
 
         # forward
         y_pred = model(x)
+
+        # loss divided by accumulation_steps
         loss = criterion(y_pred, y_gt) / args.accumulation_steps
 
         # gradient 누적
@@ -446,7 +467,7 @@ def train(train_loader, model, criterion, optimizer, scheduler, epoch, args):
             topk_accuracy(y_pred.clone().detach(), y_gt).item(), x.size(0))
         train_loss.update(loss.item() * args.accumulation_steps, x.size(0))
 
-        # args.accumulation_steps만큼 loss를 누적한 뒤 backward
+        # args.accumulation_steps만큼 loss를 누적한 뒤 평균값으로 backward
         if (step+1) % args.accumulation_steps == 0:
             # gradient clipping
             nn.utils.clip_grad_norm_(model.parameters(), max_norm=args.max_norm)
