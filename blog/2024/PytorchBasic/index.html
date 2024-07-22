@@ -45,7 +45,7 @@ if os.path.exists(csv_path):
 dataset = [] # list of dictionaries
 dataset.append({"id":id, "w":w, "h":h, "class":i})
 pd.DataFrame(dataset).to_csv(output_path, index=False) # output_path : ".../dataset.csv"
-</code></pre> <h3 id="create-dataset">Create Dataset</h3> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-08-PytorchBasic/4-480.webp 480w,/assets/img/2024-07-08-PytorchBasic/4-800.webp 800w,/assets/img/2024-07-08-PytorchBasic/4-1400.webp 1400w," sizes="95vw" type="image/webp"></source> <img src="/assets/img/2024-07-08-PytorchBasic/4.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <pre><code class="language-Python">import os
+</code></pre> <h3 id="create-dataset">Create Dataset</h3> <ul> <li> <code class="language-plaintext highlighter-rouge">data augmentation</code> : <ul> <li>Resize</li> <li>ToTensor</li> <li>RandomHorizontalFlip</li> <li>RandomVerticalFlip</li> <li>Normalize</li> <li>RandomRotation</li> <li>RandomAffine <ul> <li>shear</li> <li>scale (zoom-in/out)</li> </ul> </li> <li>RandomResizedCrop</li> <li>ColorJitter</li> <li>GaussianBlur</li> </ul> </li> </ul> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-08-PytorchBasic/4-480.webp 480w,/assets/img/2024-07-08-PytorchBasic/4-800.webp 800w,/assets/img/2024-07-08-PytorchBasic/4-1400.webp 1400w," sizes="95vw" type="image/webp"></source> <img src="/assets/img/2024-07-08-PytorchBasic/4.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <pre><code class="language-Python">import os
 import torch
 from torch.utils.data import Dataset
 import cv2
@@ -142,13 +142,11 @@ class CustomDataset(Dataset):
 
     def __len__(self):
         return len(self.path_list)
-</code></pre> <h3 id="dataloader">DataLoader</h3> <ul> <li>DataParallel(DP) vs DistributedDataParallel(DDP) :<br> <a href="https://tkayyoo.tistory.com/27#tktag2" rel="external nofollow noopener" target="_blank">Pytorch DP and DDP</a> <ul> <li>DataParallel(DP) :<br> single-process<br> multi-thread<br> single-machine</li> <li>DistributedDataParallel(DDP) :<br> multi-process<br> single-machine과 multi-machine 모두 가능</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">rank</code> : <ul> <li>전체 distributed system에서 process 순서</li> <li>4-CPU system이 2개 있을 경우<br> rank = machine 번호(0~1) * machine 당 process 개수(4) + process 번호(0~3)</li> <li>rank = 0인 process에 대해서만 wandb로 train log 출력</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">world_size</code> : <ul> <li>전체 distributed system에서 총 process 개수</li> <li>4-GPU system이 2개 있을 경우<br> world_size = machine 개수(2) * machine 당 process 개수(4)</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">torch.distributed.init_process_group()</code> : <ul> <li>분산 학습 환경 초기화 : 분산 학습하는 각 process 간의 통신을 설정</li> <li>backend : ‘gloo’ for CPU, ‘nccl’ for GPU, ‘mpi’ for 고성능</li> <li>init_method : 각 process가 서로 탐색하는 방법(url)<br> 예시 : ‘env://’, f’tcp://127.0.0.1:11203’</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">torch.utils.data.distributed.DistributedSampler()</code> : <ul> <li>world_size(총 process 개수)만큼 dataset을 분할하여 모든 process가 동일한 양의 dataset을 갖도록 함</li> <li>DistributedSampler는 각 epoch마다 dataset을 무작위로 분할</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">torch.utils.data.DataLoader()</code> : <ul> <li>shuffle=False :<br> 보통 training일 때는 일반화를 위해 shuffle=True로 두지만<br> 분산 학습을 할 때는 같은 epoch 내에서<br> 각 process가 서로 다른 dataset을 처리하기 위해 (중복 방지)<br> shuffle=False로 설정</li> <li>num_workers : cpu data load할 때 multi-processing core 개수</li> <li>pin_memory=True :<br> data load한 장치(CPU)에서 GPU로 data를 옮길 때<br> host memory가 아닌 CPU의 page-locked memory로 할당하고<br> GPU는 이를 참조하여 복사하므로 전송 시간을 단축<br> pin_memory=True와 non_blocking=True는 함께 사용</li> <li>drop_last=True : 나눠떨어지지 않는 마지막 batch를 버림</li> </ul> </li> </ul> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-08-PytorchBasic/5-480.webp 480w,/assets/img/2024-07-08-PytorchBasic/5-800.webp 800w,/assets/img/2024-07-08-PytorchBasic/5-1400.webp 1400w," sizes="95vw" type="image/webp"></source> <img src="/assets/img/2024-07-08-PytorchBasic/5.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <pre><code class="language-Python">from torch.utils.data import DataLoader
+</code></pre> <h3 id="dataloader">DataLoader</h3> <ul> <li>DataParallel(DP) vs DistributedDataParallel(DDP) :<br> <a href="https://tkayyoo.tistory.com/27#tktag2" rel="external nofollow noopener" target="_blank">Pytorch DP and DDP</a> <ul> <li>DataParallel(DP) :<br> single-process<br> multi-thread<br> single-machine</li> <li>DistributedDataParallel(DDP) :<br> multi-process<br> single-machine과 multi-machine 모두 가능</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">rank</code> : <ul> <li>전체 distributed system에서 process 순서</li> <li>4-CPU system이 2개 있을 경우<br> rank = machine 번호(0~1) * machine 당 process 개수(4) + process 번호(0~3)</li> <li>rank = 0인 process에 대해서만 wandb로 train log 출력</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">world_size</code> : <ul> <li>전체 distributed system에서 총 process 개수</li> <li>4-GPU system이 2개 있을 경우<br> world_size = machine 개수(2) * machine 당 process 개수(4)</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">torch.distributed.init_process_group()</code> : <ul> <li>분산 학습 환경 초기화 : 분산 학습하는 각 process 간의 통신을 설정</li> <li>backend : ‘gloo’ for CPU, ‘nccl’ for GPU, ‘mpi’ for 고성능</li> <li>init_method : 각 process가 서로 탐색하는 방법(url)<br> 예시 : ‘env://’, f’tcp://127.0.0.1:11203’</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">torch.utils.data.distributed.DistributedSampler()</code> : <ul> <li>world_size(총 process 개수)만큼 dataset을 분할하여 모든 process가 동일한 양의 dataset을 갖도록 함</li> <li>DistributedSampler는 각 epoch마다 dataset을 무작위로 분할</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">torch.utils.data.DataLoader()</code> : <ul> <li>shuffle=False :<br> 보통 training일 때는 일반화를 위해 shuffle=True로 두지만<br> 분산 학습을 할 때는 같은 epoch 내에서<br> 각 process가 서로 다른 dataset을 처리하기 위해 (중복 방지)<br> shuffle=False로 설정</li> <li>num_workers : cpu data load할 때 multi-processing core 개수</li> <li>pin_memory=True :<br> data load한 장치(CPU)에서 GPU로 data를 옮길 때<br> host memory가 아닌 CPU의 page-locked memory로 할당하고<br> GPU는 이를 참조하여 복사하므로 전송 시간을 단축<br> pin_memory=True와 non_blocking=True는 함께 사용</li> <li>drop_last=True : 나눠떨어지지 않는 마지막 batch를 버림</li> </ul> </li> <li> <code class="language-plaintext highlighter-rouge">_collate_fn(samples)</code> : <ul> <li>DataLoader()에서 1개의 batch로 묶을 때 사용하는 custom 전처리 함수</li> <li>samples : 1개의 batch에 해당하는 입력</li> <li>예 : 길이가 다른 input들을 batch로 묶기 위해 padding, tokenization</li> </ul> </li> </ul> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-08-PytorchBasic/5-480.webp 480w,/assets/img/2024-07-08-PytorchBasic/5-800.webp 800w,/assets/img/2024-07-08-PytorchBasic/5-1400.webp 1400w," sizes="95vw" type="image/webp"></source> <img src="/assets/img/2024-07-08-PytorchBasic/5.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <pre><code class="language-Python">from torch.utils.data import DataLoader
 from torch.utils.data.distributed import DistributedSampler
 import torch.distributed as dist
 from datetime import timedelta
 
-# 길이가 다른 input들을 batch로 묶기 위해 padding해주는 함수
-# DataLoader()에서 사용
 def _collate_fn(samples):
     # ...
 
@@ -204,12 +202,14 @@ def main():
     '''
     class Runner:
         def __init__(self, args, model):
+            self.args = args
+            self.model = model
             pass
-        def train(self, dataloader, epoch, args):
+        def train(self, dataloader, epoch):
             pass
-        def validate(self, dataloader, epoch, args):
+        def validate(self, dataloader, epoch):
             pass
-        def test(self, dataloader, args):
+        def test(self, dataloader):
             pass
     '''
 
@@ -284,12 +284,14 @@ def main_worker(process_id, args):
 
     pbar = tqdm(enumerate(train_loader), total=len(train_loader))
     for step, (x, y_gt) in pbar:
-        x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True) 
+        x, y_gt = x.cuda(non_blocking=True), y_gt.cuda(non_blocking=True) 
         # cuda device에 올려야 함
         # pin_memory=True와 non_blocking=True는 함께 사용
 
         # forward
         y_pred = model(x)
+
+        # loss divided by accumulation_steps
         loss = criterion(y_pred, y_gt) / args.accumulation_steps
 
         # gradient 누적
@@ -300,7 +302,7 @@ def main_worker(process_id, args):
             topk_accuracy(y_pred.clone().detach(), y_gt).item(), x.size(0))
         train_loss.update(loss.item() * args.accumulation_steps, x.size(0))
 
-        # args.accumulation_steps만큼 loss를 누적한 뒤 backward
+        # args.accumulation_steps만큼 loss를 누적한 뒤 평균값으로 backward
         if (step+1) % args.accumulation_steps == 0:
             # gradient clipping
             nn.utils.clip_grad_norm_(model.parameters(), max_norm=args.max_norm)
