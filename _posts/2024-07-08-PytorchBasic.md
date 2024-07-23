@@ -28,7 +28,7 @@ _styles: >
 
 ## Pytorch Basic Code (DistributedDataParallel ver.)
 
-### Deal with json, csv
+### Deal with json, image, csv
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
@@ -41,12 +41,24 @@ import os
 import json
 import pandas as pd
 import csv
+from PIL import Image
+import cv2
 
 # read json
 if os.path.exists(json_path):
     with open(json_path, "r") as f:
         data = json.load(f)
     f.close()
+
+# read image 방법 1.
+img = Image.open(image_path).convert('RGB') # PIL image object in range [0, 255]
+img.show()
+
+# read image 방법 2.
+img = cv2.imread(image_path) # np.ndarray of shape (H, W, C) in range [0, 255] in BGR mode
+cv2.imshow('Image', img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 
 # read csv 방법 1. general case
 data = pd.read_csv(csv_path, sep="|", index_col=0, skiprows=[1], na_values=['?', 'nan']).values # 0-th column (1-th row는 제외) ('?'와 'nan'은 결측값으로 인식)
@@ -61,6 +73,46 @@ if os.path.exists(csv_path):
 dataset = [] # list of dictionaries
 dataset.append({"id":id, "w":w, "h":h, "class":i})
 pd.DataFrame(dataset).to_csv(output_path, index=False) # output_path : ".../dataset.csv"
+```
+
+### Convert to Tensor
+
+data.py의 CustomDataset(torch.utils.data.Dataset)에서 image는 `shape (C, H, W) tensor`여야 하기 때문에  
+PIL.Image.open() 또는 cv2.imread()로 얻은  
+PIL image object 또는 np.ndarray를 적절한 shape 및 range의 tensor로 변환해주어야 한다  
+
+- PIL image object $$\rightarrow$$ Tensor  
+  - torchvision.transforms.ToTensor()
+  - np.array(), torch.tensor()
+  - getdata(), torch.tensor()  
+
+- np.ndarray $$\rightarrow$$ Tensor
+  - torch.tensor()
+
+```Python
+PIL_img = Image.open(image_path).convert('RGB') # PIL image object of size (W, H) in range [0, 255]
+
+# 방법 1. torchvision.transforms.ToTensor()
+transform = torchvision.transforms.Compose([
+    torchvision.transforms.Resize((256, 256)),
+    torchvision.transforms.ToTensor() # convert to tensor in range [0., 1.]
+])
+img = transform(PIL_img) # tensor of shape (C, H, W) in range [0., 1.]
+
+# 방법 2. np.array(), torch.tensor()
+img = np.array(PIL_img) # np.ndarray of shape (H, W, C) in range [0., 255.]
+img = torch.tensor(img.transpose((2, 0, 1)).astype(float)).mul_(1.0) / 255.0 # tensor of shape (C, H, W) in range [0., 1.]
+
+# 방법 3. getdata(), torch.tensor()
+img_data = PIL_img.getdata()
+img = torch.tensor(img_data, dtype=torch.float32) # tensor of shape (H*W*C,) in range [0, 255]
+img = img.view(PIL_img.size[1], PIL_img.size[0], 3).permute(2, 0, 1) / 255.0 # tensor of shape (C, H, W) in range [0., 1.]
+```
+
+```Python
+img = cv2.imread(image_path) # np.ndarray of shape (H, W, C) in range [0., 255.]
+
+img = torch.tensor(img.transpose((2, 0, 1)).astype(float)).mul_(1.0) / 255.0 # tensor of shape (C, H, W) in range [0., 1.]
 ```
 
 ### Create Dataset
@@ -143,7 +195,7 @@ class CustomDataset(Dataset):
         # input : shape (H, W, C) / range [0, 255]
         # output : shape (C, H, W) / range [0, 1]
         ts = (2, 0, 1)
-        x = torch.Tensor(x.transpose(ts).astype(float)).mul_(1.0) # in-place
+        x = torch.tensor(x.transpose(ts).astype(float)).mul_(1.0) # _ : in-place
         x = x / 255.0 # normalize
         return x
 
