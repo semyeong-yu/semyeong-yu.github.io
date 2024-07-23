@@ -285,9 +285,14 @@ class CustomDataset(Dataset):
   pin_memory=True와 non_blocking=True는 함께 사용  
   - drop_last=True : 나눠떨어지지 않는 마지막 batch를 버림
 
-- `_collate_fn(samples)` :  
+- `_collate_fn(input)` :  
   - DataLoader()에서 1개의 batch로 묶을 때 사용하는 custom 전처리 함수  
-  - samples : 1개의 batch에 해당하는 입력  
+  - input :  
+    - 1개의 batch에 해당하는 입력  
+    - Dataset(torch.utils.data.Dataset)의 __getitem__(self, idx)이 return img, target 형태일 때  
+    [(img1, target1), (img2, target2), ...]의 형태  
+  - output :  
+    - for iter, (x, y) in enumerate(dataloader): 의 x, y  
   - 예 : 길이가 다른 input들을 batch로 묶기 위해 padding, tokenization  
 
 <div class="row mt-3">
