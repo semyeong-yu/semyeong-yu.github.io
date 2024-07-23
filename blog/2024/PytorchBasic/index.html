@@ -21,16 +21,28 @@
               ]
             }
           }
-    </script> </d-front-matter> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top" role="navigation"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/"> <span class="font-weight-bold">Semyeong</span> Yu </a> <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse text-right" id="navbarNav"> <ul class="navbar-nav ml-auto flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">about </a> </li> <li class="nav-item "> <a class="nav-link" href="/cv/">cv </a> </li> <li class="nav-item "> <a class="nav-link" href="/blog/">blog </a> </li> <li class="toggle-container"> <button id="light-toggle" title="Change theme"> <i class="ti ti-sun-moon" id="light-toggle-system"></i> <i class="ti ti-moon-filled" id="light-toggle-dark"></i> <i class="ti ti-sun-filled" id="light-toggle-light"></i> </button> </li> </ul> </div> </div> </nav> <progress id="progress" value="0"> <div class="progress-container"> <span class="progress-bar"></span> </div> </progress> </header> <div class="post distill"> <d-title> <h1>Pytorch Basic Code (DDP)</h1> <p>Dataset, DataLoader, Train, Attention, ...</p> </d-title> <d-article> <h2 id="pytorch-basic-code-distributeddataparallel-ver">Pytorch Basic Code (DistributedDataParallel ver.)</h2> <h3 id="deal-with-json-csv">Deal with json, csv</h3> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-08-PytorchBasic/3-480.webp 480w,/assets/img/2024-07-08-PytorchBasic/3-800.webp 800w,/assets/img/2024-07-08-PytorchBasic/3-1400.webp 1400w," sizes="95vw" type="image/webp"></source> <img src="/assets/img/2024-07-08-PytorchBasic/3.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <pre><code class="language-Python">import os
+    </script> </d-front-matter> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top" role="navigation"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/"> <span class="font-weight-bold">Semyeong</span> Yu </a> <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse text-right" id="navbarNav"> <ul class="navbar-nav ml-auto flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">about </a> </li> <li class="nav-item "> <a class="nav-link" href="/cv/">cv </a> </li> <li class="nav-item "> <a class="nav-link" href="/blog/">blog </a> </li> <li class="toggle-container"> <button id="light-toggle" title="Change theme"> <i class="ti ti-sun-moon" id="light-toggle-system"></i> <i class="ti ti-moon-filled" id="light-toggle-dark"></i> <i class="ti ti-sun-filled" id="light-toggle-light"></i> </button> </li> </ul> </div> </div> </nav> <progress id="progress" value="0"> <div class="progress-container"> <span class="progress-bar"></span> </div> </progress> </header> <div class="post distill"> <d-title> <h1>Pytorch Basic Code (DDP)</h1> <p>Dataset, DataLoader, Train, Attention, ...</p> </d-title> <d-article> <h2 id="pytorch-basic-code-distributeddataparallel-ver">Pytorch Basic Code (DistributedDataParallel ver.)</h2> <h3 id="deal-with-json-image-csv">Deal with json, image, csv</h3> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-08-PytorchBasic/3-480.webp 480w,/assets/img/2024-07-08-PytorchBasic/3-800.webp 800w,/assets/img/2024-07-08-PytorchBasic/3-1400.webp 1400w," sizes="95vw" type="image/webp"></source> <img src="/assets/img/2024-07-08-PytorchBasic/3.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <pre><code class="language-Python">import os
 import json
 import pandas as pd
 import csv
+from PIL import Image
+import cv2
 
 # read json
 if os.path.exists(json_path):
     with open(json_path, "r") as f:
         data = json.load(f)
     f.close()
+
+# read image 방법 1.
+img = Image.open(image_path).convert('RGB') # PIL image object in range [0, 255]
+img.show()
+
+# read image 방법 2.
+img = cv2.imread(image_path) # np.ndarray of shape (H, W, C) in range [0, 255] in BGR mode
+cv2.imshow('Image', img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 
 # read csv 방법 1. general case
 data = pd.read_csv(csv_path, sep="|", index_col=0, skiprows=[1], na_values=['?', 'nan']).values # 0-th column (1-th row는 제외) ('?'와 'nan'은 결측값으로 인식)
@@ -45,6 +57,26 @@ if os.path.exists(csv_path):
 dataset = [] # list of dictionaries
 dataset.append({"id":id, "w":w, "h":h, "class":i})
 pd.DataFrame(dataset).to_csv(output_path, index=False) # output_path : ".../dataset.csv"
+</code></pre> <h3 id="convert-to-tensor">Convert to Tensor</h3> <p>data.py의 CustomDataset(torch.utils.data.Dataset)에서 image는 <code class="language-plaintext highlighter-rouge">shape (C, H, W) tensor</code>여야 하기 때문에<br> PIL.Image.open() 또는 cv2.imread()로 얻은<br> PIL image object 또는 np.ndarray를 적절한 shape 및 range의 tensor로 변환해주어야 한다</p> <ul> <li>PIL image object \(\rightarrow\) Tensor <ul> <li>torchvision.transforms.ToTensor()</li> <li>np.array(), torch.tensor()</li> <li>getdata(), torch.tensor()</li> </ul> </li> <li>np.ndarray \(\rightarrow\) Tensor <ul> <li>torch.tensor()</li> </ul> </li> </ul> <pre><code class="language-Python">PIL_img = Image.open(image_path).convert('RGB') # PIL image object of size (W, H) in range [0, 255]
+
+# 방법 1. torchvision.transforms.ToTensor()
+transform = torchvision.transforms.Compose([
+    torchvision.transforms.Resize((256, 256)),
+    torchvision.transforms.ToTensor() # convert to tensor in range [0., 1.]
+])
+img = transform(PIL_img) # tensor of shape (C, H, W) in range [0., 1.]
+
+# 방법 2. np.array(), torch.tensor()
+img = np.array(PIL_img) # np.ndarray of shape (H, W, C) in range [0., 255.]
+img = torch.tensor(img.transpose((2, 0, 1)).astype(float)).mul_(1.0) / 255.0 # tensor of shape (C, H, W) in range [0., 1.]
+
+# 방법 3. getdata(), torch.tensor()
+img_data = PIL_img.getdata()
+img = torch.tensor(img_data, dtype=torch.float32) # tensor of shape (H*W*C,) in range [0, 255]
+img = img.view(PIL_img.size[1], PIL_img.size[0], 3).permute(2, 0, 1) / 255.0 # tensor of shape (C, H, W) in range [0., 1.]
+</code></pre> <pre><code class="language-Python">img = cv2.imread(image_path) # np.ndarray of shape (H, W, C) in range [0., 255.]
+
+img = torch.tensor(img.transpose((2, 0, 1)).astype(float)).mul_(1.0) / 255.0 # tensor of shape (C, H, W) in range [0., 1.]
 </code></pre> <h3 id="create-dataset">Create Dataset</h3> <ul> <li> <code class="language-plaintext highlighter-rouge">data augmentation</code> : <ul> <li>Resize</li> <li>ToTensor</li> <li>RandomHorizontalFlip</li> <li>RandomVerticalFlip</li> <li>Normalize</li> <li>RandomRotation</li> <li>RandomAffine <ul> <li>shear</li> <li>scale (zoom-in/out)</li> </ul> </li> <li>RandomResizedCrop</li> <li>ColorJitter</li> <li>GaussianBlur</li> </ul> </li> </ul> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" srcset="/assets/img/2024-07-08-PytorchBasic/4-480.webp 480w,/assets/img/2024-07-08-PytorchBasic/4-800.webp 800w,/assets/img/2024-07-08-PytorchBasic/4-1400.webp 1400w," sizes="95vw" type="image/webp"></source> <img src="/assets/img/2024-07-08-PytorchBasic/4.png" class="img-fluid rounded z-depth-1" width="100%" height="auto" data-zoomable="" loading="eager" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <pre><code class="language-Python">import os
 import torch
 from torch.utils.data import Dataset
@@ -101,7 +133,7 @@ class CustomDataset(Dataset):
         # input : shape (H, W, C) / range [0, 255]
         # output : shape (C, H, W) / range [0, 1]
         ts = (2, 0, 1)
-        x = torch.Tensor(x.transpose(ts).astype(float)).mul_(1.0) # in-place
+        x = torch.tensor(x.transpose(ts).astype(float)).mul_(1.0) # _ : in-place
         x = x / 255.0 # normalize
         return x
 
