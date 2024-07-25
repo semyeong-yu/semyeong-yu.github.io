@@ -294,6 +294,8 @@ class CustomDataset(Dataset):
   - output :  
     - for iter, (x, y) in enumerate(dataloader): 의 x, y  
   - 예 : 길이가 다른 input들을 batch로 묶기 위해 padding, tokenization  
+  img의 경우 CustomDataset()에서 augmentation으로 shape (C, H, W)로 통일해줬다면 (N, C, H, W)로 묶을 수 있지만,  
+  object detection task에서 target의 경우 n_box가 image마다 다르므로 N batch로 묶기 위해 padding해주어야 함
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">

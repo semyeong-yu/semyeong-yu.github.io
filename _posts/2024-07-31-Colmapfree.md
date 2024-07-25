@@ -1,11 +1,11 @@
 ---
 layout: distill
 title: COLMAP-Free 3D Gaussian Splatting
-date: 2024-07-24 15:00:00
+date: 2024-07-31 15:00:00
 description: COLMAP-Free 3D Gaussian Splatting
 tags: COLMAP SfM GS depth pose rendering 3d
 categories: 3d-view-synthesis
-thumbnail: assets/img/2024-07-24-Colmapfree/1.png
+thumbnail: assets/img/2024-07-31-Colmapfree/1.png
 giscus_comments: true
 related_posts: true
 # toc:
