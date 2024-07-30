@@ -2,9 +2,9 @@
 layout: distill
 title: Pytorch Tensor
 date: 2024-07-09 15:00:00
-description: NDC
-tags: NDC 3d
-categories: 3d-view-synthesis
+description: import torch
+tags: pytorch
+categories: cv-tasks
 thumbnail: assets/img/2024-07-09-TorchTensor/1.png
 giscus_comments: true
 related_posts: true

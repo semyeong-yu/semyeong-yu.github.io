@@ -70,7 +70,7 @@ $$e_L, e_R$$ : epipole of left and right camera
 </div>
 
 real-world의 3D 좌표 $$(X, Y, Z)$$ 에 있는 물체를 카메라에 투영하기 위해 Z (= 깊이) 값을 1로 정규화한 평면을 `normalized plane`이라 하고, $$(\frac{X}{Z}, \frac{Y}{Z}, 1)$$의 좌표값을 갖는다.  
-이를 image로서 나타내기 위해 초점거리를 곱해주고 원점을 정중앙에서 좌상단으로 바꿔서 normalized plane 상의 normalized coordinates $$(\frac{X}{Z}, \frac{Y}{Z}, 1)$$을 `image plane 상의 pixel coordinates` $$(\frac{X}{Z} \ast f_x - \frac{W}{2}, \frac{Y}{Z} \ast f_y - \frac{H}{2}, 1)$$ 로 변환할 수 있는데,  
+이를 image로서 나타내기 위해 `초점거리를 곱해주고` `원점을 정중앙에서 좌상단으로` 바꿔서 normalized plane 상의 normalized coordinates $$(\frac{X}{Z}, \frac{Y}{Z}, 1)$$을 `image plane 상의 pixel coordinates` $$(\frac{X}{Z} \ast f_x - \frac{W}{2}, \frac{Y}{Z} \ast f_y - \frac{H}{2}, 1)$$ 로 변환할 수 있는데,  
 이 때 곱하게 되는 행렬이 바로 intrinsic matrix (= calibration matrix) K 이다. 그리고 이렇게 intrinsic parameters를 구하는 과정을 `Camera Calibration` 이라 부른다.  
 한편, normalized coordinate $$p = (x, y, 1)$$에 대해 any $$\hat p = (X, Y, Z)$$ where $$(\frac{X}{Z}, \frac{Y}{Z}) = (x, y)$$를 `homogeneous coordinates` for $$p$$ 라고 부른다.  
 
@@ -82,7 +82,7 @@ real-world의 3D 좌표 $$(X, Y, Z)$$ 에 있는 물체를 카메라에 투영�
 
 그런데, 카메라의 각도 혹은 위치가 달라지면 맺히는 이미지 자체도 달라지기 때문에 intrinsic matrix를 곱하기 전에 camera의 rotation 및 translation을 먼저 고려해주어야 하는데, 이 때 곱하게 되는 행렬이 바로 extrinsic marix $$[R \vert t]$$ 이다.  
 
-- `K : intrinsic parameters` (3x3 `calibration` matrix) (초점거리 곱하고 원점 바꾸는 등 image에 projection하기 위한 카메라 자체의 특성)
+- `K : intrinsic parameters` (3x3 `calibration` matrix) (초점거리 곱하고 원점 바꾸는 등 pixel-coordinate에 projection하기 위한 카메라 자체의 특성)
 
 - `R, t : extrinsic parameters` (3x3 `rotation`, 3x1 `translation` matrix) (두 카메라의 상대적인 pose(위치 및 각도))  
 
