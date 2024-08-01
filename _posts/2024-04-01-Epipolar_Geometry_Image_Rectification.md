@@ -271,14 +271,20 @@ $$e_{R} = P_{R} [O_{L} ; 1] = P_{R} [0 ; 1] =  K_{R}[R \vert t][0 ; 1] = K_{R} t
 - 네 번째로, left image를 rectify하는 `최종 projective transformation` $$H_{L} = H_{L2}H_{L1}$$ 을 구한다.
 - 다섯 번째로, 같은 방법으로 right image를 rectify하는 `최종 projective transformation` $$H_{R} = H_{R2}H_{R1}$$을 구한다. 여기서 주의할 점은, left image와 right image를 각각 $$H_{L1}$$과 $$H_{R1}$$으로 `rotate한 후에 optical axis가 서로 평행해야 한다`.  
 One strategy is to pick a plane parallel to the line where the two original optical axes intersect to minimize distortion from the reprojection process. 또는 We simply define as $$H_{R} = H_{L} R^{t}$$  
-(`위의 두 가지 strategy 이해 못 했음. 추가 공부 필요`)  
-- 마지막으로, two images가 same resolution을 갖도록 `scale`해준다. 그러면 horizontal epipoles가 align되어 매칭되는 점들이 같은 `vertical coordinates를 가지므로 매칭되는 점들을 찾기 위해 horizontal scan만 하면 되는 쉬운 문제로 바뀐다`.  
-추가로, 꼭 $$K_{L}, K_{R}$$ `intrinsic parameter를 모르더라도` `a set of seven or more image-to-image correspondences`만 알면 `fundamental matrix와 epipoles를 계산`할 수 있어서 `image rectification을 수행`할 수 있다고 한다.  
+(`?????`)  
+- 마지막으로, two images가 same resolution을 갖도록 `scale`해준다. 그러면 horizontal epipoles가 align되어 매칭되는 점들이 `같은 vertical coordinates`를 가지므로 매칭되는 점들을 찾기 위해 `horizontal scan만 하면 되는 쉬운 문제`로 바뀐다.  
+- `Eight-Point Algorithm` :  
+  - 꼭 $$K_{L}, K_{R}$$ `intrinsic parameter를 모르더라도`  
+  두 images 사이의 8 corresponding points만 알면  
+  `fundamental matrix와 epipoles`를 계산할 수 있어서  
+  image rectification을 수행할 수 있다!  
+  - fundamental matrix $$F$$는 3-by-3 matrix이므로 미지수가 9개인데  
+  $$x_{R}^{T} F x_L = 0$$ 에서 $$x_L, x_R$$ pair 8개를 알고 있다면  
+  8개의 연립방정식의 해를 구해서 $$F$$ 를 계산할 수 있다  
+  9개의 미지수를 가진 8개의 연립방정식의 해의 경우  
+  SVD(Singular Value Decomposition)으로 근사값을 찾을 수 있다  
+  추가로, $$x_L, x_R$$ 을 normalize하면 근사값의 오차를 줄일 수 있다  
 
-`????? 마지막 문장 이해 못 했음. 8 image-to-image correspondence 공부 필요`  
-
-- Why Eight? :  
-`?????`
 
 > 참고 사이트 :  
 [https://blog.naver.com/hms4913/220043661788](https://blog.naver.com/hms4913/220043661788)  
@@ -286,6 +292,6 @@ One strategy is to pick a plane parallel to the line where the two original opti
 [https://csm-kr.tistory.com/64](https://csm-kr.tistory.com/64)  
 CSC420: Intro to Image Understanding 수업 내용  
 
-중간중간에 있는 질문들은 아직 이해하지 못해서 남겨놓은 코멘트입니다.  
+중간중간에 있는 물음표들은 아직 이해하지 못해서 남겨놓은 코멘트입니다.  
 추후에 다시 읽어보고 이해했다면 업데이트할 예정입니다.  
 혹시 알고 계신 분이 있으면 댓글로 남겨주시면 감사하겠습니다!

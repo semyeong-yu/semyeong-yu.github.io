@@ -1,11 +1,11 @@
 ---
 layout: distill
 title: COLMAP-Free 3D Gaussian Splatting
-date: 2024-07-31 11:00:00
+date: 2024-08-12 11:00:00
 description: COLMAP-Free 3D Gaussian Splatting
 tags: COLMAP SfM GS depth pose rendering 3d
 categories: 3d-view-synthesis
-thumbnail: assets/img/2024-07-31-Colmapfree/1.png
+thumbnail: assets/img/2024-08-12-Colmapfree/1.png
 giscus_comments: true
 related_posts: true
 # toc:
@@ -40,7 +40,6 @@ project website :
 pytorch code :  
 [https://github.com/NVlabs/CF-3DGS](https://github.com/NVlabs/CF-3DGS)  
 
-3DGS
 - colmap (SfM) library : 각 input image에 대한 camera pose 계산
 단점 : 시간 많이 걸리고, feature 추출 오차에 대해 민감성이 있고, 반복적인 영역을 처리하는 데 어려움
 
