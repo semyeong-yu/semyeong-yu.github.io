@@ -70,7 +70,7 @@ $$e_L, e_R$$ : epipole of left and right camera
 </div>
 
 real-world의 3D 좌표 $$(X, Y, Z)$$ 에 있는 물체를 카메라에 투영하기 위해 Z (= 깊이) 값을 1로 정규화한 평면을 `normalized plane`이라 하고, $$(\frac{X}{Z}, \frac{Y}{Z}, 1)$$의 좌표값을 갖는다.  
-이를 image로서 나타내기 위해 `초점거리를 곱해주고` `원점을 정중앙에서 좌상단으로` 바꿔서 normalized plane 상의 normalized coordinates $$(\frac{X}{Z}, \frac{Y}{Z}, 1)$$을 `image plane 상의 pixel coordinates` $$(\frac{X}{Z} \ast f_x - \frac{W}{2}, \frac{Y}{Z} \ast f_y - \frac{H}{2}, 1)$$ 로 변환할 수 있는데,  
+이를 image로서 나타내기 위해 `초점거리를 곱해주고` `원점을 정중앙에서 좌상단으로` 바꿔서 normalized plane 상의 normalized coordinates $$(\frac{X}{Z}, \frac{Y}{Z}, 1)$$을 `image plane 상의 pixel coordinates` $$(\frac{X}{Z} \ast f_x + \frac{W}{2}, \frac{Y}{Z} \ast f_y + \frac{H}{2}, 1)$$ 로 변환할 수 있는데,  
 이 때 곱하게 되는 행렬이 바로 intrinsic matrix (= calibration matrix) K 이다. 그리고 이렇게 intrinsic parameters를 구하는 과정을 `Camera Calibration` 이라 부른다.  
 한편, normalized coordinate $$p = (x, y, 1)$$에 대해  
 any $$\hat p = (X, Y, Z)$$ where $$(\frac{X}{Z}, \frac{Y}{Z}) = (x, y)$$처럼  
@@ -91,7 +91,7 @@ any $$\hat p = (X, Y, Z)$$ where $$(\frac{X}{Z}, \frac{Y}{Z}) = (x, y)$$처럼
 
 즉, 정리하면 3D point [X, Y, Z]가 image plane [x, y]에 맺히는 projection 과정은 아래의 수식을 따른다.
 
-$$\begin{bmatrix} x \\ y \\ z \end{bmatrix}$$ = $$\begin{bmatrix} f_x & s & -W/2 \\ 0 & f_y & -H/2 \\ 0 & 0 & 1 \end{bmatrix}$$ $$[R \vert t]$$ $$\begin{bmatrix} X \\ Y \\ Z \\ 1 \end{bmatrix}$$  
+$$\begin{bmatrix} x \\ y \\ z \end{bmatrix}$$ = $$\begin{bmatrix} f_x & s & W/2 \\ 0 & f_y & H/2 \\ 0 & 0 & 1 \end{bmatrix}$$ $$[R \vert t]$$ $$\begin{bmatrix} X \\ Y \\ Z \\ 1 \end{bmatrix}$$  
 
 $$s$$ : skew due to sensor not mounted perpendicular to the optical axis  
 
