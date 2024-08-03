@@ -88,6 +88,7 @@ import random
 # Create Dataset
 class CustomDataset(Dataset):
     def __init__(self, args, mode):
+        # lazy-loading :
         # load할 data가 너무 크다면 __init__()에서는 load할 파일명만 저장해놓고 __getitem__()에서 필요할 때마다 load
         self.args = args
         self.mode = mode
