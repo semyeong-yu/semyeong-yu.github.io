@@ -1,6 +1,6 @@
 ---
 layout: distill
-title: Diffusion-DDPM
+title: DDPM
 date: 2024-06-25 15:00:00
 description: Diffusion Study
 tags: diffusion generative
@@ -395,6 +395,11 @@ forward process에서 $$X_{t-1}$$에서 $$X_t$$로 더하는 noise 정보 (GT) �
 `inference`를 할 때에도 `임의로 Gaussian sampling한 noise`에 대해서도 $$p_{\theta}(X_{t-1} | X_t)$$ 에 의해 image $$X_0$$ 을 생성할 수 있다.  
 수식 유도 과정을 보면 Step 2 에서 intractable $$q$$ 를 계산 가능하도록 (tractable 하도록) 만들기 위해 $$q$$ 분포의 조건부에 $$X_0$$을 추가하는 것을 확인할 수 있다.  
 
+- Q2 :  
+diffusion model에서 Gaussian을 쓰는 이유  
+
+- A2 :  
+Gaussian의 conditional도 Gaussian이듯 Gaussian이 tractable하기 때문!  
 
 > 출처 블로그 :  
 [Diffusion Model](https://xoft.tistory.com/32)  
