@@ -11,7 +11,7 @@ related_posts: true
 # toc:
 #   beginning: true
 #   sidebar: right
-# featured: true
+featured: true
 _styles: >
   .fake-img {
     background: #bbb;
@@ -44,6 +44,16 @@ _styles: >
 - `likelihood` $$L(\theta | x)$$ : `관측된 사건이 고정`된 상태에서, `확률 분포 몰라서 가정`할 때의 확률  
 예: 선택 가능한 정수를 1~5가 아니라 1~10 또는 4~50으로 바꾸면서(확률 분포 모름), 2가 관측될 확률을 계산(관측 사건 고정)할 경우  
 예: 어떤(모르는) 확률 분포를 따르는 task를 n회 반복 수행하여 관측했을 때 random var. 종류를 가정할 수도 있고 특정 random var.의 parameter를 가정할 수도 있다  
+
+- `주어진 대상`이 training data $$D$$ 이고, `구하고자 하는 대상`이 model param. $$w$$ 일 때  
+  - `Posterior` : $$P(w | D)$$  
+  - `Likelihood` : $$P(D | w)$$  
+  - `Prior` : $$P(w)$$
+
+- `주어진 대상`이 input image $$X_0$$ 이고, `구하고자 하는 대상`이 noisy image $$X_T$$ 일 때  
+  - `Posterior` : $$P(X_T | X_0)$$  
+  - `Likelihood` : $$P(X_0 | X_T)$$  
+  - `Prior` : $$P(X_T)$$
 
 ### Markov process
 
