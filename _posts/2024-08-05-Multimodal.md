@@ -13,10 +13,10 @@ related_posts: true
 #   sidebar: right
 # featured: true
 toc:
-  - name: StoryImager -- A Unified and Efficient Framework for Coherent Story Visualization and Completion
-  - name: Intelligent Grimm -- Open-ended Visual Storytelling via Latent Diffusion Models
+  - name: StoryImager - A Unified and Efficient Framework for Coherent Story Visualization and Completion
+  - name: Intelligent Grimm - Open-ended Visual Storytelling via Latent Diffusion Models
   - name: Generating Realistic Images from In-the-wild Sounds
-  - name: ViViT -- A Video Vision Transformer
+  - name: ViViT - A Video Vision Transformer
 _styles: >
   .fake-img {
     background: #bbb;
@@ -36,7 +36,7 @@ _styles: >
 
 ## Multi-Modal Study
 
-### StoryImager -- A Unified and Efficient Framework for Coherent Story Visualization and Completion
+### StoryImager - A Unified and Efficient Framework for Coherent Story Visualization and Completion
 
 #### Ming Tao, Bing-Kun Bao, Hao Tang, Yaowei Wang, Changsheng Xu
 
@@ -106,7 +106,7 @@ concat
     </div>
 </div> 
 
-### Intelligent Grimm -- Open-ended Visual Storytelling via Latent Diffusion Models
+### Intelligent Grimm - Open-ended Visual Storytelling via Latent Diffusion Models
 
 #### Chang Liu, Haoning Wu, Yujie Zhong, Xiaoyun Zhang, Yanfeng Wang, Weidi Xie
 
@@ -205,7 +205,7 @@ audio는 melspectrogram을 만든 뒤 ViT에서 image 다루듯이 똑같이 pat
 AudioCLIP similarity의 경우 audio encoding과 image encoding과 text encoding 간의 contrastive learning을 통해 구할 수 있다  
 
 
-### ViViT -- A Video Vision Transformer
+### ViViT - A Video Vision Transformer
 
 #### Anurag Arnab, Mostafa Dehghani, Georg Heigold, Chen Sun, Mario Lucic, Cordelia Schmid
 
