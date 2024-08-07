@@ -5,7 +5,8 @@ date: 2024-02-29 00:00:00
 description: Introduction to Quantum Computing
 tags: quantum bloch qubit
 categories: quantum-computing
-giscus_comments: true
+giscus_comments: false
+disqus_comments: true
 related_posts: true
 toc:
   beginning: true

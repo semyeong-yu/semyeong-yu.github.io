@@ -6,7 +6,8 @@ description: Unsupervised Monocular Depth Estimation with Left-Right Consistency
 tags: unsupervised monocular depth consistency
 categories: depth-estimation
 thumbnail: assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/2.JPG
-giscus_comments: true
+giscus_comments: false
+disqus_comments: true
 related_posts: true
 toc:
   beginning: true

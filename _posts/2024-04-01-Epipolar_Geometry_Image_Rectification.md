@@ -6,7 +6,8 @@ description: Epipolar Geometry & Image Rectification
 tags: epipolar fundamental essential image rectification
 categories: depth-estimation
 thumbnail: assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/1.png
-giscus_comments: true
+giscus_comments: false
+disqus_comments: true
 related_posts: true
 images:
   compare: true

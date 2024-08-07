@@ -6,7 +6,8 @@ description: Diffusion Study
 tags: diffusion generative
 categories: generative
 thumbnail: assets/img/2024-06-25-Diffusion/1.png
-giscus_comments: true
+giscus_comments: false
+disqus_comments: true
 related_posts: true
 # toc:
 #   beginning: true

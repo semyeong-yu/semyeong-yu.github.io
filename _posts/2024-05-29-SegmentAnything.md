@@ -6,7 +6,8 @@ description: Promptable Image Segmentation
 tags: image segmentation
 categories: cv-tasks
 thumbnail: assets/img/2024-05-29-SegmentAnything/1.png
-giscus_comments: true
+giscus_comments: false
+disqus_comments: true
 related_posts: true
 # toc:
 #   beginning: true

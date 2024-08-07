@@ -5,7 +5,8 @@ date: 2024-03-01 16:00:00
 description: Segmentation
 tags: vision segmentation
 categories: cv-tasks
-giscus_comments: true
+giscus_comments: false
+disqus_comments: true
 related_posts: true
 toc:
   beginning: true

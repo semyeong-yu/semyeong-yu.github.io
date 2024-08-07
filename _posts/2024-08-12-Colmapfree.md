@@ -6,7 +6,8 @@ description: COLMAP-Free 3D Gaussian Splatting
 tags: COLMAP SfM GS depth pose rendering 3d
 categories: 3d-view-synthesis
 thumbnail: assets/img/2024-08-12-Colmapfree/1.png
-giscus_comments: true
+giscus_comments: false
+disqus_comments: true
 related_posts: true
 # toc:
 #   beginning: true

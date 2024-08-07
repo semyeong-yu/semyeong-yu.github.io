@@ -5,7 +5,8 @@ date: 2024-03-01 15:00:00
 description: Tracking
 tags: vision tracking
 categories: cv-tasks
-giscus_comments: true
+giscus_comments: false
+disqus_comments: true
 related_posts: true
 toc:
   beginning: true

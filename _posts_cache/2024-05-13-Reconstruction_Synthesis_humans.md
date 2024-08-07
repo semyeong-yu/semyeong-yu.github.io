@@ -6,7 +6,8 @@ description: SoC Colloquium lecture by Siyu Tang (ETH Zurich)
 tags: reconstruction synthesis 3D human
 categories: 3d-view-synthesis
 thumbnail: assets/img/2024-05-13-Reconstruction_Synthesis_3D_humans/3.png
-giscus_comments: true
+giscus_comments: false
+disqus_comments: true
 related_posts: true
 toc:
   beginning: true

@@ -6,7 +6,8 @@ description: import torch
 tags: pytorch
 categories: cv-tasks
 thumbnail: assets/img/2024-07-09-TorchTensor/1.png
-giscus_comments: true
+giscus_comments: false
+disqus_comments: true
 related_posts: true
 # toc:
 #   beginning: true
@@ -61,6 +62,14 @@ _styles: >
 </div>
 
 ### Tensor list(tensor) & boolean indexing
+
+- Advanced Indexing :  
+tensor a : shape (5, 5, 3)  
+tensor b : shape (3,)  
+tensor c : shape (3,)  
+tensor d : shape (2,)  
+a[b, d, :] : shape (3, 2, 3)  
+a[b, c, :] : shape (3, 3)
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">

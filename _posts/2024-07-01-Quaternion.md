@@ -6,7 +6,8 @@ description: Quaternion for Rotation Matrix
 tags: quaternion rotation
 categories: 3d-view-synthesis
 thumbnail: assets/img/2024-07-01-Quaternion/2.png
-giscus_comments: true
+giscus_comments: false
+disqus_comments: true
 related_posts: true
 # toc:
 #   beginning: true

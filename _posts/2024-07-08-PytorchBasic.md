@@ -7,7 +7,8 @@ tags: pytorch
 categories: cv-tasks
 thumbnail: assets/img/2024-07-08-PytorchBasic/1.png
 bibliography: 2024-07-08-PytorchBasic.bib
-giscus_comments: true
+giscus_comments: false
+disqus_comments: true
 related_posts: true
 _styles: >
   .fake-img {

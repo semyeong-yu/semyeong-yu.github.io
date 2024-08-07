@@ -6,7 +6,8 @@ description: Quantization in Pytorch and ONNX
 tags: quantization
 categories: quantization
 thumbnail: assets/img/2024-03-02-Quantization/Untitled1.png
-giscus_comments: true
+giscus_comments: false
+disqus_comments: true
 related_posts: true
 toc:
   beginning: true

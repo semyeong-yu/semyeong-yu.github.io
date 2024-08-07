@@ -5,8 +5,8 @@ date: 2024-08-05 15:00:00
 description: Paper Review
 tags: multi-modal generative
 categories: generative
-thumbnail: assets/img/2024-08-05-Multimodal/1.png
-giscus_comments: true
+giscus_comments: false
+disqus_comments: true
 related_posts: true
 # toc:
 #   beginning: true

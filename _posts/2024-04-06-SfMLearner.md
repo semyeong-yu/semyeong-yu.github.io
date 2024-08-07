@@ -6,7 +6,8 @@ description: Unsupervised Learning of Depth and Ego-Motion from Video
 tags: unsupervised depth ego motion video
 categories: depth-estimation
 thumbnail: assets/img/2024-04-06-SfMLearner/3.png
-giscus_comments: true
+giscus_comments: false
+disqus_comments: true
 related_posts: true
 toc:
   beginning: true
