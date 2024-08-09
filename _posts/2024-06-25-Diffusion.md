@@ -47,13 +47,13 @@ _styles: >
 예: 어떤(모르는) 확률 분포를 따르는 task를 n회 반복 수행하여 관측했을 때 random var. 종류를 가정할 수도 있고 특정 random var.의 parameter를 가정할 수도 있다  
 
 - `주어진 대상`이 training data $$D$$ 이고, `구하고자 하는 대상`이 model param. $$w$$ 일 때  
-  - `Posterior` : $$P(w | D)$$  
-  - `Likelihood` : $$P(D | w)$$  
+  - `Posterior` : $$P(w | D)$$
+  - `Likelihood` : $$P(D | w)$$
   - `Prior` : $$P(w)$$
 
 - `주어진 대상`이 input image $$X_0$$ 이고, `구하고자 하는 대상`이 noisy image $$X_T$$ 일 때  
-  - `Posterior` : $$P(X_T | X_0)$$  
-  - `Likelihood` : $$P(X_0 | X_T)$$  
+  - `Posterior` : $$P(X_{T} | X_{0})$$
+  - `Likelihood` : $$P(X_{0} | X_{T})$$
   - `Prior` : $$P(X_T)$$
 
 ### Markov process
