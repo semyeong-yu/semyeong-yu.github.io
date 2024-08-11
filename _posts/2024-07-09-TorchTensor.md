@@ -137,6 +137,10 @@ a[b, c, :] : shape (3, 3)
 
 ### Broadcasting
 
+- Broadcasting 규칙 :  
+  - 두 tensor의 차원이 다를 경우, 더 작은 차원의 tensor의 shape 앞에 1이 추가되어 동일한 차원이 된다
+  - 두 텐서의 각 차원에서 크기가 같거나, 한쪽의 크기가 1인 경우에만 broadcasting 가능
+
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
         {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/15.png" class="img-fluid rounded z-depth-1" zoomable=true %}
