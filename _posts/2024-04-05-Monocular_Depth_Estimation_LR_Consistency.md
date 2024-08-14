@@ -115,19 +115,24 @@ Garg et al. :
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/13.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
         {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/1.JPG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
-b : baseline distance between two camera centers (상수)  
-f : camera focal length (상수)  
+$$b$$ : baseline distance between two camera centers (상수)  
+$$f$$ : camera focal length (상수)  
 가로로 뻗은 직선 : rectified image plane  
-d : predicted disparity  
-d^ : depth  
-b : d^ = b - d : d^ - f 이므로 d^ (b - d) = b (d^ - f) 이고, 이를 정리하면 d^d = bf, 즉 `d^ = bf / d` 이다.  
-만약 disparity $$d = x_{r} - x_{l}$$ 과 depth Z = d^를 얻었다면, 아래의 도식으로 X, Y 값도 얻을 수 있어서 3D point 좌표를 알 수 있다.  
-`(아래의 도식은 뭘 말하는거지?)`  
-$$x = \frac{f \cdot X}{Z} + p_x$$  
+$$d$$ : predicted disparity  
+$$\hat d$$ : depth  
+$$b : \hat d = b - d : \hat d - f$$ 이므로 $$\hat d (b - d) = b (\hat d - f)$$ 이고,  
+이를 정리하면 $$\hat d \cdot d = bf$$, 즉 $$\hat d = \frac{bf}{d}$$ 이다  
+만약 disparity $$d = x_{r} - x_{l}$$ 과 depth $$Z = \hat d$$를 얻었다면, 아래의 도식으로 3D point 좌표 $$X, Y$$ 도 알 수 있다.    
+$$x = \frac{f_x \cdot X}{Z} + p_x$$
 
 #### Depth Estimation Network
 
