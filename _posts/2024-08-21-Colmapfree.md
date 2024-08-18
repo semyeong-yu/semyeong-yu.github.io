@@ -1,11 +1,11 @@
 ---
 layout: distill
 title: COLMAP-Free 3D Gaussian Splatting
-date: 2024-08-14 11:00:00
-description: COLMAP-Free 3D Gaussian Splatting
+date: 2024-08-21 11:00:00
+description: COLMAP-Free 3D Gaussian Splatting (CVPR 2024)
 tags: COLMAP SfM GS depth pose rendering 3d
 categories: 3d-view-synthesis
-thumbnail: assets/img/2024-08-14-Colmapfree/1.png
+thumbnail: assets/img/2024-08-21-Colmapfree/1.png
 giscus_comments: false
 disqus_comments: true
 related_posts: true
