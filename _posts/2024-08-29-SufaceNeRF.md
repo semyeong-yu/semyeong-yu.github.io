@@ -5,7 +5,7 @@ date: 2024-08-26 11:00:00
 description: Key-Point Summary
 tags: nerf rendering surface
 categories: 3d-view-synthesis
-thumbnail: assets/img/2024-08-26-SurfaceNeRF/1.png
+thumbnail: assets/img/2024-08-29-SurfaceNeRF/1.png
 giscus_comments: false
 disqus_comments: true
 related_posts: true
