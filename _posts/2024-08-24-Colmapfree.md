@@ -89,6 +89,7 @@ COLMAP과 3DGS로 나눠서 하지 말고
   - Global 3DGS :  
     - 목표 :  
     Local 3DGS에서 구한 relative camera pose를 기반으로  
+    Global 3DGS를 순차적으로 점진적으로 계속 업데이트해서  
     entire scene `reconstruction` 결과가 깔끔하게 나타나도록 하자
 
 - COLMAP vs 본 논문 :  
@@ -108,7 +109,9 @@ COLMAP과 3DGS로 나눠서 하지 말고
 - Initialization from a Single View :  
   - initial frame을 monocular depth network (DPT)에 넣어 depth map $$D_1$$ 생성
   - 3D mean :  
-  `initial frame` (2D 정보)과 `initial depth map` $$D_1$$ (3D 정보)와 `intrinsic` param. 이용해서  
+  `initial frame` (2D 정보)과  
+  `initial depth map` $$D_1$$ (3D 정보)와  
+  `intrinsic` param. 이용해서  
   3D pcd로 투영하고, 이를 initial 3DGS mean point로 사용
   - opacity, SH-coeff., covariance(rotation, scale) :  
   L1, D-SSIM photometric loss로 `optimal (initial) Local 3DGS`를 5초 정도만에 구함  
@@ -132,7 +135,7 @@ COLMAP과 3DGS로 나눠서 하지 말고
 - Global 3DGS :  
   - frame이 들어올 때마다 relative camera pose $$T_t$$ 와 frame $$t, t+1$$ 이용해서 `optimal Global 3DGS` 업데이트 (progressively growing)  
   - 어떻게 업데이트? :  
-  frame $$t+1$$ 에는 frame $$t$$ 에서 보지 못한 일부 영역들이 있으므로  
+  frame $$t+1$$ 에는 frame $$t$$ 에서 `보지 못한 일부 영역` 들이 있으므로  
   새로운 frame에 대한 `under-reconstruction densification`에 초점을 두어  
   last frame까지 계속해서 점진적으로 scene reconstruction 수행  
   (last frame까지 계속 under-reconstruction 상황(보지 못했던 영역)이 발생할 것이라는 전제)  
