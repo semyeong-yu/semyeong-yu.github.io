@@ -17,6 +17,10 @@ toc:
   - name: Intelligent Grimm - Open-ended Visual Storytelling via Latent Diffusion Models
   - name: Generating Realistic Images from In-the-wild Sounds
   - name: ViViT - A Video Vision Transformer
+  - name: LLaMA-VID - An Image is Worth 2 Tokens in Large Language Models
+  - name: PEEKABOO - Interactive Video Generation via Masked-Diffusion
+  - name: ControlNet - Adding Conditional Control to Text-to-Image Diffusion Models
+  - name: InstructPix2Pix - Learning to Follow Image Editing Instructions
 _styles: >
   .fake-img {
     background: #bbb;
@@ -36,7 +40,7 @@ _styles: >
 
 ## Multi-Modal Study
 
-### StoryImager - A Unified and Efficient Framework for Coherent Story Visualization and Completion
+## StoryImager - A Unified and Efficient Framework for Coherent Story Visualization and Completion
 
 #### Ming Tao, Bing-Kun Bao, Hao Tang, Yaowei Wang, Changsheng Xu
 
@@ -106,7 +110,7 @@ concat
     </div>
 </div> 
 
-### Intelligent Grimm - Open-ended Visual Storytelling via Latent Diffusion Models
+## Intelligent Grimm - Open-ended Visual Storytelling via Latent Diffusion Models
 
 #### Chang Liu, Haoning Wu, Yujie Zhong, Xiaoyun Zhang, Yanfeng Wang, Weidi Xie
 
@@ -155,7 +159,7 @@ story의 경우 frame t에 영향을 주는 image들이 frame t-1, frame t-2, ..
 이 때, 과거 frames에 모두 같은 random noise를 줄 경우 성능 좋지 않아서  
 `현재에 가까운 과거 frame일수록 noise를 덜 주는 식으로 temporal order를 부여`하면 성능 좋음  
 
-### Generating Realistic Images from In-the-wild Sounds
+## Generating Realistic Images from In-the-wild Sounds
 
 #### Taegyeong Lee, Jeonghun Kang, Hyeonyu Kim, Taehwan Kim
 
@@ -205,7 +209,7 @@ audio는 melspectrogram을 만든 뒤 ViT에서 image 다루듯이 똑같이 pat
 AudioCLIP similarity의 경우 audio encoding과 image encoding과 text encoding 간의 contrastive learning을 통해 구할 수 있다  
 
 
-### ViViT - A Video Vision Transformer
+## ViViT - A Video Vision Transformer
 
 #### Anurag Arnab, Mostafa Dehghani, Georg Heigold, Chen Sun, Mario Lucic, Cordelia Schmid
 
@@ -247,3 +251,113 @@ spatial과 temporal을 두 개의 transformer encoder로 구성하여
 
 - Model 4 (factorized dot-product attention) :  
 spatial head의 경우 spatial-dim.에 대해서만 attention 수행
+
+## LLaMA-VID - An Image is Worth 2 Tokens in Large Language Models
+
+- task : 주로 Video-QA
+
+- VLM :  
+  - 영화 같은 long video understanding  
+  - token 수가 너무 많아서 문제
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/llamaVID/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
+- architecture  
+  - context attention :  
+  $$E_t = mean(softmax(Q_t X_t^T) X_t)$$  
+  - context token : from video frame and user question
+  - content token : from video frame
+
+- contribution  
+  - 각 video frame을 두 가지의 token으로 나타냄  
+    - context token (one token)  
+    - content token (one token으로 compressed될 수도 있고 아닐 수도 있음)
+  - hour-long video understanding을 위한 instruction dataset 만듦
+
+## PEEKABOO - Interactive Video Generation via Masked-Diffusion
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/PEEKABOO/3.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+<div class="caption">
+    Video Diffusion Model
+</div>
+
+
+- 기존 video generation diffusion model :  
+  - 성능 꽤 좋은데 아직 user가 control하기 어려움  
+  - 이전에 spatial control을 적용하려면 전체 network를 training시키거나 adapter로 training시키는 과정이 필요했다 
+  - 본 논문은 추가적인 training 없이 masked attention module을 사용하여  
+  diffusion의 3D UNet을 사용하는 다양한 model에 적용할 수 있는 방법을 제시
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/PEEKABOO/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
+- contribution :  
+  - `UNet` 기반의 video generation model이라면 `spatio-temporal control` 가능  
+  (spatio-temporal control : video가 generated될 때 object size, location, and trajectory 등을 user가 control하는 것)
+  - `training-free`
+  - no additial latency at inference time
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/PEEKABOO/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
+- `Masked attention` :  
+  - fg에만 attention하도록 만들기 위해   
+  - $$\text{MaskedAttention}(Q, K, V, M) = \text{softmax}(\frac{QK^T}{d}+M)V$$  
+  where $$M[i, j] = - \infty$$ if bg(0)  
+  where $$M[i, j] = 0$$ if fg(1)  
+
+- binary mask :  
+  - image :  
+  input BB를 입력으로 받아서 BB object 있는 부분만 fg = 1이 되도록 binary mask $$M_{input}^f[i]$$ 를 만들어서 latent size로 downsample  
+  where size of $$n_{frame} \times n_{latents}$$  
+  - text :  
+  text embedding을 받아서 object 나타내는 단어만 fg = 1이 되도록 mask $$T[j]$$  
+  where size of $$n_{text}$$
+
+- `Masked cross attention` :  
+  - text와 image 간의 attention
+  - cross-attention mask :  
+  $$M_{CA}^f[i, j] = fg(M_{input}^f[i]) \ast fg(T[j]) + (1-fg(M_{input}^f[i])) \ast (1-fg(T[j]))$$  
+  where $$fg$$ : pixel 또는 text token이 fg이면 1을 반환하고, bg이면 0을 반환  
+  where size of $$n_{latents} \times n_{text}$$  
+  - cross-attention mask :  
+    - image와 text가 둘 다 fg(1)이거나 둘 다 bg(0)이면 1을 반환하고  
+    둘 중 하나가 fg(1)이고 둘 중 하나가 bg(0)이면 0을 반환  
+    - 즉, `fg와 bg가 서로 attention하지 않도록`!  
+    `fg는 fg끼리, bg는 bg끼리 attention하도록`!
+
+- `Masked spatial attention` :  
+  - image self-attention for spatial
+  - spatial-attention mask :  
+  $$M_{SA}^f[i, j] = fg(M_{input}^f[i]) \ast fg(M_{input}^f[j]) + (1-fg(M_{input}^f[i])) \ast (1-fg(M_{input}^f[j]))$$  
+  where size of $$n_{latents} \times n_{latents}$$  
+
+- `Masked temporal attention` :  
+  - image self-attention for temporal
+  - temporal-attention mask :  
+  $$M_{TA}^i[f, k] = fg(M_{input}^f[i]) \ast fg(M_{input}^k[i]) + (1-fg(M_{input}^f[i])) \ast (1-fg(M_{input}^k[i]))$$  
+  where size of $$n_{frame} \times n_{frame}$$  
+
+- Extension :  
+image binary mask를 input BB 받아서 manually 만들지 않고  
+text prompt 넣어주면 LLM이 대신 만들어줄 수 있음 (VideoDirectorGPT와 유사)  
+$$\rightarrow$$  
+그럼 text prompt만 입력으로 넣어주면 user control이 가능한 video를 생성할 수 있음!
+
+## ControlNet - Adding Conditional Control to Text-to-Image Diffusion Models
+
+## InstructPix2Pix - Learning to Follow Image Editing Instructions

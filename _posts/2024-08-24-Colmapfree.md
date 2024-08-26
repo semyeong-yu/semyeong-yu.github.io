@@ -20,7 +20,6 @@ toc:
   - name: Global 3DGS with Progressively Growing
   - name: Experiment
   - name: Limitation
-  - name: Question
 _styles: >
   .fake-img {
     background: #bbb;
@@ -186,8 +185,3 @@ pose trajectory와 scene reconstruction 측면에서
 - camera pose와 3DGS를 동시에 순차적으로 optimize하므로  
 video stream 혹은 ordered image 집합에만 적용 가능  
 $$\rightarrow$$ unordered image 집합에도 적용하는 future work 필요
-
-## Question
-
-- Q1 : Local 3DGS로 얻은 relative camera pose는 Global 3DGS 업데이트에만 사용되고 rasterize할 때는 사용되지 않나요?
-- A1 : TBD
