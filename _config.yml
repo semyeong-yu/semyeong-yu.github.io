@@ -296,7 +296,6 @@ display_categories: [
     "3d-view-synthesis",
     "depth-estimation",
     "super-resolution",
-    "frame-interpolation",
     "quantization",
     "quantum-computing",
   ] # these categories will be displayed on the front page of your blog

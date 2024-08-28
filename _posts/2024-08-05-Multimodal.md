@@ -216,6 +216,8 @@ AudioCLIP similarity의 경우 audio encoding과 image encoding과 text encoding
 > paper :  
 [ViViT](https://arxiv.org/abs/2103.15691)
 
+**ViViT는 아직 정리 완료 못했음 TBD...**
+
 - video of (T, H, W, C)를 sampling하여  
 token sequence of (n_t, n_h, n_w, C) 을 만들고  
 positional embedding을 더한 뒤 (N, d)로 reshape해서 transformer의 input으로 넣어줌
