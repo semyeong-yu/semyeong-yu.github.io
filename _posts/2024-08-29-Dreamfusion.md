@@ -141,7 +141,8 @@ where $$\circ$$ 는 element-wise multiplication
   - $$n \cdot (l - \mu)$$ 는 표면에서의 normal vector와 표면에서 광원까지의 vector 간의 내적이며,  
   이는 Lambertian(diffuse) reflectance(난반사)에 의해 광원의 빛이 반사되는 정도를 나타냄  
   왜냐하면, 빛이 표면에 수직으로 들어올수록 많이 반사됨  
-  - 만약 빛이 표면 반대쪽에 있어서 내적 값  $$n \cdot (l - \mu)$$ 이 음수일 경우  
+  - 만약 빛이 표면 반대쪽에 있어서 또는 back-facing normal로 잘못 예측해서  
+  내적 값  $$n \cdot (l - \mu)$$ 이 음수일 경우  
   난반사에 의해 광원의 빛이 반사되는 정도는 0  
   - $$l_p \circ \text{난반사 정도} + l_a$$ 에 의해  
   `광원`의 색상 $$l_p$$ 는 물체 `표면의 난반사 정도에 따라` 반영되고  
@@ -175,19 +176,20 @@ T5-XXL text embedding을 거치기 전에
 text prompt engineering 수행  
   - Elevation angle(고각)이 60도 이상일 때 "overhead view"  
   - azimuth angle(방위각)에 따라 "front view", "side view", "back view"
-  - Imagen을 잘 쓰기 위한 text prompt engineering이 투박하긴 하네?
+  - text prompt engineering은 원래 좀 투박하게 하나?
 
 ### Optimization
 
 - 실험적인 implementation :  
   - noise level sampling $$t$$ :  
   $$z_t, t \sim U[0, 1]$$ 에서 noise level이 너무 크거나($$t=1$$) 너무 작을 경우($$t=0$$) instability 생기므로  
-  noise level을 $$t \sim U[0.02, 0.98]$$ 로 sampling
+  noise level $$t \sim U[0.02, 0.98]$$ 에서 sampling
   - guidance weight $$w$$ :  
-  Imagen이 NeRF에 얼만큼 영향을 미칠지(guide할지)  
+  Imagen이 NeRF에 얼만큼 영향을 미칠지(guide할지)인데,  
   high-quality 3D model을 학습하기 위해서는  
   classifier-free guidance weight $$w$$ 를 큰 값(100)으로 설정  
   (NeRF MLP output color가 sigmoid에 의해 [0, 1]로 bounded되어있으므로 constrained optimization 문제라서 guidance weight 커도 딱히 artifacts 없음)  
+  (만약 너무 작은 guidance weight 값을 사용할 경우 object를 표현하는 중간값을 찾고자 하여 over-smoothing됨 `????`)
   - seed :  
   noise level이 높을 때 smoothed density는 distinct modes를 많이 가지지 않고  
   SDS Loss는 mode-seeking property를 가지고 있으므로  
@@ -201,15 +203,33 @@ text prompt engineering 수행
 
 ### Structure
 
-TBD
+- Mip-NeRF 360 구조 사용
+- entire scene 대신 single object를 generate할 때  
+`bounded sphere` 내에서 NeRF view-synthesis 하면 빠르게 수렴 및 좋은 성능
+- $$\gamma(d)$$ 를 input으로 받아 배경 색상을 계산하는 별도의 MLP로 `environment map`을 생성한 뒤 그 위에 ray rendering하면 좋은 성능  
+  - 배경이 보이는 부분은 배경에서의 누적 $$\alpha$$ 값이 1이도록  
+  - 물체 때문에 배경이 안 보이는 부분은 배경에서의 누적 $$\alpha$$ 값이 0이도록
 
 ### Geometry Regularizer
 
-TBD
+- DreamField의 regularization :  
+  - `empty space가 불필요하게 채워지는` 것을 방지
+  - $$L_T = - \text{min} (\tau, \text{mean}(T(\theta, p)))$$ :  
+  평균 `transmittance가 클수록` loss가 작음  
+  where $$T(\theta, p)$$ : transmittance with NeRF parameter $$\theta$$ and camera pose $$p$$  
+  where $$\tau$$ : 최대값 상수
+
+- Ref-NeRF의 regularization :  
+  - normal vector $$n_i$$ 의 back-facing (`물체 안쪽을 향하는`) 문제를 방지  
+  - orientation loss $$L = \Sigma_{i} w_i max(0, n_i \cdot d)^2$$ :  
+  ray를 쏘면 물체의 앞면만 보이니까  
+  물체 표면의 normal vector 방향과 ray 방향의 내적이 음수여야 한다  
+  따라서 $$n_i$$ 와 $$d$$ 의 `내적이 양수일 경우` back-facing normal vector이므로 penalize  
+  white shading을 dark하게 만듦 `????`  
 
 ## SDS Loss
 
-TBD
+- TBD
 
 mode-seeking property
 
