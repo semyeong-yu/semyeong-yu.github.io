@@ -170,12 +170,32 @@ $$c = \rho \circ s$$ 또는 $$c = \rho$$
     </div>
 </div>
 
-- TBD
-
+- text embedding vector $$\tau_{\theta}$$ :  
+T5-XXL text embedding을 거치기 전에  
+text prompt engineering 수행  
+  - Elevation angle(고각)이 60도 이상일 때 "overhead view"  
+  - azimuth angle(방위각)에 따라 "front view", "side view", "back view"
+  - Imagen을 잘 쓰기 위한 text prompt engineering이 투박하긴 하네?
 
 ### Optimization
 
-TBD
+- 실험적인 implementation :  
+  - noise level sampling $$t$$ :  
+  $$z_t, t \sim U[0, 1]$$ 에서 noise level이 너무 크거나($$t=1$$) 너무 작을 경우($$t=0$$) instability 생기므로  
+  noise level을 $$t \sim U[0.02, 0.98]$$ 로 sampling
+  - guidance weight $$w$$ :  
+  Imagen이 NeRF에 얼만큼 영향을 미칠지(guide할지)  
+  high-quality 3D model을 학습하기 위해서는  
+  classifier-free guidance weight $$w$$ 를 큰 값(100)으로 설정  
+  (NeRF MLP output color가 sigmoid에 의해 [0, 1]로 bounded되어있으므로 constrained optimization 문제라서 guidance weight 커도 딱히 artifacts 없음)  
+  - seed :  
+  noise level이 높을 때 smoothed density는 distinct modes를 많이 가지지 않고  
+  SDS Loss는 mode-seeking property를 가지고 있으므로  
+  random seed 바꿔도 실험 결과는 큰 차이 없음
+
+- implementation :  
+  - train : TPUv4, 15000 iter., 1.5h with Distributed Shampoo optimizer
+  - rendering : 각 cpu는 개별 view를 rendering하는데 사용
 
 ## Rendering
 
@@ -190,6 +210,8 @@ TBD
 ## SDS Loss
 
 TBD
+
+mode-seeking property
 
 ## Pseudo Code
 
