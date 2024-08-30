@@ -6,6 +6,7 @@ description: Text-to-3D using 2D Diffusion (ICLR 2023)
 tags: sds diffusion nerf 3d rendering 
 categories: generative
 thumbnail: assets/img/2024-08-29-Dreamfusion/1.png
+bibliography: 2024-08-29-Dreamfusion.bib
 giscus_comments: false
 disqus_comments: true
 related_posts: true
@@ -161,7 +162,7 @@ $$c = \rho \circ s$$ 또는 $$c = \rho$$
 </div>
 
 - `Latent Diffusion` model :  
-  - image $$x$$ 가 아니라 encoder를 거친 image latent vector $$z, \ldots z_T$$ 에 대해 noising, denoising 수행  
+  - image $$x$$ 가 아니라 encoder를 거친 image latent vector $$z$$ 에 대해 noising, denoising 수행  
   - noisy $$z_T$$ 와 text embedding vector $$\tau_{\theta}$$ (conditioning)을 concat한 뒤  
   denoising하여 input image와 유사한 확률 분포를 갖도록 학습
 
@@ -181,9 +182,9 @@ text prompt engineering 수행
 ### Optimization
 
 - 실험적인 implementation :  
-  - noise level sampling $$t$$ :  
+  - noise level (time) sampling $$t$$ :  
   $$z_t, t \sim U[0, 1]$$ 에서 noise level이 너무 크거나($$t=1$$) 너무 작을 경우($$t=0$$) instability 생기므로  
-  noise level $$t \sim U[0.02, 0.98]$$ 에서 sampling
+  noise level $$t \sim U[0.02, 0.98]$$ 로 sampling
   - guidance weight $$w$$ :  
   Imagen이 NeRF에 얼만큼 영향을 미칠지(guide할지)인데,  
   high-quality 3D model을 학습하기 위해서는  
@@ -225,17 +226,86 @@ text prompt engineering 수행
   ray를 쏘면 물체의 앞면만 보이니까  
   물체 표면의 normal vector 방향과 ray 방향의 내적이 음수여야 한다  
   따라서 $$n_i$$ 와 $$d$$ 의 `내적이 양수일 경우` back-facing normal vector이므로 penalize  
-  white shading을 dark하게 만듦 `????`  
+    - textureless shading을 쓸 때 해당 regularization이 중요  
+    만약 해당 regularization 안 쓰면  
+    density field로 구한 normal 방향이 camera 반대쪽을 향하게 되어 shading이 더 어두워짐
 
 ## SDS Loss
 
-- TBD
+- NeRF로 rendering한 image $$x$$ 에 noise를 더한 것을 $$z_t$$ 로 두고  
+U-Net $$\hat \epsilon_{\phi}(z_t | y, t)$$ 을 빼서 denoising하여 얻은 image의 확률분포가  
+2D diffusion prior가 내놓는 image의 확률분포와 비슷하도록 하는 loss이며,  
+그 차이만큼 NeRF $$\theta$$ 로 back-propagation 
+
+- 배경지식 :  
+  - DDPM Loss : $$E_{t, x_0, \epsilon} [\| \epsilon - \hat \epsilon_{\phi}(\alpha_{t}x_0 + \sigma_{t} \epsilon, t) \|^{2}]$$  
+  where $$\epsilon \sim N(0, I)$$  
+  where $$\alpha_{t} = \sqrt{\bar \alpha_{t}}$$  
+  where $$\sigma_{t} = \sqrt{1-\bar \alpha_{t}}$$  
+  - 위의 DDPM Loss는 denoising U-Net param.을 업데이트하기 위함  
+  우리는 fixed denoising U-Net을 이용하여  
+  NeRF param. $$\theta$$ 를 업데이트하기 위한 SDS Loss 필요!
+
+### Simple Derivation of SDS Loss
+
+- DDPM Loss를 $$\phi$$ 말고 $$\theta$$ 에 대해 미분하고  
+constant $$\frac{dz_t}{dx} = \alpha_{t} \boldsymbol I$$ 를 $$w(t)$$ 에 넣으면
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/6.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+<div class="caption">
+    x는 NeRF가 생성한 image이고, y는 text embedding vector
+</div>
+
+- 위의 U-Net Jacobian은 상당한 연산량을 가지는 데 비해  
+작은 noise만 줄 뿐 큰 영향이 없으므로  
+SDS Loss에서 U-Net Jacobian term은 생략  
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/7.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
+### Derivation of SDS Loss
+
+1. $$\nabla_{\theta} L_{SDS}(\phi, x=g(\theta)) = \nabla_{\theta} E_t[w(t)\frac{\sigma_{t}}{\alpha_{t}}\text{KL}(q(z_t|g(\theta)) \| p_{\phi}(z_t | y, t))]$$ :  
+gradient of weighted probability density distillation loss <d-cite key="WaveNet">[1]</d-cite>  
+
+2. $$\text{KL}(q(z_t|g(\theta)) \| p_{\phi}(z_t | y, t)) = E_{\epsilon}[log q(z_t | x = g(\theta)) - log p_{\phi}(z_t | y)]$$  
+$$\rightarrow \nabla_{\theta}\text{KL}(q(z_t|g(\theta)) \| p_{\phi}(z_t; y, t)) = E_{\epsilon}[\nabla_{\theta}log q(z_t | x = g(\theta)) - \nabla_{\theta}log p_{\phi}(z_t | y)]$$
+
+3. $$\nabla_{\theta}log q(z_t | x = g(\theta)) = (\frac{d\text{log}q(z_t | x)}{dx} + \frac{d\text{log}q(z_t | x)}{dz_t}\frac{dz_t}{dx})\alpha_{t}\frac{dx}{d\theta} = (\frac{\alpha_{t}}{\sigma_{t}}\epsilon - \frac{\alpha_{t}}{\sigma_{t}}\epsilon)\alpha_{t}\frac{dx}{d\theta}$$ :  
+$$q$$ 는 고정된 variance의 noise를 사용하므로 $$\theta$$ 에 대한 forward entropy $$\text{log}q$$ 의 미분 값은 0  
+  - $$\frac{d\text{log}q(z_t | x)}{dx}$$ : parameter score function  
+  gradient of log probability w.r.t parameters `????` 
+  - $$\frac{d\text{log}q(z_t | x)}{dz_t}\frac{dz_t}{dx}$$ : path derivative  
+  gradient of log probability w.r.t sample `????`
+
+4. <d-cite key="vargrad">[2]</d-cite>  
 
 mode-seeking property
 
 ## Pseudo Code
 
-TBD
+```Python
+params = generator.init() # NeRF param.
+opt_state = optimizer.init(params) # optimizer
+diffusion_model = diffusion.load_model() # Imagen diffusion model
+for iter in iterations:
+  t = random.uniform(0., 1.) # noise level (time step)
+  alpha_t, sigma_t = diffusion_model.get_coeffs(t) # determine noisy z_t's mean, std.
+  eps = random.normal(img_shape) # gaussian noise (epsilon)
+  x = generator(params, ...) # NeRF rendered image
+  z_t = alpha_t * x + sigma_t * eps # noisy NeRF image
+  epshat_t = diffusion_model.epshat(z_t, y, t) # denoising U-Net
+  g = grad(weight(t) * dot(stopgradient[epshat_t - eps], x), params) # derivative of SDS loss; stopgradient since do not update diffusion model
+  params, opt_state = optimizer.update(g, opt_state) # update NeRF param.
+return params
+```
 
 ## Experiment
 
