@@ -272,22 +272,61 @@ SDS Loss에서 U-Net Jacobian term은 생략
 
 ### Derivation of SDS Loss
 
-1. $$\nabla_{\theta} L_{SDS}(\phi, x=g(\theta)) = \nabla_{\theta} E_t[w(t)\frac{\sigma_{t}}{\alpha_{t}}\text{KL}(q(z_t|g(\theta)) \| p_{\phi}(z_t | y, t))]$$ :  
-gradient of weighted probability density distillation loss <d-cite key="WaveNet">[1]</d-cite>  
+- SDS Loss gradient :  
+  - inspired by gradient of weighted probability density distillation loss <d-cite key="WaveNet">[1]</d-cite>  
+  - $$\nabla_{\theta} L_{SDS}(\phi, x=g(\theta)) = \nabla_{\theta} E_{t, z_t|x}[w(t)\frac{\sigma_{t}}{\alpha_{t}}\text{KL}(q(z_t|g(\theta)) \| p_{\phi}(z_t | y, t))]$$
 
-2. $$\text{KL}(q(z_t|g(\theta)) \| p_{\phi}(z_t | y, t)) = E_{\epsilon}[log q(z_t | x = g(\theta)) - log p_{\phi}(z_t | y)]$$  
-$$\rightarrow \nabla_{\theta}\text{KL}(q(z_t|g(\theta)) \| p_{\phi}(z_t; y, t)) = E_{\epsilon}[\nabla_{\theta}log q(z_t | x = g(\theta)) - \nabla_{\theta}log p_{\phi}(z_t | y)]$$
+- KL-divergence :  
+  - $$\text{KL}(q(z_t|g(\theta)) \| p_{\phi}(z_t | y, t)) = E_{\epsilon}[\text{log} q(z_t | x = g(\theta)) - \text{log} p_{\phi}(z_t | y)]$$  
+  $$\rightarrow \nabla_{\theta}\text{KL}(q(z_t|g(\theta)) \| p_{\phi}(z_t; y, t)) = E_{\epsilon}[\nabla_{\theta}\text{log} q(z_t | x = g(\theta)) - \nabla_{\theta}\text{log} p_{\phi}(z_t | y)]$$
 
-3. $$\nabla_{\theta}log q(z_t | x = g(\theta)) = (\frac{d\text{log}q(z_t | x)}{dx} + \frac{d\text{log}q(z_t | x)}{dz_t}\frac{dz_t}{dx})\alpha_{t}\frac{dx}{d\theta} = (\frac{\alpha_{t}}{\sigma_{t}}\epsilon - \frac{\alpha_{t}}{\sigma_{t}}\epsilon)\alpha_{t}\frac{dx}{d\theta}$$ :  
-$$q$$ 는 고정된 variance의 noise를 사용하므로 $$\theta$$ 에 대한 forward entropy $$\text{log}q$$ 의 미분 값은 0  
-  - $$\frac{d\text{log}q(z_t | x)}{dx}$$ : parameter score function  
-  gradient of log probability w.r.t parameters `????` 
-  - $$\frac{d\text{log}q(z_t | x)}{dz_t}\frac{dz_t}{dx}$$ : path derivative  
-  gradient of log probability w.r.t sample `????`
+- $$\theta$$ 에 대한 $$\text{log}q$$ 의 미분 :  
+  - gradient of `forward process entropy` w.r.t mean param. $$\theta$$ (variance는 고정)  
+  - 아래 수식을 $$\nabla_{\theta}log q(z_t | x = g(\theta))$$ 계산에 이용  
+  $$z_t = \alpha_{t} x + \sigma_{t} \epsilon \sim N(\alpha_{t} x, \sigma_{t}^2)$$  
+  $$\rightarrow \text{log} q(z_t|x=g(\theta)) = -\frac{1}{2\sigma_{t}^2} \| z_t - \alpha_{t} x \|^2 + \text{constant}$$  
+  $$\rightarrow \frac{d\text{log}q(z_t | x)}{dx} = \frac{\alpha_{t}}{\sigma_{t}^2}(z_t - \alpha_{t} x) = \frac{\alpha_{t}}{\sigma_{t}^2}\sigma_{t}\epsilon = \frac{\alpha_{t}}{\sigma_{t}}\epsilon$$  
+  and $$\frac{d\text{log}q(z_t | x)}{dz_t} = -\frac{1}{\sigma_{t}^2}(z_t - \alpha_{t} x) = -\frac{1}{\sigma_{t}^2}\sigma_{t}\epsilon = -\frac{1}{\sigma_{t}}\epsilon$$  
+  and $$\frac{dz_t}{dx} = \alpha_{t}$$
+  - $$\nabla_{\theta}log q(z_t | x = g(\theta)) = (\frac{d\text{log}q(z_t | x)}{dx} + \frac{d\text{log}q(z_t | x)}{dz_t}\frac{dz_t}{dx})\frac{dx}{d\theta}$$  
+  $$= (\frac{\alpha_{t}}{\sigma_{t}}\epsilon - \frac{1}{\sigma_{t}}\epsilon \alpha_{t})\frac{dx}{d\theta}$$  
+  $$= 0$$
+  ($$q$$ 는 `고정된 variance의 noise`를 사용하므로 $$\theta$$ 에 대한 entropy $$\text{log}q$$ 의 미분 값은 0)  
+    - 위의 식에서 $$\frac{d\text{log}q(z_t | x)}{dx}$$ :  
+    `parameter score function`  
+    gradient of log probability w.r.t parameter $$x$$  
+    ($$x$$ 에 대한 $$\text{log}q$$ 의 gradient 계산)
+    - $$\frac{d\text{log}q(z_t | x)}{dz_t}\frac{dz_t}{dx}$$ :  
+    `path derivative`  
+    gradient of log probability w.r.t sample $$z_t$$  
+    ($$q$$ 를 따르는 sample $$z_t$$ 를 통해 $$x$$ 에 대한 $$\text{log}q$$ 의 gradient 계산)
+  - <d-cite key="vargrad">[2]</d-cite> 에 따르면  
+  path derivative term은 냅두고  
+  parameter score function term을 제거하여  
+  SDS loss gradient에 $$\epsilon$$ 항을 포함할 경우  
+  `control-variates` 기법 [Wikipedia](https://en.wikipedia.org/wiki/Control_variates)에 의해  
+  $$E[\cdot]$$ 으로 gradient 구할 때 `variance를 줄일 수` 있음!  
+  (자세한 설명은 아래의 SDS Loss gradient Summary 부분 참고)
+  (variance가 작으면 optimization이 빨라지고 더 나은 결과를 도출할 수 있음)
 
-4. <d-cite key="vargrad">[2]</d-cite>  
+- $$\theta$$ 에 대한 $$\text{log}p_{\phi}$$ 의 미분 :  
+  - gradient of `backward process entropy` (denoising U-Net) w.r.t mean param. $$\theta$$  
+  - 아래 수식을 $$\nabla_{\theta}log p_{\phi}(z_t | y)$$ 계산에 이용  
+  $$\nabla_{z_t} \text{log}p_{\phi}(z_t | y) = \frac{d\text{log}p_{\phi}(z_t | y)}{dz_t} = -\frac{1}{\sigma_{t}}\hat \epsilon_{\phi}$$  
+  and $$\frac{dz_t}{dx} = \alpha_{t}$$
+  - $$\nabla_{\theta}\text{log} p_{\phi}(z_t | y) = \nabla_{z_t} \text{log}p_{\phi}(z_t | y) \frac{dz_t}{dx} \frac{dx}{d\theta} = - \frac{\alpha_{t}}{\sigma_{t}} \hat \epsilon_{\phi}(z_t | y) \frac{dx}{d\theta}$$
 
-mode-seeking property
+- SDS Loss gradient `Summary` :  
+  - SDS Loss gradient :  
+  $$\nabla_{\theta} L_{SDS}(\phi, x=g(\theta)) = E_{t, z_t|x}[w(t)\frac{\sigma_{t}}{\alpha_{t}}\nabla_{\theta}\text{KL}(q(z_t|g(\theta)) \| p_{\phi}(z_t | y, t))]$$  
+  $$= E_{t, \epsilon}[w(t)\frac{\sigma_{t}}{\alpha_{t}} (-\frac{\alpha_{t}}{\sigma_{t}}\epsilon \frac{dx}{d\theta} + \frac{\alpha_{t}}{\sigma_{t}} \hat \epsilon_{\phi}(z_t | y) \frac{dx}{d\theta})]$$  
+  $$= E_{t, \epsilon}[w(t)(\hat \epsilon_{\phi}(z_t | y) - \epsilon)\frac{dx}{d\theta}]$$  
+  - $$\nabla_{\theta}log q(z_t | x = g(\theta))$$ 의 path derivative term은 $$\epsilon$$ 과 관련 있고,  
+  $$\nabla_{\theta}\text{log} p_{\phi}(z_t | y)$$ 은 $$\epsilon$$ 의 예측, 즉 $$\hat \epsilon_{\phi}$$ 와 관련 있고,  
+  둘의 KL-divergence를 loss term으로 사용한다  
+  ($$\epsilon$$ 을 $$\hat \epsilon$$ 의 control-variate로 생각하여 <d-cite key="vargrad">[2]</d-cite> 방식처럼 SDS Loss gradient 만들 수 있음!)
+
+mode-seeking property `?????`
 
 ## Pseudo Code
 
@@ -308,6 +347,38 @@ return params
 ```
 
 ## Experiment
+
+### Metric 
+
+- CLIP R-Precision <d-cite key="dreamfield">[3]</d-cite> :  
+어떤 input text에 대해 rendered image의 일관성을 측정
+  - 기존 CLIP R-Precision은 geometry quality는 측정할 수 없으므로  
+  평평한 flat geometry에 대해서도 높은 점수가 나올 수 있음  
+  - textureless render의 R-Precision도 추가로 측정!
+
+- PSNR :  
+zero-shot text-to-3D generation에서는  
+text에 대한 3D Ground-Truth를 만들 수 없으므로  
+GT를 필요로 하는 PSNR 같은 metric은 사용하지 못함
+
+### Result
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/8.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+<div class="caption">
+    Geo(metry)의 CLIP R-Precision 점수가 높다는 것은 평평한 3D model이 아니라 shape 정보까지 고려했다는 것!
+</div>
+
+- 아쉬운 점 :  
+비슷한 다른 모델이 있다면 PSNR, SSIM 등으로 비교할 수 있었을텐데  
+비교군이 없어서 R-Precision으로 consistency 측정만 했음
+
+- 25:52
+
+### Ablation Study
 
 TBD
 
