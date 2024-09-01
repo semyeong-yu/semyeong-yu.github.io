@@ -179,6 +179,10 @@ text prompt engineering 수행
   - azimuth angle(방위각)에 따라 "front view", "side view", "back view"
   - text prompt engineering은 원래 좀 투박하게 하나?
 
+- Imagen :  
+  - latent diffusion model with $$64 \times 64$$ resolution  
+  (for fast training)
+
 ### Optimization
 
 - 실험적인 implementation :  
@@ -277,11 +281,16 @@ SDS Loss에서 U-Net Jacobian term은 생략
   - $$\nabla_{\theta} L_{SDS}(\phi, x=g(\theta)) = \nabla_{\theta} E_{t, z_t|x}[w(t)\frac{\sigma_{t}}{\alpha_{t}}\text{KL}(q(z_t|g(\theta)) \| p_{\phi}(z_t | y, t))]$$
 
 - KL-divergence :  
-  - $$\text{KL}(q(z_t|g(\theta)) \| p_{\phi}(z_t | y, t)) = E_{\epsilon}[\text{log} q(z_t | x = g(\theta)) - \text{log} p_{\phi}(z_t | y)]$$  
-  $$\rightarrow \nabla_{\theta}\text{KL}(q(z_t|g(\theta)) \| p_{\phi}(z_t; y, t)) = E_{\epsilon}[\nabla_{\theta}\text{log} q(z_t | x = g(\theta)) - \nabla_{\theta}\text{log} p_{\phi}(z_t | y)]$$
+  - [Diffusion](https://semyeong-yu.github.io/blog/2024/Diffusion/) 의 KL-divergence 부분에 따르면  
+  모르는 분포 $$q(x)$$ ( $$\epsilon$$ ) 을 N개 sampling하여 trained $$p(x | \theta)$$로 근사하고자 할 때,  
+  $$KL(q \| p) \simeq \frac{1}{N} \sum_{n=1}^{N} {log q(x_n) - log p(x_n | \theta)}$$ 이므로  
+  $$\text{KL}(q(z_t|g(\theta)) \| p_{\phi}(z_t | y, t)) = E_{\epsilon}[\text{log} q(z_t | x = g(\theta)) - \text{log} p_{\phi}(z_t | y)]$$  
+  $$\rightarrow$$  
+  $$\nabla_{\theta}\text{KL}(q(z_t|g(\theta)) \| p_{\phi}(z_t; y, t)) = E_{\epsilon}[\nabla_{\theta}\text{log} q(z_t | x = g(\theta)) - \nabla_{\theta}\text{log} p_{\phi}(z_t | y)]$$
 
 - $$\theta$$ 에 대한 $$\text{log}q$$ 의 미분 :  
-  - gradient of `forward process entropy` w.r.t mean param. $$\theta$$ (variance는 고정)  
+  - gradient of `forward process entropy` w.r.t mean param. $$\theta$$  
+  (variance는 고정)  
   - 아래 수식을 $$\nabla_{\theta}log q(z_t | x = g(\theta))$$ 계산에 이용  
   $$z_t = \alpha_{t} x + \sigma_{t} \epsilon \sim N(\alpha_{t} x, \sigma_{t}^2)$$  
   $$\rightarrow \text{log} q(z_t|x=g(\theta)) = -\frac{1}{2\sigma_{t}^2} \| z_t - \alpha_{t} x \|^2 + \text{constant}$$  
@@ -290,7 +299,7 @@ SDS Loss에서 U-Net Jacobian term은 생략
   and $$\frac{dz_t}{dx} = \alpha_{t}$$
   - $$\nabla_{\theta}log q(z_t | x = g(\theta)) = (\frac{d\text{log}q(z_t | x)}{dx} + \frac{d\text{log}q(z_t | x)}{dz_t}\frac{dz_t}{dx})\frac{dx}{d\theta}$$  
   $$= (\frac{\alpha_{t}}{\sigma_{t}}\epsilon - \frac{1}{\sigma_{t}}\epsilon \alpha_{t})\frac{dx}{d\theta}$$  
-  $$= 0$$
+  $$= 0$$  
   ($$q$$ 는 `고정된 variance의 noise`를 사용하므로 $$\theta$$ 에 대한 entropy $$\text{log}q$$ 의 미분 값은 0)  
     - 위의 식에서 $$\frac{d\text{log}q(z_t | x)}{dx}$$ :  
     `parameter score function`  
@@ -300,18 +309,19 @@ SDS Loss에서 U-Net Jacobian term은 생략
     `path derivative`  
     gradient of log probability w.r.t sample $$z_t$$  
     ($$q$$ 를 따르는 sample $$z_t$$ 를 통해 $$x$$ 에 대한 $$\text{log}q$$ 의 gradient 계산)
-  - <d-cite key="vargrad">[2]</d-cite> 에 따르면  
+  - Sticking-the-Landing <d-cite key="vargrad">[2]</d-cite> 에 따르면  
   path derivative term은 냅두고  
   parameter score function term을 제거하여  
   SDS loss gradient에 $$\epsilon$$ 항을 포함할 경우  
   `control-variates` 기법 [Wikipedia](https://en.wikipedia.org/wiki/Control_variates)에 의해  
   $$E[\cdot]$$ 으로 gradient 구할 때 `variance를 줄일 수` 있음!  
-  (자세한 설명은 아래의 SDS Loss gradient Summary 부분 참고)
+  (자세한 설명은 아래의 SDS Loss gradient Summary 부분 참고)  
   (variance가 작으면 optimization이 빨라지고 더 나은 결과를 도출할 수 있음)
 
 - $$\theta$$ 에 대한 $$\text{log}p_{\phi}$$ 의 미분 :  
   - gradient of `backward process entropy` (denoising U-Net) w.r.t mean param. $$\theta$$  
   - 아래 수식을 $$\nabla_{\theta}log p_{\phi}(z_t | y)$$ 계산에 이용  
+  $$\frac{d\text{log}q(z_t | x)}{dz_t}$$ 구했듯이 $$\epsilon$$ 대신 $$\epsilon_{\phi}$$ 넣으면  
   $$\nabla_{z_t} \text{log}p_{\phi}(z_t | y) = \frac{d\text{log}p_{\phi}(z_t | y)}{dz_t} = -\frac{1}{\sigma_{t}}\hat \epsilon_{\phi}$$  
   and $$\frac{dz_t}{dx} = \alpha_{t}$$
   - $$\nabla_{\theta}\text{log} p_{\phi}(z_t | y) = \nabla_{z_t} \text{log}p_{\phi}(z_t | y) \frac{dz_t}{dx} \frac{dx}{d\theta} = - \frac{\alpha_{t}}{\sigma_{t}} \hat \epsilon_{\phi}(z_t | y) \frac{dx}{d\theta}$$
@@ -319,11 +329,12 @@ SDS Loss에서 U-Net Jacobian term은 생략
 - SDS Loss gradient `Summary` :  
   - SDS Loss gradient :  
   $$\nabla_{\theta} L_{SDS}(\phi, x=g(\theta)) = E_{t, z_t|x}[w(t)\frac{\sigma_{t}}{\alpha_{t}}\nabla_{\theta}\text{KL}(q(z_t|g(\theta)) \| p_{\phi}(z_t | y, t))]$$  
+  $$= E_{t, \epsilon}[w(t)\frac{\sigma_{t}}{\alpha_{t}}E_{\epsilon}[\nabla_{\theta}\text{log} q(z_t | x = g(\theta)) - \nabla_{\theta}\text{log} p_{\phi}(z_t | y)]]$$  
   $$= E_{t, \epsilon}[w(t)\frac{\sigma_{t}}{\alpha_{t}} (-\frac{\alpha_{t}}{\sigma_{t}}\epsilon \frac{dx}{d\theta} + \frac{\alpha_{t}}{\sigma_{t}} \hat \epsilon_{\phi}(z_t | y) \frac{dx}{d\theta})]$$  
   $$= E_{t, \epsilon}[w(t)(\hat \epsilon_{\phi}(z_t | y) - \epsilon)\frac{dx}{d\theta}]$$  
-  - $$\nabla_{\theta}log q(z_t | x = g(\theta))$$ 의 path derivative term은 $$\epsilon$$ 과 관련 있고,  
-  $$\nabla_{\theta}\text{log} p_{\phi}(z_t | y)$$ 은 $$\epsilon$$ 의 예측, 즉 $$\hat \epsilon_{\phi}$$ 와 관련 있고,  
-  둘의 KL-divergence를 loss term으로 사용한다  
+  - $$\nabla_{\theta}log q(z_t | x = g(\theta))$$ 의 path derivative term은 $$\epsilon$$ 과 관련 있고!  
+  $$\nabla_{\theta}\text{log} p_{\phi}(z_t | y)$$ 은 $$\epsilon$$ 의 예측, 즉 $$\hat \epsilon_{\phi}$$ 와 관련 있고!  
+  둘의 KL-divergence를 loss term으로 사용한다!  
   ($$\epsilon$$ 을 $$\hat \epsilon$$ 의 control-variate로 생각하여 <d-cite key="vargrad">[2]</d-cite> 방식처럼 SDS Loss gradient 만들 수 있음!)
 
 mode-seeking property `?????`
@@ -350,11 +361,12 @@ return params
 
 ### Metric 
 
-- CLIP R-Precision <d-cite key="dreamfield">[3]</d-cite> :  
-어떤 input text에 대해 rendered image의 일관성을 측정
+- `CLIP R-Precision` <d-cite key="dreamfield">[3]</d-cite> :  
+  - `rendered image의 text 일관성`을 측정  
+  (rendered image가 주어졌을 때 CLIP이 오답 texts 중 적절한 text를 찾는 accuracy로 계산)
   - 기존 CLIP R-Precision은 geometry quality는 측정할 수 없으므로  
   평평한 flat geometry에 대해서도 높은 점수가 나올 수 있음  
-  - textureless render의 R-Precision도 추가로 측정!
+  - textureless render의 R-Precision(Geo)도 추가로 측정!
 
 - PSNR :  
 zero-shot text-to-3D generation에서는  
@@ -372,15 +384,53 @@ GT를 필요로 하는 PSNR 같은 metric은 사용하지 못함
     Geo(metry)의 CLIP R-Precision 점수가 높다는 것은 평평한 3D model이 아니라 shape 정보까지 고려했다는 것!
 </div>
 
+- 위의 표 설명 :  
+  - GT Images : oracle (CLIP training에 사용된 dataset)
+  - CLIP-Mesh : CLIP으로 mesh를 optimize한 연구
+
+- DreamFusion은 training할 때 `Imagen`을 썼고,  
+Dream Fields와 CLIP-Mesh는 training할 때 `CLIP`을 썼으므로  
+Dream Fields와 CLIP-Mesh를 사용하는 게  
+DreamFusion보다 성능이 더 좋아야 하는데,  
+위의 표를 보면 Color와 Geometry 평가에서 DreamFusion이 높은 성능(text 일관성)을 보인다는 것을 확인할 수 있다
+
 - 아쉬운 점 :  
 비슷한 다른 모델이 있다면 PSNR, SSIM 등으로 비교할 수 있었을텐데  
 비교군이 없어서 R-Precision으로 consistency 측정만 했음
 
-- 25:52
-
 ### Ablation Study
 
-TBD
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/9.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+ 
+- 어떤 기법이 얼마나 성능에 기여했는지 파악하기 위해  
+4가지 기법을 점진적으로 추가
+  - (i) `ViewAug` : view-points의 범위를 넓힘
+  - (ii) `ViewDep` : view-dependent text prompt-engineering 사용  
+  (e.g. "overhead view", "side view")
+  - (iii) `Lighting` : 조명 사용
+  - (iv) `Textureless` : albedo를 white로 만들어서 (color 없이) shading
+
+- geometry quality를 확인하기 위해  
+3가지 rendering 기법을 비교  
+  - (Top) `Albedo` : albedo $$\rho$$ 만으로 rendering  
+  (기존 NeRF와 동일)  
+  - (Middle) `Full Shaded` : albedo $$\rho$$ 뿐만 아니라 shading하여 rendering  
+  - (Bottom) `Textureless` : albedo $$\rho$$ 를 white $$(1, 1, 1)$$ 로 바꾼 뒤 shading
+
+- 결과 설명 :  
+  - 기법 추가 없이 Albedo rendering 하면 R-Precision은 높게 나오는데  
+  Geometry가 엄청 이상함 (e.g. 머리 2개 가진 개)  
+  - ViewDep, Lighting, Textureless 기법 사용해야 정확한 `geometry`까지 recon할 수 있음
+  - (ii) ViewDep의 영향 :  
+  geometry 개선되지만, surface가 non-smooth하고 Shaded rendering 결과가 bad
+  - (iii) Lighting의 영향 :  
+  geometry 개선되지만, 어두운 부분은 (e.g. 해적 모자) 여전히 non-smooth
+  - (iv) Textureless의 영향 :  
+  geometry smooth하게 만드는 데 도움 되지만, color detail (e.g. 해골 뼈)이 geometry에 carved 되는 문제 발생
 
 ## Limitation
 
