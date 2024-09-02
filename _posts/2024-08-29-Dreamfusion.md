@@ -61,8 +61,11 @@ pytorch code :
 
 ## Contribution
 
-- `SDS(Score Distillation) Loss` 처음 제시
-- NeRF가 Diffusion(Imagen) model이 내놓을 만한 그럴 듯한 image를 합성하도록 함
+- `SDS(Score Distillation) Loss` 처음 제시  
+  - scalable, high-quality 2D diffusion model의 능력을 3D domain renderer로 distill
+  - 3D 또는 multi-view training data 필요없고, pre-trained 2D diffusion model만 있으면, 3D synthesis 수행 가능!
+- NeRF가 Diffusion(Imagen) model with text에서 내놓을 만한 그럴 듯한 image를 합성하도록 함
+- `text-to-3D` synthesis 발전 시작
 
 ## Overview
 
@@ -182,6 +185,12 @@ text prompt engineering 수행
 - Imagen :  
   - latent diffusion model with $$64 \times 64$$ resolution  
   (for fast training)
+
+### Sample in Parmater Space, not Pixel Space
+
+- loss optimization으로 tractable sample 만들기 위해 diffusion model의 힘을 이용해서  
+$$x$$ in pixel space 가 아니라, $$\theta$$ in parameter space 를 optimize  
+s.t. $$x=g(\theta)$$ 가 그럴 듯한 diffusion model sample처럼 보이도록
 
 ### Optimization
 
@@ -337,8 +346,6 @@ SDS Loss에서 U-Net Jacobian term은 생략
   둘의 KL-divergence를 loss term으로 사용한다!  
   ($$\epsilon$$ 을 $$\hat \epsilon$$ 의 control-variate로 생각하여 <d-cite key="vargrad">[2]</d-cite> 방식처럼 SDS Loss gradient 만들 수 있음!)
 
-mode-seeking property `?????`
-
 ## Pseudo Code
 
 ```Python
@@ -434,8 +441,35 @@ DreamFusion보다 성능이 더 좋아야 하는데,
 
 ## Limitation
 
-TBD
+- SDS를 적용하여 만든 2D image sample은 `over-saturated` 혹은 `over-smoothed` result  
+  - dynamic thresholding <d-cite key="dynathres">[4]</d-cite> 을 사용하면 SDS를 image에 적용할 때의 문제를 완화시킬 수 있다고 알려져 있긴 하지만, NeRF context에 대해서는 해결하지 못함  
+  `?????`
+
+- SDS를 적용하여 만든 2D image sample은 `diversity` 부족  
+(random seed 바꿔도 3D result에 큰 차이 없음)  
+
+This may be fundamental to our use of reverse KL divergence, which has been previously noted to have mode-seeking properties in the context of variational inference and probability density distillation `?????`
+
+- $$64 \times 64$$ Imagen (`low resol.`)을 사용하여 3D model의 fine-detail이 부족할 수 있음  
+  - diffusion model 또는 NeRF를 더 큰 걸 사용하면 문제 해결할 수 있지만, 그만큼 겁나 느려지지...
+
+- 2D image로부터 3D recon.하는 게 원래 어려운 task임  
+e.g. inverse rendering, dreamfusion
+  - 같은 2D images로부터 무수히 많은 3D worlds가 존재할 수 있으니까
+  - optimization landscape가 highly non-convex하므로 local minima에 빠지지 않기 위한 기법들 필요  
+  (local minima : e.g. 모든 scene content가 하나의 flat surface에 painted된 경우)  
+  - more `robust 3D prior`가 도움 될 것임
+
 
 ## Question
 
-TBD
+- Q1 : reverse KL-divergence를 최소화하는 과정의 경우 mode-seeking property (확률 높은 중요한 부분 찾는 경향)가 있다는데,  
+reverse KL-divergence와 mode-seeking property가 무슨 관계인가요?
+
+- A1 : TBD
+
+- Q2 : SDS loss로 image rendering한 samples의 경우 diversity가 부족하고 그 이유가 mode-seeking property라는 거 같은데,  
+오히려 diversity가 부족한 게 단점이 아니라,  
+mode-seeking property로 중요한 부분을 잘 캐치해서 consistent하게 그려내는 게 장점이 될 수 있지 않나요?
+
+- A2 : TBD
