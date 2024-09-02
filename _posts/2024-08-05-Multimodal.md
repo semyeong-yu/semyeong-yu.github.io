@@ -19,6 +19,7 @@ toc:
   - name: ViViT - A Video Vision Transformer
   - name: LLaMA-VID - An Image is Worth 2 Tokens in Large Language Models
   - name: PEEKABOO - Interactive Video Generation via Masked-Diffusion
+  - name: Style Aligned Image Generation via Shared Attention
   - name: ControlNet - Adding Conditional Control to Text-to-Image Diffusion Models
   - name: InstructPix2Pix - Learning to Follow Image Editing Instructions
 _styles: >
@@ -359,6 +360,10 @@ image binary mask를 input BB 받아서 manually 만들지 않고
 text prompt 넣어주면 LLM이 대신 만들어줄 수 있음 (VideoDirectorGPT와 유사)  
 $$\rightarrow$$  
 그럼 text prompt만 입력으로 넣어주면 user control이 가능한 video를 생성할 수 있음!
+
+## Style Aligned Image Generation via Shared Attention
+
+- CVPR 2024 (oral)
 
 ## ControlNet - Adding Conditional Control to Text-to-Image Diffusion Models
 

@@ -504,14 +504,25 @@ e.g. inverse rendering, dreamfusion
 
 ## Question
 
-- Q1 : reverse KL-divergence를 최소화하는 과정의 경우 mode-seeking property (확률 높은 중요한 부분 찾는 경향)가 있다는데,  
+- Q1 : diffusion의 mode-seeking property?
+
+- A1 :  
+  - A1-1 : diffusion에서 forward process는 mean-seeking property 가지고 있고, backward process는 mode-seeking property 가지고 있는 걸로 알고 있는데 이거랑 관련 있을까요?  
+  - A1-2 : 그 아까 말씀하신 mode-seeking property에 대해 찾아봤는데 diffusion의 Langevin Dynamics 등의 샘플링 방법이 갖고 있는 특징으로 특정 mode에서 sample을 집중적으로 생성하는 특징을 의미하네요. 제 생각에 "mode-seeking property를 갖고있어 guidance weight가 작으면 over-smoothing 된다"는 말은 diffusion model에서는 특정 모드에 집중되어 sample들이 생성되는데 낮은 guidance weight를 쓰면 여러 모드 사이를 부드럽게(?) 연결하려는 (over-smoothing) 말이지 않을까 싶네요.(즉 너무 매끄럽거나 디테일이 떨어지는 이미지 생성)
+
+- Q2 : reverse KL-divergence를 최소화하는 과정의 경우 mode-seeking property (확률 높은 중요한 부분 찾는 경향)가 있다는데,  
 reverse KL-divergence와 mode-seeking property가 무슨 관계인가요?
 
-- A1 : TBD
+- A2 : TBD
 
-- Q2 : SDS loss로 image rendering한 samples의 경우 diversity가 부족하고 그 이유가 mode-seeking property라는 거 같은데,  
+- Q3 : SDS loss로 image rendering한 samples의 경우 diversity가 부족하고 그 이유가 mode-seeking property라는 거 같은데,  
 오히려 diversity가 부족한 게 단점이 아니라,  
 mode-seeking property로 중요한 부분을 잘 캐치해서 consistent하게 그려내는 게 장점이 될 수 있지 않나요?
 
-- A2 : TBD  
+- A3 : TBD  
 While modes of generative models in high dimensions are often far from typical samples (Nalisnick et al., 2018), the multiscale nature of diffusion model training may help to avoid these pathologies. `?????`
+
+- Q4 : $$\theta$$ 에 대한 $$\text{log}q$$ 의 미분에서 path derivative term은 냅두고 parameter score function term은 제거해서 control-variates에 의해 variance를 줄였다고 하는데,  
+parameter score function term을 걍 제거해버리는 게 좀 야매 아닌가요?
+
+- A4 : TBD
