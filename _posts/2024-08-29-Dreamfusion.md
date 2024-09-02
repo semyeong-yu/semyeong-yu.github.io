@@ -166,8 +166,9 @@ $$c = \rho \circ s$$ 또는 $$c = \rho$$
 
 - `Latent Diffusion` model :  
   - image $$x$$ 가 아니라 encoder를 거친 image latent vector $$z$$ 에 대해 noising, denoising 수행  
-  - noisy $$z_T$$ 와 text embedding vector $$\tau_{\theta}$$ (conditioning)을 concat한 뒤  
-  denoising하여 input image와 유사한 확률 분포를 갖도록 학습
+  - noisy $$z_T$$ 와 text embedding vector $$\tau_{\theta}$$ 를 concat한 걸  
+  denoising하여 input image와 유사한 확률 분포를 갖도록 학습  
+  (text embedding vector $$\tau_{\theta}$$ 을 conditioning (query) 로 넣어줌)  
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
@@ -188,6 +189,17 @@ text prompt engineering 수행
 
 ### Sample in Parmater Space, not Pixel Space
 
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/10.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
+- $$x=g(\theta)$$ : differentiable image parameterization (DIP)  
+where $$x$$ 는 image이고 $$g$$ 는 renderer이고 $$\theta$$ 는 param.
+  - more compact param. space $$\theta$$ 에서 optimize ㄱㄴ  
+  (더 강력한 optimization algorithm 사용 ㄱㄴ)
+
 - loss optimization으로 tractable sample 만들기 위해 diffusion model의 힘을 이용해서  
 $$x$$ in pixel space 가 아니라, $$\theta$$ in parameter space 를 optimize  
 s.t. $$x=g(\theta)$$ 가 그럴 듯한 diffusion model sample처럼 보이도록
@@ -201,9 +213,9 @@ s.t. $$x=g(\theta)$$ 가 그럴 듯한 diffusion model sample처럼 보이도록
   - guidance weight $$w$$ :  
   Imagen이 NeRF에 얼만큼 영향을 미칠지(guide할지)인데,  
   high-quality 3D model을 학습하기 위해서는  
-  classifier-free guidance weight $$w$$ 를 큰 값(100)으로 설정  
+  CFG(classifier-free guidance) weight $$w$$ 를 큰 값(100)으로 설정  
   (NeRF MLP output color가 sigmoid에 의해 [0, 1]로 bounded되어있으므로 constrained optimization 문제라서 guidance weight 커도 딱히 artifacts 없음)  
-  (만약 너무 작은 guidance weight 값을 사용할 경우 object를 표현하는 중간값을 찾고자 하여 over-smoothing됨 `????`)
+  (SDS loss는 mode-seeking property를 가지고 있어서 작은 guidance weight 값을 사용할 경우 over-smoothing됨 `????`)
   - seed :  
   noise level이 높을 때 smoothed density는 distinct modes를 많이 가지지 않고  
   SDS Loss는 mode-seeking property를 가지고 있으므로  
@@ -255,9 +267,13 @@ U-Net $$\hat \epsilon_{\phi}(z_t | y, t)$$ 을 빼서 denoising하여 얻은 ima
   where $$\epsilon \sim N(0, I)$$  
   where $$\alpha_{t} = \sqrt{\bar \alpha_{t}}$$  
   where $$\sigma_{t} = \sqrt{1-\bar \alpha_{t}}$$  
-  - 위의 DDPM Loss는 denoising U-Net param.을 업데이트하기 위함  
+  - 만약 $$\theta$$ 를 업데이트하기 위해 DDPM Loss를 직접 이용할 경우  
+  diffusion training의 multiscale 특성을 이용하고  
+  timestep schedule을 잘 선택한다면 <d-cite key="diffprior">[1]</d-cite> 잘 작동할 수 있다고 하지만  
+  실험해봤을 때 timestep schedule을 tune하기 어려웠고 DDPM Loss는 불안정했음
+  - 위의 DDPM Loss는 denoising U-Net param.을 업데이트하기 위함이었고,  
   우리는 fixed denoising U-Net을 이용하여  
-  NeRF param. $$\theta$$ 를 업데이트하기 위한 SDS Loss 필요!
+  NeRF param. $$\theta$$ 업데이트하기 위한 SDS Loss를 새로 만들겠다!
 
 ### Simple Derivation of SDS Loss
 
@@ -286,7 +302,7 @@ SDS Loss에서 U-Net Jacobian term은 생략
 ### Derivation of SDS Loss
 
 - SDS Loss gradient :  
-  - inspired by gradient of weighted probability density distillation loss <d-cite key="WaveNet">[1]</d-cite>  
+  - inspired by `gradient of weighted probability density distillation loss` <d-cite key="WaveNet">[2]</d-cite>  
   - $$\nabla_{\theta} L_{SDS}(\phi, x=g(\theta)) = \nabla_{\theta} E_{t, z_t|x}[w(t)\frac{\sigma_{t}}{\alpha_{t}}\text{KL}(q(z_t|g(\theta)) \| p_{\phi}(z_t | y, t))]$$
 
 - KL-divergence :  
@@ -318,7 +334,7 @@ SDS Loss에서 U-Net Jacobian term은 생략
     `path derivative`  
     gradient of log probability w.r.t sample $$z_t$$  
     ($$q$$ 를 따르는 sample $$z_t$$ 를 통해 $$x$$ 에 대한 $$\text{log}q$$ 의 gradient 계산)
-  - Sticking-the-Landing <d-cite key="vargrad">[2]</d-cite> 에 따르면  
+  - Sticking-the-Landing <d-cite key="vargrad">[3]</d-cite> 에 따르면  
   path derivative term은 냅두고  
   parameter score function term을 제거하여  
   SDS loss gradient에 $$\epsilon$$ 항을 포함할 경우  
@@ -344,7 +360,21 @@ SDS Loss에서 U-Net Jacobian term은 생략
   - $$\nabla_{\theta}log q(z_t | x = g(\theta))$$ 의 path derivative term은 $$\epsilon$$ 과 관련 있고!  
   $$\nabla_{\theta}\text{log} p_{\phi}(z_t | y)$$ 은 $$\epsilon$$ 의 예측, 즉 $$\hat \epsilon_{\phi}$$ 와 관련 있고!  
   둘의 KL-divergence를 loss term으로 사용한다!  
-  ($$\epsilon$$ 을 $$\hat \epsilon$$ 의 control-variate로 생각하여 <d-cite key="vargrad">[2]</d-cite> 방식처럼 SDS Loss gradient 만들 수 있음!)
+  ($$\epsilon$$ 을 $$\hat \epsilon$$ 의 control-variate로 생각하여 <d-cite key="vargrad">[3]</d-cite> 방식처럼 둘의 차이로 SDS Loss gradient 만들 수 있음!)
+
+- Other Papers :  
+  - Graikos et al. (2022) <d-cite key="diffprior">[1]</d-cite> :  
+  $$KL(h(x) \| p_{\phi}(x|y))$$ 로부터  
+  $$E_{\epsilon, t}[\| \epsilon - \hat \epsilon_{\theta}(z_t | y; t) \|^2] - \text{log} c(x, y)$$ 를 유도해서 loss로 썼지만,  
+  SDS와 달리 error 제곱 꼴이라서 costly back-propagation  
+  - DDPM-PnP 또한 auxiliary classifier $$c$$ 를 썼지만,  
+  SDS에서는 CFG(classifier-free-guidance) 사용  
+  (별도의 image label 없이 image caption만 conditioning으로 넣어줘서 model 학습)
+  - 지금까지 implicit model의 entropy의 gradient는 single noise level <d-cite key="ARDAE">[4]</d-cite> 에서의 amortized score model (control-variate 사용 안 함) 로 측정하였는데,  
+  SDS에서는 multiple noise level을 사용함으로써 optimization 더 쉽게 ㄱㄴ  
+  (multiple noise level `?????`)
+  - GAN-like amortized samplers는 Stein discrepancy 최소화 <d-cite key="Stein">[5]</d-cite> , <d-cite key="Stein2">[6]</d-cite> 로 학습하는데,  
+  이는 SDS loss의 score 차이와 비슷
 
 ## Pseudo Code
 
@@ -368,7 +398,7 @@ return params
 
 ### Metric 
 
-- `CLIP R-Precision` <d-cite key="dreamfield">[3]</d-cite> :  
+- `CLIP R-Precision` <d-cite key="dreamfield">[7]</d-cite> :  
   - `rendered image의 text 일관성`을 측정  
   (rendered image가 주어졌을 때 CLIP이 오답 texts 중 적절한 text를 찾는 accuracy로 계산)
   - 기존 CLIP R-Precision은 geometry quality는 측정할 수 없으므로  
@@ -442,8 +472,8 @@ DreamFusion보다 성능이 더 좋아야 하는데,
 ## Limitation
 
 - SDS를 적용하여 만든 2D image sample은 `over-saturated` 혹은 `over-smoothed` result  
-  - dynamic thresholding <d-cite key="dynathres">[4]</d-cite> 을 사용하면 SDS를 image에 적용할 때의 문제를 완화시킬 수 있다고 알려져 있긴 하지만, NeRF context에 대해서는 해결하지 못함  
-  `?????`
+  - dynamic thresholding <d-cite key="dynathres">[8]</d-cite> 을 사용하면 SDS를 image에 적용할 때의 문제를 완화시킬 수 있다고 알려져 있긴 하지만, NeRF context에 대해서는 해결하지 못함  
+  (dynamic thresholding이 뭔지 아직 몰라서 읽어 봐야 됨 `?????`)
 
 - SDS를 적용하여 만든 2D image sample은 `diversity` 부족  
 (random seed 바꿔도 3D result에 큰 차이 없음)  
@@ -453,13 +483,24 @@ This may be fundamental to our use of reverse KL divergence, which has been prev
 - $$64 \times 64$$ Imagen (`low resol.`)을 사용하여 3D model의 fine-detail이 부족할 수 있음  
   - diffusion model 또는 NeRF를 더 큰 걸 사용하면 문제 해결할 수 있지만, 그만큼 겁나 느려지지...
 
-- 2D image로부터 3D recon.하는 게 원래 어려운 task임  
+- `2D image로부터 3D recon.`하는 게 원래 어렵고 애매한 task임  
 e.g. inverse rendering, dreamfusion
   - 같은 2D images로부터 무수히 많은 3D worlds가 존재할 수 있으니까
   - optimization landscape가 highly non-convex하므로 local minima에 빠지지 않기 위한 기법들 필요  
   (local minima : e.g. 모든 scene content가 하나의 flat surface에 painted된 경우)  
   - more `robust 3D prior`가 도움 될 것임
 
+## Latest Papers
+
+- 본 논문 DreamFusion과 관련된 논문들
+  - ProlificDreamer
+  - CLIP Goes 3D
+  - Magic3D
+  - Fantasia3D
+  - CLIP-Forge
+  - CLIP-NeRF
+  - Text2Mesh
+  - DDS (Delta Denoising Score)
 
 ## Question
 
@@ -472,4 +513,5 @@ reverse KL-divergence와 mode-seeking property가 무슨 관계인가요?
 오히려 diversity가 부족한 게 단점이 아니라,  
 mode-seeking property로 중요한 부분을 잘 캐치해서 consistent하게 그려내는 게 장점이 될 수 있지 않나요?
 
-- A2 : TBD
+- A2 : TBD  
+While modes of generative models in high dimensions are often far from typical samples (Nalisnick et al., 2018), the multiscale nature of diffusion model training may help to avoid these pathologies. `?????`
