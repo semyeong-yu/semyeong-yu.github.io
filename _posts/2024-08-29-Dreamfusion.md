@@ -81,7 +81,7 @@ pytorch code :
     - camera 위치와 각도, light 위치와 색상을 randomly sampling  
     $$P(camera), P(light)$$    
     - NeRF로 image rendering
-    - NeRF param. $$\theta$$ 와 text embedding $$\tau$$ 이용해서 SDS loss 계산
+    - text embedding $$\tau$$ 이용해서 NeRF param. $$\theta$$ 에 대한 SDS loss 계산
     - update NeRF weight
 
 ### Random camera, light sampling

@@ -195,11 +195,12 @@
       "name": "Computer Vision",
       "icon": "fa-solid fa-tag",
       "keywords": [
+        "Neural Radiance Fields",
+        "3D Gaussian Splatting",
+        "Diffusion",
         "Depth Estimation",
         "Super Resolution",
-        "Video Motion Deblurring",
-        "Neural Radiance Fields",
-        "3D Gaussian Splatting"
+        "Video Motion Deblurring"
       ]
     }
   ],
