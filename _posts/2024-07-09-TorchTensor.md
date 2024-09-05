@@ -55,6 +55,12 @@ _styles: >
 
 ### Tensor slice indexing
 
+- a[start, end, step]에서 start, end는 시작 및 끝 위치만 정하고, 방향은 step이 정함  
+e.g. a = np.arange(10)[8:5] 는 []  
+e.g. a = np.arange(10)[8:5:-1] 는 [8, 7, 6]  
+
+- a[1,:,:,:,:,2] 대신 a[1,...,2] 으로 생략 가능
+
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
         {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/5.png" class="img-fluid rounded z-depth-1" zoomable=true %}
@@ -108,6 +114,10 @@ a[b, c, :] : shape (3, 3)
 
 ### Reshape, Permute
 
+- dimension 추가 :  
+  - 방법 1. a.unsqueeze(1)
+  - 방법 2. a[:, None]
+
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
         {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/11.png" class="img-fluid rounded z-depth-1" zoomable=true %}
@@ -116,6 +126,8 @@ a[b, c, :] : shape (3, 3)
 
 ### element-wise, reduction operation, concatenation
 
+- np에선 np.concatenate([a, b], axis=0)
+
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
         {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/12.png" class="img-fluid rounded z-depth-1" zoomable=true %}
@@ -123,6 +135,11 @@ a[b, c, :] : shape (3, 3)
 </div>
 
 ### Matrix operation
+
+- a : shape (4, 3, 2), b : shape (4, 2, 3)일 때  
+np.dot(a, b) : shape (4, 3, 4, 3) 이고  
+a@b : shape (4, 3, 3) 이므로  
+batched matrix multiplication 수행하는 a@b 권장
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
