@@ -291,6 +291,7 @@ jekyll-archives:
 
 display_tags: [] # these tags will be displayed on the front page of your blog
 display_categories: [
+    "math",
     "cv-tasks",
     "generative",
     "3d-view-synthesis",
@@ -298,6 +299,7 @@ display_categories: [
     "super-resolution",
     "quantization",
     "quantum-computing",
+    "others"
   ] # these categories will be displayed on the front page of your blog
 
 # -----------------------------------------------------------------------------
