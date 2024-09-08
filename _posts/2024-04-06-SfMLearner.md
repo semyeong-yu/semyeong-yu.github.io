@@ -9,9 +9,6 @@ thumbnail: assets/img/2024-04-06-SfMLearner/3.png
 giscus_comments: false
 disqus_comments: true
 related_posts: true
-toc:
-  beginning: true
-  sidebar: right
 images:
   compare: true
   slider: true

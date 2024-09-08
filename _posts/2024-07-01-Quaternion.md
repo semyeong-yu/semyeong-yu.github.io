@@ -117,7 +117,8 @@ Quaternion은 `한 번에 계산 가능`하여 `동시에 회전`시킬 수 있�
   $$(q_1 q_2)^{\ast} = q_2^{\ast} q_1^{\ast}$$
 
 - 3D Transformations via Quaternions :  
-  - `3D Rotation` : $$q x \bar q$$ $$\leftrightarrow$$ $$x$$를 $$u$$에 대해 $$\theta$$만큼 회전  
+  - `3D Rotation` : $$x$$를 $$u$$에 대해 $$\theta$$만큼 회전하고 싶다면  
+  $$q x \bar q$$  
   for $$q = cos(\frac{\theta}{2}) + sin(\frac{\theta}{2})u$$  
   where pure imaginary 3D vector $$x, u \in Im(H) = R^3$$  
   where unit quaternion $$q \in H = (R, R^3)$$ where $$\| q \|^2 = 1$$  

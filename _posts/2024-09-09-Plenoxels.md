@@ -5,7 +5,7 @@ date: 2024-09-07 11:00:00
 description: Radiance Fields without Neural Networks (CVPR 2022 oral)
 tags: 3d rendering
 categories: 3d-view-synthesis
-thumbnail: assets/img/2024-09-07-Plenoxels/1.png
+thumbnail: assets/img/2024-09-09-Plenoxels/1.png
 giscus_comments: false
 disqus_comments: true
 related_posts: true
