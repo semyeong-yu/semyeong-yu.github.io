@@ -1,7 +1,7 @@
 ---
 layout: distill
 title: Plenoxels
-date: 2024-09-07 11:00:00
+date: 2024-09-09 11:00:00
 description: Radiance Fields without Neural Networks (CVPR 2022 oral)
 tags: 3d rendering
 categories: 3d-view-synthesis
