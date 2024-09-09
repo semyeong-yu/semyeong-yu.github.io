@@ -22,6 +22,10 @@ toc:
   - name: Style Aligned Image Generation via Shared Attention
   - name: ControlNet - Adding Conditional Control to Text-to-Image Diffusion Models
   - name: InstructPix2Pix - Learning to Follow Image Editing Instructions
+  - name: The Platonic Representation Hypothesis
+  - name: Action2Sound - Ambient-Aware Generation of Action Sounds from Egocentric Videos
+  - name: MasaCtrl - Tuning-Free Mutual Self-Attention Control for Consistent Image Synthesis and Editing
+  - name: DreamMatcher - Appearance Matching Self-Attention for Semantically-Consistent Text-to-Image Personalization
 _styles: >
   .fake-img {
     background: #bbb;
@@ -255,6 +259,8 @@ spatial과 temporal을 두 개의 transformer encoder로 구성하여
 - Model 4 (factorized dot-product attention) :  
 spatial head의 경우 spatial-dim.에 대해서만 attention 수행
 
+TBD
+
 ## LLaMA-VID - An Image is Worth 2 Tokens in Large Language Models
 
 - task : 주로 Video-QA
@@ -368,3 +374,66 @@ $$\rightarrow$$
 ## ControlNet - Adding Conditional Control to Text-to-Image Diffusion Models
 
 ## InstructPix2Pix - Learning to Follow Image Editing Instructions
+
+## The Platonic Representation Hypothesis
+
+- ICML 2024
+
+- model architecture, training objective, data modality와 관계없이 서로 다른 neural network models에서 datapoint-representation 간의 similarity가 증가하고 있다
+
+- Where are we heading? :  
+world (sequence of discrete events samples from unknown distribution $$P(Z)$$) 를 realistic하게 나타내는 방향으로 나아가고 있다  
+
+- Discussion
+  - Scaling은 좋지만 꼭 효과적인 건 아니다
+  - trainining data가 modality 간에 공유될수록 좋다
+  - translation 및 adaptation이 수월해질 것이다
+  - robotics처럼 아직 공유 쉽지 않은 reprensentation도 있다
+  - alignment를 측정하는 게 아직 얘기 많은 분야이다
+
+## Action2Sound - Ambient-Aware Generation of Action Sounds from Egocentric Videos
+
+- ECCV 2024 Oral
+
+## MasaCtrl - Tuning-Free Mutual Self-Attention Control for Consistent Image Synthesis and Editing
+
+- ICCV 2023
+
+- controllable image generation에서 주로 쓰는 technique
+  - task : 주로 image personalization 혹은 image editing
+  - `textual embedding`  
+    - null-text inversion (CVPR 2023)
+    - DreamBooth (CVPR 2023)
+  - `connection in U-Net`  
+    - FreeU (CVPR 2024 Oral) : U-Net skip-connection에서 활용하기 좋은 기술인 듯
+  - attention map in U-Net
+    - Towards Understanding Cross and Self-Attention in Stable Diffusion for Text-Guided Image Editing (CVPR 2024)
+    - `Cross-Attention` : query from noise image, and key-value from prompt
+    - `Self-Attention` : query, key, value from noise image
+
+- contribution :  
+  - 기존의 self-attention을 `mutual self-attention` (cross-attention)으로 바꾸는 방법 제안
+  - `tuning-free` method로 `consistent` image synthesis
+  - effective
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/MasaCtrl/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+<div class="caption">
+    Overview
+</div>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/MasaCtrl/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+<div class="caption">
+    (Mask-Guided) Mutual Self-Attention
+</div>
+
+## DreamMatcher - Appearance Matching Self-Attention for Semantically-Consistent Text-to-Image Personalization
+
+- CVPR 2024
