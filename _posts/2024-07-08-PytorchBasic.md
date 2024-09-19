@@ -914,3 +914,24 @@ class MultiAttentionBlock(nn.Module):
 
         return Fw
 ```
+
+### nn module
+
+- layer :  
+  - nn.Conv2d
+  - nn.RNNCell
+  - nn.LSTMCell
+  - nn.GRUCell
+  - nn.Transformer
+
+- activation :  
+  - nn.Sigmoid
+  - nn.ReLU
+  - nn.LeakyReLU
+  - nn.Tanh
+  - nn.Softplus
+
+- augograd :  
+  - update해야 하는 tensor (model param.)는 requirs_grad=True로 설정하자!  
+  - y.retain_grad() : leaf node가 아닌 tensor의 gradient는 계산 후 날라가는데  
+  y.regain_grad()를 하면 y.grad가 사라지지 않도록 붙잡아둠
