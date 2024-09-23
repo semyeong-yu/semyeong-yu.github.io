@@ -106,8 +106,10 @@ Quaternion은 `한 번에 계산 가능`하여 `동시에 회전`시킬 수 있�
   $$= (a, \boldsymbol u) = (a, (b, c, d)) \in H$$  
   where $$a \in Re(H) = R$$ and $$\boldsymbol u \in Im(H) = R^3$$  
   - `quaternion product` :  
-  $$(a, \boldsymbol u)(b, \boldsymbol v) = (ab - \boldsymbol u \cdot \boldsymbol v, a \boldsymbol v + b \boldsymbol u + \boldsymbol u \times \boldsymbol v)$$  
-  $$\boldsymbol u \boldsymbol v = \boldsymbol u \times \boldsymbol v - \boldsymbol u \cdot \boldsymbol v$$  
+    - $$(a, \boldsymbol u)(b, \boldsymbol v) = (ab - \boldsymbol u \cdot \boldsymbol v, a \boldsymbol v + b \boldsymbol u + \boldsymbol u \times \boldsymbol v)$$  
+    Equivalently,  
+    $$(a, (x_1, y_1, z_1))(b, (x_2, y_2, z_2)) = (w_1 w_2 - x_1 x_2 - y_1 y_2 - z_1 z_2, (w_1 x_2 + x_1 w_2 + y_1 z_2 - z_1 y_2, w_1 y_2 - x_1 z_2 + y_1 w_2 + z_1 x_2, w_1 z_2 + x_1 y_2 - y_1 x_2 + z_1 w_2))$$
+    - $$\boldsymbol u \boldsymbol v = \boldsymbol u \times \boldsymbol v - \boldsymbol u \cdot \boldsymbol v$$  
   - `quaternion conjugate` :  
   $$q = (w, x, y, z)$$  
   $$q^{\ast} = (w, -x, -y, -z)$$  
