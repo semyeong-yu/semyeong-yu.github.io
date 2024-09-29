@@ -26,6 +26,8 @@ toc:
   - name: Action2Sound - Ambient-Aware Generation of Action Sounds from Egocentric Videos
   - name: MasaCtrl - Tuning-Free Mutual Self-Attention Control for Consistent Image Synthesis and Editing
   - name: DreamMatcher - Appearance Matching Self-Attention for Semantically-Consistent Text-to-Image Personalization
+  - name: Instant NGP - Instant Neural Graphics Primitives with a Multiresolution Hash Encoding
+  - name: Neuralangelo - High-Fidelity Neural Surface Reconstruction
 _styles: >
   .fake-img {
     background: #bbb;
