@@ -74,7 +74,7 @@ with SDF-based volume rendering
 - Instant NGP <d-cite key="InstantNGP">[1]</d-cite> [Link](https://nvlabs.github.io/instant-ngp/) :  
 모든 좌표(pixel) 각각에 대해 MLP output을 구하면 연산량이 너무 크므로  
 연산량 감소 및 speed-up 위해  
-Hash Grid(연산량 감소)와 Linear Interpolation(continuous 보장)을 이용한  
+`Hash Grid`(연산량 감소)와 `Linear Interpolation`(continuous 보장)을 이용한  
 좌표 encoding 기법 제시  
   - STEP 1)  
   $$d$$-dim. scene일 때  
@@ -179,7 +179,8 @@ multi-resolution hash grid representation 사용
     - SDF의 higher-order derivatives 계산하기 위해  
     numerical gradient $$\text{lim}_{\epsilon \rightarrow 0} \frac{f(x_i + \epsilon) - f(x_i - \epsilon)}{2\epsilon}$$ 사용  
     - `adjacent` 6개의 cells $$x_i \pm \epsilon$$ 각각에 대해 trilinear sampling으로 SDF 값 계산하고  
-    `그 차이`를 이용해서 `numerical gradient` 계산
+    `그 차이`를 이용해서 `numerical gradient` 계산  
+    이는 backward pass에 이용
     - local cell $$x_i$$ 로만 backpropagate하는 게 아니라  
     주위 6개의 cells $$x_i \pm \epsilon$$ 으로 backpropagate하므로  
     `smoothing` on SDF 역할 수행  
