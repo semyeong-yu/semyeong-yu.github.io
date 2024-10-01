@@ -60,8 +60,8 @@ with SDF-based volume rendering
 - no need for auxiliary data like segmentation or depth
 
 - Novelty :  
-  - numerical gradient
-  - coarse-to-fine
+  - numerical gradient (backpropagation locality 문제 해결)
+  - coarse-to-fine (점점 high resol.)
 
 ### Related Works
 
