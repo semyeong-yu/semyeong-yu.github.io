@@ -116,8 +116,10 @@ Let $$\alpha_t = 1 - \beta_t$$ and $$\bar \alpha_t = \prod_{s=1}^t \alpha_s$$ an
 2. $$x_t \sim q(x_t | x_0) = N(x_t; \sqrt{\bar \alpha_{t}} x_{0}, (1-\bar \alpha_{t}) \boldsymbol I) = \sqrt{\bar \alpha_{t}}x_0 + \sqrt{1-\bar \alpha_{t}} \epsilon$$  
 
 3. $$x_{t-1} \sim q(x_{t-1} | x_t, x_0) = N(x_{t-1}; \tilde \mu_{t}(x_t), \tilde \beta_{t})$$  
-where $$\tilde \mu_{t}(x_t) = \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{t})$$  
+where $$\tilde \mu_{t}(x_t) = \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{t}) = \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \frac{x_t - \sqrt{\bar \alpha_{t}}x_0}{\sqrt{1-\bar \alpha_{t}}}) = \cdots = \sqrt{\bar \alpha_{t-1}} \frac{\beta_{t}}{1 - \bar \alpha_{t}} x_0 + \sqrt{\alpha_{t}} \frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} x_t$$  
+(forward pass에서 썼던 $$\epsilon_{t} = \frac{x_t - \sqrt{\bar \alpha_{t}}x_0}{\sqrt{1-\bar \alpha_{t}}}$$ 을 기억)
 and $$\tilde \beta_{t} = \frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} \beta_{t}$$
+
 4. $$x_{t-1} \sim p_{\theta}(x_{t-1} | x_t) = N(x_{t-1}; \mu_{\theta}(x_t, t), \tilde \beta_{t})$$  
 where $$\mu_{\theta}(x_t, t) = \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{\theta}(x_t, t))$$  
 and $$\tilde \beta_{t} = \frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} \beta_{t}$$  
