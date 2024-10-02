@@ -147,7 +147,7 @@ multi-resolution hash grid representation 사용
   large smooth regions의 surface에 noise 및 hole이 생김
   - 이유 :  
     - surface recon.에서 RGB(color) 및 SDF(geometry)를 MLP output으로 얻는데  
-    surface regularization 위해 higher-order derivatives of SDF 계산해야 함
+    surface regularization loss를 구할 때 higher-order derivatives of SDF 계산해야 함
       - first-order derivative of SDF $$f(x_i)$$ :  
       Eikonal constraints on the surface normals 계산  
       $$L_{eik} = \frac{1}{N} \sum_{i=1}^N (\| \nabla f(x_i) \| - 1)^2$$
@@ -178,8 +178,13 @@ multi-resolution hash grid representation 사용
   - 해결 :  
     - SDF의 higher-order derivatives 계산하기 위해  
     numerical gradient $$\text{lim}_{\epsilon \rightarrow 0} \frac{f(x_i + \epsilon) - f(x_i - \epsilon)}{2\epsilon}$$ 사용  
-    - `adjacent` 6개의 cells $$x_i \pm \epsilon$$ 각각에 대해 trilinear sampling으로 SDF 값 계산하고  
-    `그 차이`를 이용해서 `numerical gradient` 계산  
+    - `forward pass`에서 rendering하기 위해 (`recon. loss` 구하기 위해) SDF 계산할 때는  
+    sampled point 1개만 사용  
+    - `regularization loss` 구하기 위해 SDF의 higher-order derivatives 계산할 때는  
+    adjacent cells의 SDF까지 이용하는 numerical gradient를 사용함으로써  
+    `backward pass`에서 `backpropagate to adjacent cells`
+    - adjacent 6개의 cells $$x_i \pm \epsilon$$ 각각에 대해 trilinear sampling으로 SDF 값 계산하고  
+    그 차이를 이용해서 `numerical gradient` 계산  
     이는 backward pass에 이용
     - local cell $$x_i$$ 로만 backpropagate하는 게 아니라  
     주위 6개의 cells $$x_i \pm \epsilon$$ 으로 backpropagate하므로  
@@ -226,10 +231,17 @@ analytical gradient에 비해 numerical gradient가 갖는 장점을 정리해�
 - A1 :  
   - numerical gradient는  
   point 하나만 sampling해도  
-  여러 samples의 feature를 다룰 수 있음
+  그 주위의 여러 samples' feature까지 다룰 수 있음
   - gradient 하나가 얼마나 넓은 범위에 영향을 미치는지에 따라 sample efficiency가 결정되고 학습의 효율성이 결정됨  
   continuous surface 상황에서는 하나의 error에서 나오는 gradient가 여러 군데에 영향을 동시에 미치는 것이 적합함  
   사실 forward pass에서 많은 points를 aggregate(또는 blur)하면 analytical gradient로도 backpropagation이 여러 군데에 퍼지게 할 수 있다  
   하지만 그러면 forward 쪽이 blur해지면서 frequency bound가 생기고, 속도가 느려짐  
-  따라서 forward pass 쪽은 건들지 않고 backward pass 쪽만 건드려서 (numerical gradient : gradient 계산할 때만 주위 points 이용)  
+  따라서 forward pass 쪽은 건들지 않고 backward pass 쪽만 건드려서 (numerical gradient for regularization loss)  
   backpropagation이 여러 군데에 퍼지게 함
+
+- Q2 :  
+analytical gradient 대신 numerical gradient 쓰기 위해 adjacent cells' SDF까지 계산하려면 performance 상승하긴 하지만 느려지지 않나요?
+
+- A2 :  
+Instant-NGP의 Hash Grid 방식 자체가 빨라서 ㄱㅊ  
+내 피셜로는 regularization loss 구할 때만 adjacent cells' SDF 이용하므로 inference rendering speed는 그대로라서 training speed 저하 미비

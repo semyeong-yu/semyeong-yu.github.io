@@ -117,15 +117,56 @@ Let $$\alpha_t = 1 - \beta_t$$ and $$\bar \alpha_t = \prod_{s=1}^t \alpha_s$$ an
 
 3. $$x_{t-1} \sim q(x_{t-1} | x_t, x_0) = N(x_{t-1}; \tilde \mu_{t}(x_t), \tilde \beta_{t})$$  
 where $$\tilde \mu_{t}(x_t) = \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{t}) = \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \frac{x_t - \sqrt{\bar \alpha_{t}}x_0}{\sqrt{1-\bar \alpha_{t}}}) = \cdots = \sqrt{\bar \alpha_{t-1}} \frac{\beta_{t}}{1 - \bar \alpha_{t}} x_0 + \sqrt{\alpha_{t}} \frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} x_t$$  
-(forward pass에서 썼던 $$\epsilon_{t} = \frac{x_t - \sqrt{\bar \alpha_{t}}x_0}{\sqrt{1-\bar \alpha_{t}}}$$ 을 기억)
 and $$\tilde \beta_{t} = \frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} \beta_{t}$$
 
-4. $$x_{t-1} \sim p_{\theta}(x_{t-1} | x_t) = N(x_{t-1}; \mu_{\theta}(x_t, t), \tilde \beta_{t})$$  
-where $$\mu_{\theta}(x_t, t) = \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{\theta}(x_t, t))$$  
+4. $$x_{t-1} \sim p_{\theta}(x_{t-1} | x_t) = N(x_{t-1}; \mu_{\theta}(x_t, t), \tilde \beta_{t}) = \mu_{\theta}(x_t, t) + \tilde \beta_{t} \epsilon$$  
+where $$\mu_{\theta}(x_t, t) = \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{\theta}(x_t, t)) = \cdots = \sqrt{\bar \alpha_{t-1}} \frac{\beta_{t}}{1 - \bar \alpha_{t}} x_0 + \sqrt{\alpha_{t}} \frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} x_t$$  
 and $$\tilde \beta_{t} = \frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} \beta_{t}$$  
 (training param.로 학습하는 부분은 $$\epsilon_{\theta}(x_t, t)$$ 뿐!!)  
 
-(위의 수식 유도과정은 지금부터 아래에서 다룰 예정)  
+### DDPM Diagram
+
+reference : [Link](https://github.com/w86763777/pytorch-ddpm)  
+
+- Model : U-Net $$\supset$$ Res Block $$\supset$$ Self-Attention
+
+- Tip :  
+  - nn.Module들 그룹 지을 때  
+  한 번에 forward하려면 nn.Sequential  
+  하나씩 꺼내서 forward하려면 nn.ModuleList
+  - nn.Module class 내에서 $$\text{self.register_buffer('name', t)}$$ :  
+    - model.name 으로 t에 접근
+    - model.named_parameters() 에 나타나지 않음 (학습 X)
+    - model.named_buffers() 에 나타남
+    - model.state_dict() 에 나타남
+    - model.to("cuda:0") 할 때 parameters()와 buffers()에 있는 tensor들은 같이 옮겨짐!!  
+    이것이 $$\text{self.register_buffer('name', t)}$$ 를 하는 이유!!
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-06-25-Diffusion/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
+- Trainer :  
+  - DDPM의 forward process를 구현하여 U-Net을 훈련시킴
+  - $$x_0$$ 로부터 random $$t$$ 에 대해 $$x_t = \sqrt{\bar \alpha_{t}}x_0 + \sqrt{1-\bar \alpha_{t}} \epsilon$$ 를 구해서  
+  self.model로 $$\epsilon_{\theta}(x_t, t)$$ 를 예측한 뒤  
+  $$\epsilon$$ 과의 차이로 loss 구함
+
+- Sampler :  
+  - DDPM의 backward process를 구현하여 inference(sampling)에 쓰임  
+  - self.model이 예측한 $$\epsilon_{\theta}(x_t, t)$$ 를 이용해서  
+  $$x_T$$ 로부터 $$x_{T-1}, \cdots, x_0$$ 구함  
+    - $$x_{t-1} = \mu_{\theta}(x_t, t) + \tilde \beta_{t} \epsilon$$  
+    where $$\mu_{\theta}(x_t, t) = \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{\theta}(x_t, t)) = \cdots = \sqrt{\bar \alpha_{t-1}} \frac{\beta_{t}}{1 - \bar \alpha_{t}} x_0 + \sqrt{\alpha_{t}} \frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} x_t$$  
+    and $$\tilde \beta_{t} = \frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} \beta_{t}$$ 
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-06-25-Diffusion/3.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
 
 ### Diffusion Model 및 DDPM Loss 수식 유도
 
