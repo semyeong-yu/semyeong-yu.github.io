@@ -364,11 +364,13 @@ def main_worker(process_id, args):
   GIL(global interpreter lock)의 제약을 해결  
 2. `wandb` init  
   - wandb.init() : wandb 초기화  
-  vars(args)는 args 객체의 __dict__ 속성을 반환  
-  {'transforms' : 'BaseTransform', 'crop_size' : 224}과 같이 반환  
-  - wandb.watch() : wandb 기록  
-  모든 param.의 gradient를 기록  
-  arg.log_interval-번째 batch마다 log 기록  
+    - config=vars(args) : vars(args)는 args 객체의 __dict__ 속성을 반환  
+    {'transforms' : 'BaseTransform', 'crop_size' : 224}과 같이 반환  
+  - wandb.watch() : wandb 설정  
+    - log='all' : 모든 param.의 gradient를 기록  
+    - log_freq : arg.log_interval-번째 batch마다 log 기록
+  - wandb.log() : wandb 기록  
+    - wandb.log(__dict__)  
 3. `optimizer, scheduler` initialize  
 4. load `checkpoint`  
 5. `train` with `barrier`  
@@ -385,7 +387,14 @@ def main_worker(process_id, args):
   args.accumulation_steps마다 gradient 및 measurement 초기화, rank=0 logging  
   - validation :  
   with torch.no_grad(): 로 gradient 누적 안 함!  
+  또는  
+  with torch.set_grad_enabled(false): 로 gradient 누적 안 함!
+  - model.state_dict() :  
+  torch.save() 또는 wandb.log()로 model.state_dict()를 별도 파일에 저장 가능  
+  model_param = copy.deepcopy(model.state_dict())로 model.state_dict()를 코드 내 변수에 저장 가능
 6. `wandb` and `distributed` finish  
+
+
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
