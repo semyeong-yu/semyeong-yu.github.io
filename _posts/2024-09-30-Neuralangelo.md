@@ -47,7 +47,7 @@ _styles: >
 project website :  
 [https://research.nvidia.com/labs/dir/neuralangelo/](https://research.nvidia.com/labs/dir/neuralangelo/)  
 code :  
-[https://research.nvidia.com/labs/dir/neuralangelo/](https://research.nvidia.com/labs/dir/neuralangelo/)  
+[https://github.com/nvlabs/neuralangelo](https://github.com/nvlabs/neuralangelo)  
 reference :  
 NeRF and 3DGS Study
 
