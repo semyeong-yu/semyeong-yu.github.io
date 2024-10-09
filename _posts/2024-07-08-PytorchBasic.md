@@ -4,7 +4,7 @@ title: Pytorch Basic Code (DDP)
 date: 2024-07-08 11:00:00
 description: Dataset, DataLoader, Train, Attention, ...
 tags: pytorch
-categories: cv-tasks
+categories: others
 thumbnail: assets/img/2024-07-08-PytorchBasic/1.png
 bibliography: 2024-07-08-PytorchBasic.bib
 giscus_comments: false

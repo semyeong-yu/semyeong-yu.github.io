@@ -4,7 +4,7 @@ title: Pytorch Tensor
 date: 2024-07-09 15:00:00
 description: import torch
 tags: pytorch
-categories: cv-tasks
+categories: others
 thumbnail: assets/img/2024-07-09-TorchTensor/1.png
 giscus_comments: false
 disqus_comments: true
