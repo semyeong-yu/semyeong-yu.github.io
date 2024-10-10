@@ -499,7 +499,7 @@ def main_worker(process_id, args):
     
     # 6. wandb and distributed finish
     if rank == 0:
-        wandb.run.finish()
+        wandb.finish()
 
     dist.destroy_process_group()
 ```
