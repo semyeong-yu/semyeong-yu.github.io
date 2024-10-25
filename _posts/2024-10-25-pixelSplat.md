@@ -52,7 +52,7 @@ NeRF and 3DGS Study
   - `scale ambiguity` :  
   camera pose has arbitrary scale factor
   - `local minima` :  
-  primitive param.을 직접 optimize하면 local minima 문제 발생
+  primitive param.을 random initialization으로부터 직접 optimize하면 local minima 문제 발생
 
 - Solution :  
   - `feed-forward model` 이 `a pair of images`로부터  
@@ -61,7 +61,16 @@ NeRF and 3DGS Study
 ### Background
 
 - local minima :  
-  - TBD
+  - random location에 initialization된 Gaussian primitives가  
+  최종 목적지까지 a few std보다 더 많이 움직여야 될 때  
+  또는  
+  최종 목적지까지 loss가 monotonically decrease하지 않을 때  
+  local minima 발생
+  - 이를 해결하기 위해 3DGS에서는  
+  non-differentiable pruning and splitting 기법인  
+  Adaptive Density Controld을 사용하지만  
+  본 논문에서는  
+  differentiable parameterization of Gaussian primitives 소개
 
 ### Methods
 
