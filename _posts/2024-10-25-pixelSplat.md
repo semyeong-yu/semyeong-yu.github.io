@@ -5,7 +5,7 @@ date: 2024-10-25 12:00:00
 description: 3D Gaussian Splats from Image Pairs for Scalable Generalizable 3D Reconstruction (CVPR 2024)
 tags: 3DGS image pair scalable
 categories: 3d-view-synthesis
-thumbnail: assets/img/2024-10-25-pixelSplat/1.PNG
+thumbnail: assets/img/2024-10-25-pixelSplat/1.png
 giscus_comments: false
 disqus_comments: true
 related_posts: true
@@ -65,12 +65,19 @@ NeRF and 3DGS Study
   - `feed-forward model` 이, `a pair of images`로부터,  
   `3DGS primitives`로 parameterized되는 3D radiance field recon.을 학습  
 
-- overview :  
-  - input :  
-  a pair of images  
-  associated camera parameters  
-  - task :  
-  3DGS representation of 3D scene
+- model :  
+  - per-scene model :  
+  `하나의 scene`에 대해 `iteratively` update many points  
+  $$\rightarrow$$  
+  local minima 등 문제 있어서  
+  3DGS에서는 non-differentiable Adaptive Density Control 기법으로 해결하려 하지만  
+  이는 일반화 불가능
+  - feed-forward model :  
+  각각의 scene을 학습하고자 points를 iteratively update하는 게 아니라  
+  points를 `한 번에 feed-forward`로 넣어서  
+  differentiable하게 일반화 가능  
+    - attention
+    - MASt3R(-SfM), Spann3R, Splatt3R, DUSt3R (잘 모름. 더 서치해봐야 함.)
 
 ### Background
 
@@ -132,7 +139,7 @@ NeRF and 3DGS Study
     Step 1) Per-Image Encoder
 </div>
 
-- Step 1) Per-Image Encoder :  
+- Step 1) `Per-Image Encoder` :  
 each view (two images)를 각각 feature $$F$$, $$\tilde F$$ 로 encode
 
 <div class="row mt-3">
@@ -144,8 +151,23 @@ each view (two images)를 각각 feature $$F$$, $$\tilde F$$ 로 encode
     Step 2) Epipolar Sampling
 </div>
 
-- Step 2) Epipolar Sampling :  
-TBD 10p
+- Step 2) `Epipolar Sampling` :  
+Features 1 from Image 1의 `ray`로 `query` 만들고,  
+Features 2 from Image 2의 `epipolar samples` 및 `depth` 로 `key, value` 만들어서,  
+attention으로 depth scale을 잘 학습하는 게 목적  
+(attention : depth 정보와 함께, Image 1의 ray가 Image 2의 epipolar line 위 어떤 sample에 더 많이 attention하는지)  
+(epipolar line은 학습하는 게 아니라 수학 식으로 계산)
+  - Query :  
+  $$q = Q \cdot F [u]$$  
+  where $$F$$ : Features 1 from Image 1    
+  where $$F [u]$$ : ray feature at each pixel (in pixel coordinate)  
+  - Key, Value :  
+  $$s = \tilde F [\tilde u_{l}] \oplus \gamma (\tilde d_{\tilde u_{l}})$$  
+  where $$\tilde F$$ : Features 2 from Image 2  
+  where $$\tilde F [\tilde u_{l}]$$ : samples on epipolar line  
+  where $$\tilde d_{\tilde u_{l}}$$ : Image 2의 camera 원점까지의 거리
+    - $$k_{l} = K \cdot s$$  
+    - $$v_{l} = V \cdot s$$
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
@@ -153,15 +175,43 @@ TBD 10p
     </div>
 </div>
 <div class="caption">
-    Step 3) Epipolar Attention
+    Step 3) Epipolar Attention 중 Epipolar Cross-Attention
 </div>
 
 - Step 3) Epipolar Attention :  
-TBD 11p
-per-pixel correspondence 찾고,  
-해당 pixel에 대응되는 depth 기억
+  - `Epipolar Cross-Attention` :  
+  앞서 만든 $$q, k_{l}, v_{l}$$ 로 `cross-attention 수행`하여  
+  per-pixel `correpondence b.w. ray and epipolar sample` 찾음으로써  
+  per-pixel feature $$F [u]$$ 가 이제  
+  arbitrary scale factor $$s$$ 에 consistent한  
+  `scaled depth를 encode`하도록 update  
+    - $$F [u] += Att(q, k_{l}, v_{l})$$  
+    where $$+=$$ : skip-connection  
+    where $$Att$$ : softmax attention
+  - `Per-Image Self-Attention` :  
+  Cross-Attention 끝난 뒤 마지막에 Per-Image Self-Attention 수행하여  
+  propagate scaled depth estimates  
+  to parts of the image feature maps  
+  that may not have any epipolar correspondences
+    - $$F += SelfAttention(F)$$
 
 ### Gaussian Parameter Prediction
+
+- 앞선 과정들 덕분에  
+scale-aware feature map $$F, \tilde F$$ 를 이용하여  
+Gaussian param. $$g_{k} = (\mu_{k}, \Sigma_{k}, \alpha_{k}, S_{k})$$ 를 예측  
+  - 2D image 상의 `모든 각 pixel은 3D 상의 point에 대응`되어  
+  최종적인 Gaussian primitives set은  
+  just union of each image
+
+- 방법 1) baseline :  
+17p TBD
+
+- 방법 2) 본 논문 방식 :  
+18p TBD
+
+17p baseline처럼 neural network로 depth 자체를 추정하는 건 local minima 문제가 있어서  
+depth 자체 대신 differentiable probability distribution of likelihood of depth를 예측하는 방식 제안
 
 ### Experiments
 
