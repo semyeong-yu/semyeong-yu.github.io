@@ -73,8 +73,8 @@ NeRF and 3DGS Study
   3DGS에서는 non-differentiable Adaptive Density Control 기법으로 해결하려 하지만  
   이는 일반화 불가능
   - feed-forward model :  
-  각각의 scene을 학습하고자 points를 iteratively update하는 게 아니라  
-  points를 `한 번에 feed-forward`로 넣어서  
+  각각의 scene을 학습하기 위해 정해진 points set을 iteratively update하는 게 아니라  
+  scene마다 얻은 points set을 `한 번에 feed-forward`로 넣어서 학습  
   differentiable하게 일반화 가능  
     - attention
     - MASt3R(-SfM), Spann3R, Splatt3R, DUSt3R (잘 모름. 더 서치해봐야 함.)
