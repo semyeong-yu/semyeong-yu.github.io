@@ -204,14 +204,54 @@ Gaussian param. $$g_{k} = (\mu_{k}, \Sigma_{k}, \alpha_{k}, S_{k})$$ 를 예측
   최종적인 Gaussian primitives set은  
   just union of each image
 
-- 방법 1) baseline :  
-17p TBD
+- 3D position Prediction :  
+  - 방법 1) Baseline :  
+  predict point estimate of 3D position $$\mu$$  
+    - $$\boldsymbol \mu = \boldsymbol o + d_{u} \boldsymbol d$$  
+    where $$u$$ : 2D pixel coordiante  
+    where $$\boldsymbol d = R K^{-1} [u, 1]^{T}$$ : ray direction  
+    where $$d_{u} = g_{\theta}(F [u])$$ : depth obtained by neural network
+    - 문제 :  
+    depth 자체를 neural network로 추정하는 건 local minima 문제 발생하기 쉬움
+  - 방법 2) 본 논문 방식 :  
+  predict `probability density` of 3D position $$\mu$$  
+    - 핵심 :  
+    neural network로  
+    depth 자체를 예측하는 게 아니라  
+    differentiable probability distribution of likelihood of depth along ray를 예측
+    - Step 1)  
+    depth를 $$Z$$-bins로 discretize  
+    $$b_{z} = ((1 - \frac{z}{Z})(\frac{1}{d_{near}} - \frac{1}{d_{far}}) + \frac{1}{d_{far}})^{-1}$$  
+    for $$z \in [0, Z]$$ : index variable
+    - Step 2)  
+    index variable $$z$$ 를 sampling함으로써 probabilty density가 됨  
+    $$z \sim p_{\phi}(z)$$  
+    - Step 3)  
+    $$\boldsymbol \mu = \boldsymbol o + (b_{z} + \delta_{z}) \boldsymbol d$$  
+    where $$(\phi, \delta) = f_{\theta}(F [u])$$ : $$z$$-distribution param. and depth obtained by neural network
 
-- 방법 2) 본 논문 방식 :  
-18p TBD
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/6.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
 
-17p baseline처럼 neural network로 depth 자체를 추정하는 건 local minima 문제가 있어서  
-depth 자체 대신 differentiable probability distribution of likelihood of depth를 예측하는 방식 제안
+- Gaussian Parameter Prediction :  
+scale-aware feature map $$F, \tilde F$$ 과 neural network $$f$$ 를 이용하여  
+$$\phi, \delta, \Sigma, S = f(F [u])$$  
+  - 3D position :  
+  $$\phi, \delta$$ 이용해서  
+  $$\boldsymbol \mu = \boldsymbol o + (b_{z} + \delta_{z}) \boldsymbol d$$  
+  - Covariance :  
+  $$\Sigma$$  
+  - Spherical Harmonics Coeff. :  
+  $$S$$  
+  - Opacity :  
+  $$\phi$$ 이용해서  
+  $$\alpha = \phi_{z}$$  
+  $$=$$ z-th entry of probabilities $$\phi$$
+
+19p TBD
 
 ### Experiments
 
