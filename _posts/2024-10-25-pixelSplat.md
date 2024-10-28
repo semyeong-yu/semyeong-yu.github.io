@@ -10,12 +10,12 @@ giscus_comments: false
 disqus_comments: true
 related_posts: true
 toc:
+  - name: Abstract
   - name: Introduction
   - name: Background
   - name: Scale Ambiguity
   - name: Gaussian Parameter Prediction
   - name: Experiments
-  - name: Conclusion
 
 _styles: >
   .fake-img {
@@ -47,6 +47,11 @@ code :
 reference :  
 NeRF and 3DGS Study
 
+### Abstract
+
+- pixelSplat :  
+reconstruct a 3DGS primitive-based parameterization of 3D radiance field from only two images
+
 ### Introduction
 
 - Problem :  
@@ -56,25 +61,26 @@ NeRF and 3DGS Study
   primitive param.을 random initialization으로부터 직접 optimize하면 local minima 문제 발생
 
 - Contribution :  
-  - `two-view image encoder` :  
+  - two-view image encoder :  
+  `two-view Epipolar Sampling, Epipolar Attention` 덕분에  
   scale ambiguity 문제 극복
-  - `pixel-aligned Gaussian param. prediction module` :  
+  - pixel-aligned Gaussian param. prediction module :  
+  depth를 `sampling`하기 때문에  
   local minima 문제 극복
   
 - Solution :  
-  - `feed-forward model` 이, `a pair of images`로부터,  
-  `3DGS primitives`로 parameterized되는 3D radiance field recon.을 학습  
+  - feed-forward model 이, a pair of images로부터,  
+  3DGS primitives로 parameterized되는 3D radiance field recon.을 학습  
 
 - model :  
-  - per-scene model :  
-  `하나의 scene`에 대해 `iteratively` update many points  
+  - `per-scene model` :  
+  `각각의 scene`을 학습하기 위해 `정해진 하나의 points set`을 `iteratively` update  
   $$\rightarrow$$  
   local minima 등 문제 있어서  
   3DGS에서는 non-differentiable Adaptive Density Control 기법으로 해결하려 하지만  
   이는 일반화 불가능
-  - feed-forward model :  
-  각각의 scene을 학습하기 위해 정해진 points set을 iteratively update하는 게 아니라  
-  scene마다 얻은 points set을 `한 번에 feed-forward`로 넣어서 학습  
+  - `feed-forward model` :  
+  `scene마다 얻은 points set`을 `한 번에 feed-forward`로 넣어서 학습  
   differentiable하게 일반화 가능  
     - attention
     - MASt3R(-SfM), Spann3R, Splatt3R, DUSt3R (잘 모름. 더 서치해봐야 함.)
@@ -195,6 +201,12 @@ attention으로 depth scale을 잘 학습하는 게 목적
   that may not have any epipolar correspondences
     - $$F += SelfAttention(F)$$
 
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/9.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
 ### Gaussian Parameter Prediction
 
 - 앞선 과정들 덕분에  
@@ -221,14 +233,16 @@ Gaussian param. $$g_{k} = (\mu_{k}, \Sigma_{k}, \alpha_{k}, S_{k})$$ 를 예측
     differentiable probability distribution of likelihood of depth along ray를 예측
     - Step 1)  
     depth를 $$Z$$-bins로 discretize  
-    $$b_{z} = ((1 - \frac{z}{Z})(\frac{1}{d_{near}} - \frac{1}{d_{far}}) + \frac{1}{d_{far}})^{-1}$$  
-    for $$z \in [0, Z]$$ : index variable
+    $$b_{z} = ((1 - \frac{z}{Z})(\frac{1}{d_{near}} - \frac{1}{d_{far}}) + \frac{1}{d_{far}})^{-1} \in [d_{near}, d_{far}]$$  
+    for $$z \in [0, Z]$$ : depth index
     - Step 2)  
-    index variable $$z$$ 를 sampling함으로써 probabilty density가 됨  
+    discrete probability $$\phi$$ 로부터 index $$z$$ 를 sampling  
     $$z \sim p_{\phi}(z)$$  
     - Step 3)  
+    ray를 쏴서(unproject) Gaussian mean $$\mu$$ 계산  
     $$\boldsymbol \mu = \boldsymbol o + (b_{z} + \delta_{z}) \boldsymbol d$$  
-    where $$(\phi, \delta) = f_{\theta}(F [u])$$ : $$z$$-distribution param. and depth obtained by neural network
+    where $$\phi$$ : depth($$z$$) probability obtained by neural network  
+    where $$\delta_{z}$$ : depth offset obtained by neural network
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
@@ -237,22 +251,68 @@ Gaussian param. $$g_{k} = (\mu_{k}, \Sigma_{k}, \alpha_{k}, S_{k})$$ 를 예측
 </div>
 
 - Gaussian Parameter Prediction :  
-scale-aware feature map $$F, \tilde F$$ 과 neural network $$f$$ 를 이용하여  
-$$\phi, \delta, \Sigma, S = f(F [u])$$  
-  - 3D position :  
-  $$\phi, \delta$$ 이용해서  
-  $$\boldsymbol \mu = \boldsymbol o + (b_{z} + \delta_{z}) \boldsymbol d$$  
-  - Covariance :  
-  $$\Sigma$$  
-  - Spherical Harmonics Coeff. :  
-  $$S$$  
-  - Opacity :  
-  $$\phi$$ 이용해서  
-  $$\alpha = \phi_{z}$$  
-  $$=$$ z-th entry of probabilities $$\phi$$
-
-19p TBD
+  - scale-aware feature map $$F, \tilde F$$ 과 neural network $$f$$ 를 이용하여  
+  $$\phi, \delta, \Sigma, S = f(F [u])$$  
+  where $$\phi, \delta, \Sigma, S$$ : depth probability, depth offset, covariance, spherical harmonics coeff.  
+    - `3D position`(mean) :  
+    $$\phi, \delta$$ 이용해서  
+    $$\boldsymbol \mu = \boldsymbol o + (b_{z} + \delta_{z}) \boldsymbol d$$  
+    - `Covariance` :  
+    $$\Sigma$$  
+    - `Spherical Harmonics Coeff.` :  
+    $$S$$  
+    - `Opacity` :  
+    $$\phi$$ 이용해서  
+    $$\alpha = \phi_{z}$$  
+    $$=$$ probability of sampled depth $$z$$  
+    (so that we make sampling differentiable)
+  - 각 pixel마다 3DGS point에 대응되므로  
+  pixel-aligned Gaussians라고 부름
 
 ### Experiments
 
-### Conclusion
+- Setup :  
+  - Dataset :  
+  camera pose is computed by SfM
+    - RealEstate 10k
+    - ACID
+  - Baseline :  
+    - pixelNeRF
+    - GPNR
+    - Method of Du et al.
+  - Metric :  
+    - PSNR
+    - SSIM
+    - LPIPS
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/7.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
+- Result :  
+  - performance much better
+  - inference time faster
+  - less memory per ray
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/8.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/10.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+<div class="caption">
+    Ablation Study
+</div>
+
+- Ablation Study :  
+  - Epipolar Encoder : Epipolar Sampling and Epipolar Attention
+  - Depth Encoding : freq.-based positional encoding $$\gamma(\tilde d_{\tilde u_{l}})$$
+  - Probabilistic Sampling : depth index $$z \sim p_{\phi}(z)$$
+  - Depth Regularization : `???`
