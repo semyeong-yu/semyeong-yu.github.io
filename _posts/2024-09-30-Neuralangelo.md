@@ -82,7 +82,7 @@ with SDF-based volume rendering
   grid level별로 주위 $$2^d$$-개 좌표 선택  
     - multi-resolution (grid-level $$l$$) :  
     $$N_l = \lfloor N_{min} \cdot b^l \rfloor$$  
-    where $$b = e^{\frac{\text{ln} N_{max} - \text{ln} N_{min}}{L-1}}  
+    where $$b = e^{\frac{\text{ln} N_{max} - \text{ln} N_{min}}{L-1}}$$  
     MLP size가 작더라도 multi-resol. 덕분에 high approx. power 가짐
     - 주위 좌표 선택 :  
     $$N_l$$ 만큼 scale된 좌표 계산  
