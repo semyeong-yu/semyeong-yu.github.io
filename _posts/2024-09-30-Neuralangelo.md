@@ -93,7 +93,7 @@ with SDF-based volume rendering
     - HashKey :  
     grid-level 마다 1개씩 HashTable이 정의되며  
     Spatial Hash Function(2003)에 의해  
-    HashKey $$h(x) = (\text{XOR}_{i=1}^{d} x_i \pi_{i}) \text{mod} T \in [0, T-1]$  
+    HashKey $$h(x) = (\text{XOR}_{i=1}^{d} x_i \pi_{i}) \text{mod} T \in [0, T-1]$$  
     where $$d$$ : dim., $$\pi$$ : dim.마다 임의로 정해둔 constant, $$T$$ : Hash Table Size
     - HashValue :  
     $$T \times F$$ 의 HashTable로부터 $$F$$-dim. feature vector인 HashValue를 얻음
