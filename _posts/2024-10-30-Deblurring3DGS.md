@@ -76,7 +76,7 @@ code :
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-DeblurGS/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -169,23 +169,23 @@ where output : $$j$$-th Gaussian's rotation change, scale change
       $$\hat s_{j} \geq s_{j}$$ 이므로 transformed 3DGS는 `더 큰 covariance`를 가져서  
       `Defocus Blur`의 근본 원인인 주변 정보의 interference을 모델링할 수 있게 됨
   - inference :  
+  scaling factor로 covariance 변화시키는 게 blur kernel의 역할을 하므로  
   `training` 시에는 `transformed 3DGS`가 `blurry` image를 생성하지만  
   `inference` 시에는 MLP를 사용하지 않은 `기존 3DGS`가 `sharp` image를 생성  
   $$\rightarrow$$  
   training할 때는 MLP forwarding과 간단한 element-wise multiplication만 추가 비용이고,  
-  inference할 때는 MLP를 사용하지 않아 Vanilla-3DGS와 모든 단계가 동일하므로 `추가 비용 없이 real-time rendering` 가능
-
-In addition 읽을 차례
+  inference할 때는 MLP를 사용하지 않아 Vanilla-3DGS와 모든 단계가 동일하므로  
+  `추가 비용 없이 real-time rendering` 가능
 
 ### Selective Blurring
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-DeblurGS/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
-- 초점에 따른 Defocus Blur는 `영역마다 흐린 수준이 다름`  
+- 초점에 의한 Defocus Blur는 `영역마다 흐린 수준이 다름`  
 본 논문에서는 `각 3DGS마다` 다르게 $$\delta_{r}, \delta_{s}$$ 를 추정하므로  
 Gaussian의 covariance를 선택적으로 확대시킬 수 있어서  
 영역에 따라 다르게 blurring 할 수 있으므로  
@@ -196,18 +196,34 @@ Gaussian의 covariance를 선택적으로 확대시킬 수 있어서
 
 ### Camera motion Blur
 
+- 셔터가 열려 있는 exposure time 동안  
+camera movement가 있으면  
+light intensities from multipe sources가 inter-mixed되어  
+Camera motion Blur 발생
+
 - Camera motion Blur를 모델링하는 MLP :  
 $${(\delta x_{j}^{(i)}, \delta r_{j}^{(i)}, \delta s_{j}^{(i)})}_{i=1}^{M} = F_{\theta}(\gamma(x_{j}), r_{j}, s_{j}, \gamma(v))$$  
   - transformed 3DGS :  
-    - 3D position : $$x^{'} = x \cdot \delta x_{j}^{(i)}$$ (element-wise multiplication) `???`
-    - rotation quaternion : $$r^{'} = r \cdot \delta r_{j}^{(i)}$$ (element-wise multiplication)
-    - scaling : $$s^{'} = s \cdot \delta s_{j}^{(i)}$$ (element-wise multiplication)
+    - 3D position : $$\hat x_{j}^{(i)} = x_{j} + \lambda_{p} \delta x_{j}^{(i)}$$ (shift)  
+    - rotation quaternion : $$\hat r_{j}^{(i)} = r_{j} \cdot \delta r_{j}^{(i)}$$  
+    - scaling : $$\hat s_{j}^{(i)} = s_{j} \cdot \delta s_{j}^{(i)}$$
+      - Camera motion Blur의 경우  
+      Defocus Blur와 달리 covariance를 무조건 키워야 되는 게 아니므로  
+      min-clip by 1.0 없음  
   - Camera motion Blur :  
-  $$j$$-th Gaussian 의 `camera movement`를 나타내기 위해  
-  `M개의 auxiliary 3DGS sets` 만들어서  
-  `M개의 images` rendering해서  
-  `average`해서 camera-motion-blurred image 얻음  
-  (각 3DGS set은 각 discrete moment of camera movement를 나타냄)
+  $$I_{b} = \frac{1}{M} \sum_{i=1}^{M} I_{i}$$
+    - 셔터가 열려 있는 동안 카메라가 움직이는 각 discrete moment는  
+    각 3DGS set에 대응됨
+    - $$j$$-th Gaussian 의 `camera movement`를 나타내기 위해  
+    `M개의 auxiliary 3DGS sets` 만들어서  
+    `M개의 clean images` rendering해서  
+    `average`해서 camera-motion-blurred image 얻음  
+  - inference :  
+  마찬가지로 `inference` 시에는 MLP를 사용하지 않은 `기존 3DGS`가 clean image를 생성  
+  $$\rightarrow$$  
+  inference할 때는 MLP로 $$M$$-개의 3DGS sets 만들지 않고  
+  Vanilla-3DGS와 모든 단계가 동일하므로  
+  `추가 비용 없이 real-time rendering` 가능
 
 ### Compensation for Sparse Point Cloud
 
@@ -226,7 +242,7 @@ given images가 `blurry`하면 SfM은 유효한 feature를 식별하지 못해�
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-DeblurGS/3.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/3.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -248,7 +264,7 @@ given images가 `blurry`하면 SfM은 유효한 feature를 식별하지 못해�
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-DeblurGS/4.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/4.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -279,18 +295,18 @@ SOTA deblurring NeRF만큼 PSNR이 높은데
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-DeblurGS/5.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/5.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-DeblurGS/6.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/6.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-DeblurGS/7.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/7.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -299,12 +315,12 @@ SOTA deblurring NeRF만큼 PSNR이 높은데
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-DeblurGS/8.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/8.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-DeblurGS/9.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/9.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -317,7 +333,7 @@ SOTA deblurring NeRF만큼 PSNR이 높은데
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-DeblurGS/10.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/10.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -326,7 +342,7 @@ SOTA deblurring NeRF만큼 PSNR이 높은데
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-DeblurGS/11.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/11.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
