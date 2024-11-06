@@ -5,11 +5,11 @@ date: 2024-10-30 12:00:00
 description: ECCV 2024
 tags: 3DGS deblur
 categories: 3d-view-synthesis
-thumbnail: assets/img/2024-10-30-DeblurGS/1.PNG
+thumbnail: assets/img/2024-10-30-Deblurring3DGS/1.PNG
 giscus_comments: false
 disqus_comments: true
 related_posts: true
-bibliography: 2024-10-30-DeblurGS.bib
+bibliography: 2024-10-30-Deblurring3DGS.bib
 toc:
   - name: Introduction
   - name: Related Works
@@ -106,6 +106,7 @@ code :
     - Baking neural radiance fields, Merf, Bakedsdf
 
 - Deblurring NeRF :  
+자세한 건 [Link](https://semyeong-yu.github.io/blog/2024/DeblurNeRF/) 참조  
   - DoF-NeRF <d-cite key="DofNeRF">[1]</d-cite> :  
     - 단점 :  
     train하기 위해 all-in-focus image와 blurry image 모두 필요  
@@ -114,11 +115,19 @@ code :
     - 장점 :  
     train할 때 all-in-focus image 필요 없음  
     - 핵심 :  
-    TBD
+    additional small MLP 사용해서  
+    per-pixel blur kernel 예측
   - DP-NeRF <d-cite key="DpNeRF">[3]</d-cite> and PDRF <d-cite key="PDRF">[4]</d-cite> :  
-    - TBD
+    - Deblur-NeRF 발전시킴
   - Hybrid <d-cite key="Hybrid">[5]</d-cite> and Sharp-NeRF <d-cite key="SharpNeRF">[6]</d-cite> and BAD-NeRF <d-cite key="BADNeRF">[7]</d-cite> :  
-    - TBD
+    - camera motion blur와 defocus blur 중 하나만 다룸
+
+- Deblurring NeRF 요약 :  
+  - deblur task 잘 수행하지만  
+  NeRF 자체가 rendering time이 오래 걸림  
+  $$\rightarrow$$  
+  real-time differentiable rasterizer 이용하는  
+  3DGS로 deblur task 수행하자!
 
 ### Background
 
@@ -136,32 +145,37 @@ code :
 
 - Motivation :  
   - Defocus Blur는 일반적으로  
-  PSF(point spread func.)로 알려진 2D Gaussian function과 실제 image의  
+  실제 image와 PSF(point spread func.)(2D Gaussian function) 간의  
   convolution으로 모델링  
   즉, a pixel이 주위 pixels에 영향을 미칠 경우 blur
   - 여기서 영감을 받아  
-  covariance(크기)가 큰 3DGS는 Blur를 유발하고  
-  covariance(크기)가 작은 3DGS는 선명한 detail에 기여한다고 가정
+  `covariance(크기)가 큰 3DGS는 Blur`를 유발하고  
+  `covariance(크기)가 작은 3DGS는 Sharp` image에 기여한다고 가정  
+  (covariance(dispersion)가 클수록 Gaussian이 더 많은 pixels에 걸쳐 있으니까  
+  더 많은 이웃한 pixels 간의 interference 표현 가능)
   - 그렇다면 covariance $$\Sigma = R S S^{T} R^{T}$$ 를 변경하여 Blur를 모델링해야겠다!
 
 - Defocus Blur를 모델링하는 MLP :  
-$$(\delta_{r}, \delta_{s}) = F_{\theta}(\gamma(x), r, s, \gamma(v))$$  
-where input : position, rotation, scale, view-direction  
-where output : rotation change, scale change  
-($$\gamma$$ : positional encoding)
+$$(\delta r_{j}, \delta s_{j}) = F_{\theta}(\gamma(x_{j}), r_{j}, s_{j}, \gamma(v))$$  
+where input : $$j$$-th Gaussian's position, rotation, scale, view-direction  
+where output : $$j$$-th Gaussian's rotation change, scale change  
+($$\gamma$$ : positional encoding)  
   - transformed 3DGS :  
-  $$r^{'} = r \cdot \delta_{r}$$ and $$s^{'} = s \cdot \delta_{s}$$ (element-wise multiplication)
-  - Defocus Blur :  
-  MLP output $$\delta_{r}, \delta_{s}$$ 의 `최솟값을 1로 clip`  
-  $$\rightarrow$$  
-  그럼 $$s^{'}$$ 이 $$s$$ 보다 크거나 같으므로 transformed 3DGS는 더 `큰 covariance`를 가져서  
-  `Defocus Blur`의 근본 원인인 주변 정보의 간섭을 모델링할 수 있게 됨
+    - rotation quaternion : $$\hat r_{j} = r_{j} \cdot \text{min}(1.0, \lambda_{s} \delta r_{j} + (1 - \labmda_{s}))$$  
+    - scaling : $$\hat s_{j} = s_{j} \cdot \text{min}(1.0, \lambda_{s} \delta s_{j} + (1 - \labmda_{s}))$$  
+      - $$\cdot$$ : element-wise multiplication  
+      - $$\lambda_{s}$$ 로 scale하고 $$(1 - \lambda_{s})$$ 로 shift : for optimization stability `???`
+      - MLP output $$\delta r_{j}, \delta s_{j}$$ 의 `최솟값을 1로 clip` :  
+      $$\hat s_{j} \geq s_{j}$$ 이므로 transformed 3DGS는 `더 큰 covariance`를 가져서  
+      `Defocus Blur`의 근본 원인인 주변 정보의 interference을 모델링할 수 있게 됨
   - inference :  
   `training` 시에는 `transformed 3DGS`가 `blurry` image를 생성하지만  
   `inference` 시에는 MLP를 사용하지 않은 `기존 3DGS`가 `sharp` image를 생성  
   $$\rightarrow$$  
   training할 때는 MLP forwarding과 간단한 element-wise multiplication만 추가 비용이고,  
   inference할 때는 MLP를 사용하지 않아 Vanilla-3DGS와 모든 단계가 동일하므로 `추가 비용 없이 real-time rendering` 가능
+
+In addition 읽을 차례
 
 ### Selective Blurring
 
@@ -182,7 +196,18 @@ Gaussian의 covariance를 선택적으로 확대시킬 수 있어서
 
 ### Camera motion Blur
 
-TBD `???`
+- Camera motion Blur를 모델링하는 MLP :  
+$${(\delta x_{j}^{(i)}, \delta r_{j}^{(i)}, \delta s_{j}^{(i)})}_{i=1}^{M} = F_{\theta}(\gamma(x_{j}), r_{j}, s_{j}, \gamma(v))$$  
+  - transformed 3DGS :  
+    - 3D position : $$x^{'} = x \cdot \delta x_{j}^{(i)}$$ (element-wise multiplication) `???`
+    - rotation quaternion : $$r^{'} = r \cdot \delta r_{j}^{(i)}$$ (element-wise multiplication)
+    - scaling : $$s^{'} = s \cdot \delta s_{j}^{(i)}$$ (element-wise multiplication)
+  - Camera motion Blur :  
+  $$j$$-th Gaussian 의 `camera movement`를 나타내기 위해  
+  `M개의 auxiliary 3DGS sets` 만들어서  
+  `M개의 images` rendering해서  
+  `average`해서 camera-motion-blurred image 얻음  
+  (각 3DGS set은 각 discrete moment of camera movement를 나타냄)
 
 ### Compensation for Sparse Point Cloud
 
