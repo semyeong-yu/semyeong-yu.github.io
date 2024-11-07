@@ -17,6 +17,8 @@ toc:
   - name: Camera motion Blur
   - name: Compensation for Sparse Point Cloud
   - name: Experiment
+  - name: Results
+  - name: Ablation Study
   - name: Limitation and Future Work
   - name: Code Review
 
@@ -49,8 +51,19 @@ code :
 [https://github.com/benhenryL/Deblurring-3D-Gaussian-Splatting](https://github.com/benhenryL/Deblurring-3D-Gaussian-Splatting)  
 
 > 핵심 :  
-1. defocus blur 구현 : TBD `???`  
-2. camera motion blur 구현 : TBD  
+1. defocus blur 구현 :  
+MLP로 covariance(rotation, scaling)의 변화량을 모델링해서  
+covariance를 키워서  
+defocus-blurred image 얻음  
+2. camera motion blur 구현 :  
+MLP로 position 및 covariance의 변화량을 모델링해서  
+M개의 3DGS sets를 만든 뒤  
+이걸로 만든 M개의 sharp imgs를 average해서  
+camera-motion-blurred image 얻음  
+3. 위의 MLP를 training에서만 사용하므로  
+still real-time rendering at inference  
+4. sparse point clouds 보상하기 위해 points 추가  
+또한 먼 거리에 있는 3DGS는 덜 prune out
 
 ### Introduction
 
@@ -320,6 +333,8 @@ dataset에 기록된 `z-axis 값`은 `relative depth` from any viewpoint라고 �
   $$M = 5$$ 개의 3DGS sets 만들어서  
   $$M = 5$$ 개의 clean images를 average
 
+### Results
+
 - Results :  
   - `SOTA deblurring NeRF`만큼 `PSNR` 높음  
   - `3DGS`만큼 `FPS` 높음  
@@ -339,6 +354,9 @@ dataset에 기록된 `z-axis 값`은 `relative depth` from any viewpoint라고 �
         {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/6.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
+<div class="caption">
+    real-world Defocus Blur Dataset
+</div>
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
         {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/7.png" class="img-fluid rounded z-depth-1" zoomable=true %}
@@ -352,6 +370,9 @@ dataset에 기록된 `z-axis 값`은 `relative depth` from any viewpoint라고 �
     <div class="col-sm mt-3 mt-md-0">
         {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/8.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
+</div>
+<div class="caption">
+    synthesized Defocus Blur Dataset
 </div>
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
@@ -370,6 +391,16 @@ dataset에 기록된 `z-axis 값`은 `relative depth` from any viewpoint라고 �
 <div class="caption">
     real-world Camera motion Blur Dataset
 </div>
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/14.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+<div class="caption">
+    real-world Camera motion Blur Dataset
+</div>
+
+### Ablation Study
 
 - Ablation Study :  
   - Extra points allocation
@@ -395,7 +426,19 @@ dataset에 기록된 `z-axis 값`은 `relative depth` from any viewpoint라고 �
 
 ### Limitation and Future Work
 
-TBD `???`
+- Limitation :  
+  - volumetric rendering 기반의 NeRF-based deblurring 기법들을  
+  rasterization 기반의 3DGS에 적용하기 어렵  
+  $$\rightarrow$$  
+  MLP로 `world-space`에서의 rays 또는 kernels를 변형하는 대신  
+  MLP로 `rasterized image space`에서의 kernels를 변형하면  
+  Deblurring 3DGS 구현 가능  
+  $$\rightarrow$$  
+  하지만 kernel interpolation 방향으로 가면  
+  pixel interpolation은 추가 비용이 발생하며  
+  3DGS의 geometry를 implicitly 변형하는 것일 뿐이므로  
+  해당 방법은 3DGS로 blur를 모델링하는 최적의 방법이 아닐 것이다  
+  이를 개선하기 위한 future works 필요
 
 ### Code Review
 
