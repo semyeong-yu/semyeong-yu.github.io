@@ -49,7 +49,7 @@ code :
 [https://github.com/benhenryL/Deblurring-3D-Gaussian-Splatting](https://github.com/benhenryL/Deblurring-3D-Gaussian-Splatting)  
 
 > 핵심 :  
-1. defocus blur 구현 : TBD  
+1. defocus blur 구현 : TBD `???`  
 2. camera motion blur 구현 : TBD  
 
 ### Introduction
@@ -165,8 +165,8 @@ where input : $$j$$-th Gaussian's position, rotation, scale, view-direction
 where output : $$j$$-th Gaussian's rotation change, scale change  
 ($$\gamma$$ : positional encoding)  
   - transformed 3DGS :  
-    - rotation quaternion : $$\hat r_{j} = r_{j} \cdot \text{min}(1.0, \lambda_{s} \delta r_{j} + (1 - \labmda_{s}))$$  
-    - scaling : $$\hat s_{j} = s_{j} \cdot \text{min}(1.0, \lambda_{s} \delta s_{j} + (1 - \labmda_{s}))$$  
+    - rotation quaternion : $$\hat r_{j} = r_{j} \cdot \text{min}(1.0, \lambda_{s} \delta r_{j} + (1 - \lambda_{s}))$$  
+    - scaling : $$\hat s_{j} = s_{j} \cdot \text{min}(1.0, \lambda_{s} \delta s_{j} + (1 - \lambda_{s}))$$  
       - $$\cdot$$ : element-wise multiplication  
       - $$\lambda_{s}$$ 로 scale하고 $$(1 - \lambda_{s})$$ 로 shift : for optimization stability `???`
       - MLP output $$\delta r_{j}, \delta s_{j}$$ 의 `최솟값을 1로 clip` :  
@@ -209,8 +209,8 @@ Camera motion Blur 발생
 $${(\delta x_{j}^{(i)}, \delta r_{j}^{(i)}, \delta s_{j}^{(i)})}_{i=1}^{M} = F_{\theta}(\gamma(x_{j}), r_{j}, s_{j}, \gamma(v))$$  
   - transformed 3DGS :  
     - 3D position : $$\hat x_{j}^{(i)} = x_{j} + \lambda_{p} \delta x_{j}^{(i)}$$ (shift)  
-    - rotation quaternion : $$\hat r_{j}^{(i)} = r_{j} \cdot \delta r_{j}^{(i)}$$  
-    - scaling : $$\hat s_{j}^{(i)} = s_{j} \cdot \delta s_{j}^{(i)}$$
+    - rotation quaternion : $$\hat r_{j}^{(i)} = r_{j} \cdot \delta r_{j}^{(i)}$$ (element-wise multiplication)
+    - scaling : $$\hat s_{j}^{(i)} = s_{j} \cdot \delta s_{j}^{(i)}$$ (element-wise multiplication)
       - Camera motion Blur의 경우  
       Defocus Blur와 달리 covariance를 무조건 키워야 되는 게 아니므로  
       min-clip by 1.0 없음  
@@ -323,10 +323,10 @@ dataset에 기록된 `z-axis 값`은 `relative depth` from any viewpoint라고 �
 - Results :  
   - `SOTA deblurring NeRF`만큼 `PSNR` 높음  
   - `3DGS`만큼 `FPS` 높음  
-  - 비교 대상 :  
-  Deblur-NeRF, Sharp-NeRF, DP-NeRF, PDRF  
-  original 3DGS  
-  Restormer로 input training images 먼저 deblur한 뒤 original 3DGS
+  - 비교 대상으로 쓰인 논문들 :  
+    - Deblur-NeRF, Sharp-NeRF, DP-NeRF, PDRF  
+    - original 3DGS  
+    - Restormer로 input training images 먼저 deblur한 뒤 original 3DGS
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
@@ -360,6 +360,15 @@ dataset에 기록된 `z-axis 값`은 `relative depth` from any viewpoint라고 �
 </div>
 <div class="caption">
     synthesized Defocus Blur Dataset
+</div>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/13.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+<div class="caption">
+    real-world Camera motion Blur Dataset
 </div>
 
 - Ablation Study :  
