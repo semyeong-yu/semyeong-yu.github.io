@@ -229,7 +229,9 @@ $${(\delta x_{j}^{(i)}, \delta r_{j}^{(i)}, \delta s_{j}^{(i)})}_{i=1}^{M} = F_{
 
 - 문제 1)  
 3DGS는 initial point cloud에 많이 의존하는데  
-given images가 `blurry`하면 SfM은 유효한 feature를 식별하지 못해서 `매우 적은 수의 point` cloud를 추출함  
+given input multi-view images가 `blurry`하면  
+SfM은 유효한 feature를 식별하지 못해서  
+매우 적은 수의 `sparse point cloud`를 추출함  
 
 - 해결 :  
   - sparse point cloud를 방지하고자  
@@ -247,16 +249,19 @@ given images가 `blurry`하면 SfM은 유효한 feature를 식별하지 못해�
 </div>
 
 - 문제 2)  
-심지어 depth가 크면 SfM은 맨 끝에 있는 점을 거의 추출하지 않음  
+심지어 depth of field가 크면  
+SfM은 맨 끝에 있는 점을 거의 추출하지 않음  
 
 - 해결 :  
+Deblur-NeRF dataset은 forward-facing scene으로만 구성되어 있으므로  
+dataset에 기록된 `z-axis 값`은 `relative depth` from any viewpoint라고 볼 수 있음  
   - 방법 1) 먼 거리에 있는 3DGS 수 늘리기  
   먼 거리의 평면에 있는 3DGS에 대해 denisfy  
   $$\rightarrow$$  
   과도한 densification은 Blur 모델링을 방해하고 추가 계산 비용 필요  
-  - 방법 2) `먼 거리에 있는 3DGS는 덜 pruning`  
+  - 방법 2) `먼 거리에 있는 3DGS는 덜 prune out`  
   pruning threshold를 깊이에 따라 다르게 scaling  
-  as $$t_{p}, 0.9 t_{p}, \cdots , w_{p} t_{p}$$  
+  as $$t_{p}, 0.9 t_{p}, \cdots , \frac{1}{w_{p}} t_{p}$$  
   (먼 거리의 3DGS일수록 낮은 threshold)    
   $$\rightarrow$$  
   real-time rendering을 고려했을 때  
@@ -271,11 +276,14 @@ given images가 `blurry`하면 SfM은 유효한 feature를 식별하지 못해�
 ### Experiment
 
 - Setting :  
+  - dataset : Deblur-NeRF dataset  
+    - have both synthetic and real images  
+    - has camera motion blur or defocus blur
   - GPU : NVIDIA RTX 4090 GPU (24GB)
   - optimzier : Adam
   - iter. : $$30,000$$
   - Blur를 모델링하는 small MLP :  
-    - lr : $$10^{-3}$$
+    - lr : $$1e^{-3}$$
     - hidden layer : 3
     - hidden unit : 64
     - activation : ReLU
@@ -290,8 +298,12 @@ given images가 `blurry`하면 SfM은 유효한 feature를 식별하지 못해�
   where $$t_{p} = 5 \times 10^{-3}$$ and $$w_{p} = 0.3$$
 
 - Results :  
-SOTA deblurring NeRF만큼 PSNR이 높은데  
-3DGS만큼 FPS도 높음
+  - `SOTA deblurring NeRF`만큼 `PSNR` 높음  
+  - `3DGS`만큼 `FPS` 높음  
+  - 비교 대상 :  
+  Deblur-NeRF, Sharp-NeRF, DP-NeRF, PDRF  
+  original 3DGS  
+  Restormer로 input training images 먼저 deblur한 뒤 original 3DGS
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">

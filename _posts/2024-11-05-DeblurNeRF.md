@@ -9,7 +9,7 @@ thumbnail: assets/img/2024-11-05-DeblurNeRF/1.PNG
 giscus_comments: false
 disqus_comments: true
 related_posts: true
-bibliography: 2024-10-30-DeblurGS.bib
+bibliography: 2024-11-05-DeblurNeRF.bib
 toc:
   - name: DoF-NeRF
   - name: Deblur-NeRF
