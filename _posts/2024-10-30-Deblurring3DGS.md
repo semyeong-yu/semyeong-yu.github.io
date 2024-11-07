@@ -48,6 +48,10 @@ project website :
 code :  
 [https://github.com/benhenryL/Deblurring-3D-Gaussian-Splatting](https://github.com/benhenryL/Deblurring-3D-Gaussian-Splatting)  
 
+> 핵심 :  
+1. defocus blur 구현 : TBD  
+2. camera motion blur 구현 : TBD  
+
 ### Introduction
 
 - 3DGS :  
@@ -248,6 +252,15 @@ SfM은 유효한 feature를 식별하지 못해서
     </div>
 </div>
 
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/12.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+<div class="caption">
+    가운데는 without adding points, 오른쪽은 with adding extra points
+</div>
+
 - 문제 2)  
 심지어 depth of field가 크면  
 SfM은 맨 끝에 있는 점을 거의 추출하지 않음  
@@ -281,21 +294,31 @@ dataset에 기록된 `z-axis 값`은 `relative depth` from any viewpoint라고 �
     - has camera motion blur or defocus blur
   - GPU : NVIDIA RTX 4090 GPU (24GB)
   - optimzier : Adam
-  - iter. : $$30,000$$
+  - iter. : $$20,000$$
   - Blur를 모델링하는 small MLP :  
     - lr : $$1e^{-3}$$
-    - hidden layer : 3
+    - hidden layer : 4  
+      - 3 layers : shared
+      - 1 layer : head for each $$\delta$$
     - hidden unit : 64
     - activation : ReLU
     - initialization : Xavier
+    - scaling factor for $$\delta$$ : $$\lambda_{s}, \lambda_{p} = 1 e^{-2}$$
   - sparse point cloud를 보상하기 위해  
-    - $$N_{st} = 2,500$$ iter. 후에 $$N_{p} = 100,000$$ 개의 point 추가  
+    - $$N_{st} = 2,500$$ iter. 후에 $$N_{p}$$ 개의 point 추가  
+    $$N_{p}$$ 는 기존 point cloud 규모에 비례하며 최대 200,000개
     - 색상은 $$K = 4$$ 의 KNN interpolation으로 할당  
-    - nearest neighbor까지의 거리가 $$t_{d} = 10$$ 을 초과하는 point는 폐기
+    - nearest neighbor까지의 거리가 $$t_{d} = 2$$ 을 초과하는 point는 폐기
   - 먼 거리에 있는 3DGS는 덜 pruning하기 위해  
   pruning threshold를 깊이에 따라 다르게 scaling  
-  as $$t_{p}, 0.9 t_{p}, \cdots , w_{p} t_{p}$$  
-  where $$t_{p} = 5 \times 10^{-3}$$ and $$w_{p} = 0.3$$
+    - pruning threshold $$t_{p} = 5 e^{-3}$$ and densification threshold $$2 e^{-4}$$  
+    for real defocus blur dataset  
+    - pruning threshold $$t_{p} = 1 e^{-2}$$ and densification threshold $$5 e^{-4}$$  
+    for real camera motion blur dataset
+    - pruning threshold multiplier $$w_{p} = 3$$
+  - camera motion blur를 구현하기 위해  
+  $$M = 5$$ 개의 3DGS sets 만들어서  
+  $$M = 5$$ 개의 clean images를 average
 
 - Results :  
   - `SOTA deblurring NeRF`만큼 `PSNR` 높음  
