@@ -254,8 +254,22 @@ class CustomDataset(Dataset):
 
 - `rank` :  
   - 전체 distributed system에서 process 순서  
-  - 4-CPU system이 2개 있을 경우  
+  - 4-GPU system이 2개 있을 경우  
   rank = machine 번호(0~1) * machine 당 process 개수(4) + process 번호(0~3)  
+    - rank :  
+    `rank = int(os.environ['RANK'])`  
+    torch.distributed.init_process_group() 한 이후에  
+    rank = torch.distributed.get_rank()
+    - machine 당 process 개수 :  
+    `num_gpu = torch.cuda.device_count()`  
+    - process id (local rank) :  
+    process_id = rank % num_gpu  
+    torch.cuda.set_device(process_id)  
+    model.cuda(process_id)  
+    `process_id = torch.cuda.current_device()`  
+    - world_size :  
+    torch.distributed.init_process_group() 한 이후에  
+    world_size = torch.distributed.get_world_size()
   - rank = 0인 process에 대해서만 wandb로 train log 출력
 
 - `world_size` :  
@@ -317,7 +331,7 @@ def _collate_fn(samples):
 
 # main_worker : 각 process가 실행하는 함수
 def main_worker(process_id, args):
-
+    
     rank = args.machine_id * args.num_processes + process_id
     
     world_size = args.num_machines * args.num_processes
