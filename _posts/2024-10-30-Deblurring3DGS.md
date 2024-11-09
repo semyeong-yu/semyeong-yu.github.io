@@ -442,4 +442,10 @@ dataset에 기록된 `z-axis 값`은 `relative depth` from any viewpoint라고 �
 
 ### Code Review
 
-TBD `???`
+- blur kernel 함수 :  
+Defocus Blur 및 Camera motion Blur 
+  - 정의 : [https://github.com/benhenryL/Deblurring-3D-Gaussian-Splatting/blob/main/scene/blur_kernel.py#L74](https://github.com/benhenryL/Deblurring-3D-Gaussian-Splatting/blob/main/scene/blur_kernel.py#L74)
+  - 호출 : [https://github.com/benhenryL/Deblurring-3D-Gaussian-Splatting/blob/main/gaussian_renderer/__init__.py#L101](https://github.com/benhenryL/Deblurring-3D-Gaussian-Splatting/blob/main/gaussian_renderer/__init__.py#L101)
+
+- sparse point cloud 보상하기 위해 add points :  
+  - [https://github.com/benhenryL/Deblurring-3D-Gaussian-Splatting/blob/main/scene/gaussian_model.py#L444](https://github.com/benhenryL/Deblurring-3D-Gaussian-Splatting/blob/main/scene/gaussian_model.py#L444)
