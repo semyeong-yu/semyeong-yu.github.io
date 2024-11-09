@@ -449,3 +449,17 @@ Defocus Blur 및 Camera motion Blur
 
 - sparse point cloud 보상하기 위해 add points :  
   - [https://github.com/benhenryL/Deblurring-3D-Gaussian-Splatting/blob/main/scene/gaussian_model.py#L444](https://github.com/benhenryL/Deblurring-3D-Gaussian-Splatting/blob/main/scene/gaussian_model.py#L444)
+
+### Question
+
+- Q1 :  
+TBD
+
+- A1 :  
+TBD
+
+- Q2 :  
+TBD
+
+- A2 :  
+TBD
