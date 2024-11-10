@@ -72,7 +72,7 @@ with SDF-based volume rendering
 </div>
 
 - Instant NGP <d-cite key="InstantNGP">[1]</d-cite> [Link](https://nvlabs.github.io/instant-ngp/) :  
-모든 좌표(pixel) 각각에 대해 MLP output을 구하면 연산량이 너무 크므로  
+모든 좌표(pixel) 각각에 대해 deep MLP output을 구하면 연산량이 너무 크므로  
 연산량 감소 및 speed-up 위해  
 `Hash Grid`(연산량 감소)와 `Linear Interpolation`(continuous 보장)을 이용한  
 좌표 encoding 기법 제시  
@@ -93,7 +93,7 @@ with SDF-based volume rendering
     - HashKey :  
     grid-level 마다 1개씩 HashTable이 정의되며  
     Spatial Hash Function(2003)에 의해  
-    HashKey $$h(x) = (\text{XOR}_{i=1}^{d} x_i \pi_{i}) \text{mod} T \in [0, T-1]$$  
+    HashKey $$h(x) = (\text{XOR}_{i=1}^{d} x_i \pi_{i})\ \text{mod}\ T \in [0, T-1]$$  
     where $$d$$ : dim., $$\pi$$ : dim.마다 임의로 정해둔 constant, $$T$$ : Hash Table Size
     - HashValue :  
     $$T \times F$$ 의 HashTable로부터 $$F$$-dim. feature vector인 HashValue를 얻음
