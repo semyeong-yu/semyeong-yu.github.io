@@ -1,6 +1,6 @@
 ---
 layout: distill
-title: Neuralangelo
+title: Neuralangelo (and InstantNGP)
 date: 2024-09-30 12:00:00
 description: High-Fidelity Neural Surface Reconstruction (CVPR 2023)
 tags: 3d surface hash grid numerical gradient
