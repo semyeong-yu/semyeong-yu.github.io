@@ -183,7 +183,7 @@ where output : $$j$$-th Gaussian's rotation change, scale change
     - scaling : $$\hat s_{j} = s_{j} \cdot \text{min}(1.0, \lambda_{s} \delta s_{j} + (1 - \lambda_{s}))$$  
       - $$\cdot$$ : element-wise multiplication  
       - $$\lambda_{s}$$ 로 scale하고 $$(1 - \lambda_{s})$$ 로 shift : for optimization stability `???`
-      - MLP output $$\delta r_{j}, \delta s_{j}$$ 의 `최솟값을 1로 clip` :  
+      - rotation 및 scaling 변화량의 `최솟값을 1로 clip` :  
       $$\hat s_{j} \geq s_{j}$$ 이므로 transformed 3DGS는 `더 큰 covariance`를 가져서  
       `Defocus Blur`의 근본 원인인 주변 정보의 interference을 모델링할 수 있게 됨
   - inference :  
