@@ -454,13 +454,61 @@ Defocus Blur 및 Camera motion Blur
 ### Question
 
 - Q1 :  
-TBD
+small MLP는 어떤 architecture로 구성되어 있나요?  
+Dust3R 기반의 논문들을 보면  
+transformer 등 pre-trained complex model 가져와서 쓰는데  
+feed-forward 방식으로 학습하므로  
+빠르면서도 성능이 좋습니다. 이를 적용할 수 있지 않을까요?  
 
 - A1 :  
-TBD
+일단 본 논문에서는 fast training 유지하기 위해 shallow MLP가 simply fc layers로 구성되어 있습니다  
+말씀해주신대로 simple shallow MLP 대신 더 좋은 network 쓰면 성능이 더 좋아질 것 같다고 생각하는데,  
+deblurring task를 다룬 본 논문 이후의 논문들을 아직 읽어보지 않아서  
+혹시 읽어보고 좋은 아이디어 있다면 공유하도록 하겠습니다.
 
 - Q2 :  
-TBD
+본 논문이 deblurring task를 위해 pre-trained 3DGS를 가져와서 fine-tuning하는 것인가요?
 
 - A2 :  
-TBD
+아닙니다. 기존 3DGS에 blur를 모델링하는 MLP만 추가해서 scratch부터 training하고,  
+이로써 input image가 더러워도(blurry하더라도) clean image를 rendering할 수 있게 됩니다.  
+그리고 기존 3DGS와 같이 per-scene 방식으로 학습하는 것으로 알고 있습니다.
+
+- Q3 :  
+blurry input image를 dataset에서 미리 빼버리면 deblurring을 해야 하는 상황이 없어지잖아요  
+이처럼 제가 생각하기에는 굳이 deblurring을 해야 하나 라는 생각이 듭니다.
+
+- A3 :  
+일단 deblurring이라는 게 super-resolution처럼 하나의 task로 생각할 수 있습니다  
+input image가 blurry 할 수 있는데 말씀해주신대로 이를 dataset에서 미리 뺀다는 것 자체가 manual effort를 필요로 합니다 (이를 model이 대신 해준다면 좋겠죠)  
+그리고 만약 주어진 모델이 deblurring을 수행할 수 있다면 다른 모델의 앞단에 쓰여서 blur를 제거하는 pre-processing 용도로도 쓰일 수 있습니다.  
+2D image 또는 video를 deblurring하는 논문들은 이미 많이 있는데  
+3D scene deblurring의 경우에는 3D view consistency 때문에 어려움이 있었습니다.  
+그러다가 3DGS 등장 이후로 처음 3DGS deblurring을 시도한 논문이 본 논문이라고 보시면 될 것 같습니다.
+
+- Q4 :  
+그렇다면 deblurring task라는 게 uncertainty를 해결하는 것이라고 볼 수 있을까요? 아니면 이것과는 별개의 task로 봐야 할까요?  
+
+- A4 :  
+(3D recon. 및 novel view synthesis에서 uncertainty라는 용어가 자주 등장하는데, 관련 논문들을 많이 읽어보지 않아서 잘 모르겠습니다.)
+
+- Q5 :  
+dataset에 있는 image들이 blurry하지 않고 clean(sharp) 하더라도  
+camera explore 하면서 novel view에 대해 rendering을 하다보면 rendered image에 blur가 생길 수 있을 것 같은데  
+deblurring이라는 게 이러한 blur도 제거해주나요?
+
+- A5 :  
+일단 본 논문에서 deblur를 하는 원리는 covariance를 조정하는 MLP로 blur를 모델링하여  
+해당 MLP(blur 담당)를 사용하지 않는 inference에서는 deblurred image가 rendering되는 것입니다  
+하지만 input이 blurry해서 생긴 blur가 아니라 rendering하다보니 생기는 artifacts로서의 blur의 경우라면  
+해당 MLP가 artifacts로서의 blur도 잘 모델링해줄지는 모르겠습니다. 더 찾아봐야 할 것 같습니다.
+
+- Q6 :  
+혹시 본 논문을 읽으면서 생각해보셨던 limitation이 있을까요? 논문에 적혀있는 것 말고 개인적인 생각이 있으신지 궁금합니다.  
+저는 뭔가 본 논문의 알고리즘이 artificial하다는 생각이 들었습니다.
+
+- A6 :  
+(개인적으로 생각해본 limitation 답변 못 드림 ㅠㅠ 앞으로는 논문 읽을 때 novelty 말고도 limitation이 무엇일지 생각하는 습관 길러보자!)  
+기존 deblur nerf에서는 deblur kernel을 이용해서 여러 ray를 쏴서 2D 상에서 pixel들을 interpolate해서 blur를 모델링하는데  
+deblurring 3DGS에서는 3D 상에서 Gaussian covariance를 키우는 방식으로 interpolate를 비슷하게 구현했다는 논리(가정)이고  
+결과적으로 성능이 좋게 나왔으니 본인들 주장(가정)이 맞았다 인 것 같아서 말씀해주신대로 artificial한 느낌이 들긴 하네요
