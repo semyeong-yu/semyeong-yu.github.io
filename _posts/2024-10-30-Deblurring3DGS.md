@@ -482,6 +482,7 @@ blurry input image를 dataset에서 미리 빼버리면 deblurring을 해야 하
 일단 deblurring이라는 게 super-resolution처럼 하나의 task로 생각할 수 있습니다  
 input image가 blurry 할 수 있는데 말씀해주신대로 이를 dataset에서 미리 뺀다는 것 자체가 manual effort를 필요로 합니다 (이를 model이 대신 해준다면 좋겠죠)  
 그리고 만약 주어진 모델이 deblurring을 수행할 수 있다면 다른 모델의 앞단에 쓰여서 blur를 제거하는 pre-processing 용도로도 쓰일 수 있습니다.  
+이로써 input images가 현실에서 있을 법한 더러운(blurry) 이미지더라도 상관 없이 input으로 쓸 수 있습니다.  
 2D image 또는 video를 deblurring하는 논문들은 이미 많이 있는데  
 3D scene deblurring의 경우에는 3D view consistency 때문에 어려움이 있었습니다.  
 그러다가 3DGS 등장 이후로 처음 3DGS deblurring을 시도한 논문이 본 논문이라고 보시면 될 것 같습니다.
@@ -490,7 +491,7 @@ input image가 blurry 할 수 있는데 말씀해주신대로 이를 dataset에�
 그렇다면 deblurring task라는 게 uncertainty를 해결하는 것이라고 볼 수 있을까요? 아니면 이것과는 별개의 task로 봐야 할까요?  
 
 - A4 :  
-(3D recon. 및 novel view synthesis에서 uncertainty라는 용어가 자주 등장하는데, 관련 논문들을 많이 읽어보지 않아서 잘 모르겠습니다.)
+(3D recon. 및 novel view synthesis에서 uncertainty라는 용어가 자주 등장하는데, 관련 논문들을 아직 많이 읽어보지 않아서 확실하게 답변드리지 못하겠습니다.)
 
 - Q5 :  
 dataset에 있는 image들이 blurry하지 않고 clean(sharp) 하더라도  
