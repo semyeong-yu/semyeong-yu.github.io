@@ -5,7 +5,7 @@ date: 2024-12-20 12:00:00
 description: Physics-Integrated 3D Gaussians for Generative Dynamics (CVPR 2024)
 tags: 3DGS multi GPU parallel
 categories: 3d-view-synthesis
-thumbnail: assets/img/2024-12-20-PhysGaussian/1.png
+thumbnail: assets/img/2024-12-20-PhysGaussian/0.png
 giscus_comments: false
 disqus_comments: true
 related_posts: true
@@ -19,7 +19,7 @@ toc:
   - name: Internal Filling
   - name: Anisotropy Regularizer
   - name: Experiments
-  - name: Limitation
+  - name: Conclusion
 
 _styles: >
   .fake-img {
@@ -54,8 +54,15 @@ reference :
 ## Contribution
 
 - `Physics Simulation`을 `3DGS`에 결합 :  
-3DGS에 부피, 질량, 속도 (Physics) property를 부여하여  
-3DGS가 시간에 따라 물리 법칙에 따라 변화
+  - 3DGS에 부피, 질량, 속도 (Physics) property를 부여하여  
+  3DGS의 covariance 및 rotation matrix가 시간에 따라 물리 법칙에 따라 변화  
+  - MPM simulation 장점과 3DGS rendering 장점을 결합하여  
+  unified simulation-rendering pipeline 제시
+
+- 결과 영상이 재미있어 보여서 리뷰해 보았는데  
+다 읽은 결과  
+추후 3D recon. 연구를 위해 기억해야 하는 중요한 기법은 딱히 없고  
+얻어갈 건 3DGS의 covariance를 잘 변형시키는 게 중요하다 정도?
 
 ## Overview
 
@@ -206,14 +213,14 @@ object의 deformation이 클 경우 내부가 노출될 수도 있고
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/3.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/4.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
 - Internal Filling :  
   - Step 1)  
   discretize  
-  from continuous 3D opacity field $$d(x) = \sum_{p} \sigma_{p} e^{-\frac{1}{2}(x-x_{p})^{T}\Sigma_{p}^{-1}(x-x_{p})}$$  
+  from continuous `3D opacity field` $$d(x) = \sum_{p} \sigma_{p} e^{-\frac{1}{2}(x-x_{p})^{T}\Sigma_{p}^{-1}(x-x_{p})}$$  
   into discrete 3D grid
   - Step 2)  
   low opacity($$\sigma_{i} \lt \sigma_{th}$$)를 가지는 grid에서  
@@ -251,6 +258,92 @@ where $$S_{p}$$ : scale matrix of 3DGS
 
 ## Experiments
 
+- Dataset :  
+InstantNGP, NerfStudio, DroneDeployNeRF, $$\cdots$$
 
+- Resource :  
+24-core 3.50GHz Intel i9-10920X machine with Nvidia RTX 3090 GPU
 
-## Limitation
+- MPM Simulation :  
+  - MPM :  
+  [SIGGRAPH2023](https://zeshunzong.github.io/reduced-order-mpm/)
+  - simulation region :  
+  simulation region을 manually 선택하여 $$2 \times 2 \times 2$$ cube로 normalize한 뒤 3D dense crid로 discretize  
+  - particle :  
+  controlled movement(흔들리는 여우 얼굴 등)를 보일 specific particles만 선택적으로 velocities 수정하고  
+  나머지 particles는 물리 법칙을 따르는 natural motion
+
+- Qualitative Results :  
+[Video](https://xpandora.github.io/PhysGaussian/) 를 보면  
+Simulation 할 때  
+  - Fox의 경우  
+  물체의 원래 형태로 되돌아가는 Elasticity (탄성) 성질을 적용  
+  - Plane의 경우  
+  물체의 원래 형태로 되돌아가지 않는 Metal (금속) 성질을 적용  
+  - Ruins의 경우  
+  Sand 효과 (granular-level frictional effect based on Druker-Prager plastic model)를 적용  
+  - Toast의 경우  
+  MPM Simulation에 따라 큰 deformation이 발생하면 입자가 여러 그룹으로 분리되는 Fracture
+  - Jam의 경우  
+  Paste 효과 (non-Newtonian fluid based on Herschel Bulkley plastic model)를 적용
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/5.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
+- Quantitative Results :  
+  - deformation에 대한 GT를 만들기 위해  
+  BlenderNeRF로 scene 합성한 뒤 lattice deformation tool로 Bend 및 Twist  
+  - 3가지 model과 비교  
+    - [NeRF-Editing](https://arxiv.org/abs/2205.04978) :  
+      - [NeuS](https://arxiv.org/abs/2106.10689) 로 추출한 surface mesh를 이용해서 NeRF 를 변형하는데,  
+      surface recon.에 초점이 맞춰진 연구여서 volumetric simulation과 결합했을 때  
+      rendering 퀄리티가 낮았음  
+      - deformation이 extracted surface mesh와 dilated cage mesh의 정밀도에 의존하는데  
+      mesh가 지나치게 크면 경계가 공백이 될 수 있음 
+    - [Deforming-NeRF](https://arxiv.org/abs/2309.13101) :  
+      - 고해상도 deformation cage mesh를 사용해서 변형하여 향상된 결과 보이지만  
+      interpolation 과정에서 local detail을 filtering하면서 성능 낮아짐
+    - [PAC-NeRF](https://arxiv.org/abs/2303.05512) :  
+      - 단순한 object, texture를 표현하도록 디자인되어  
+      particle representation을 통해 flexible하지만 rendering 퀄리티는 여전히 높지 않음
+  - Ours :  
+  zero-order info.(deformation map)와 first-order info.(deformation gradient)를 모두 활용하였으므로  
+  deformation 후에도 높은 성능 보임
+  - Ablation Study :  
+    - Fixed Covariance :  
+    3DGS에 translation만 적용하여  
+    covariance는 그대로 사용
+    - Rigid Covariance :  
+    3DGS에 rigid transformation 적용하여  
+    covariance를 수정하여 물리 법칙을 따르도록
+    - Fixed Harmonics :  
+    SH에서 view direction을 rotate하지 않음
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/6.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+<div class="caption">
+    논문에서 언급한 기법들을 적용하지 않을 경우 Gaussian이 surface를 제대로 덮지 않아 artifacts 발생
+</div>
+
+## Conclusion
+
+- Limitation :  
+  - 그림자 고려 안 함
+  - material param.를 manually 정해주어야 함  
+  (GS segmentation과 differentiable MPM simulator를 결합하여 video로부터 param. 자동 assign 가능하긴 함)
+
+- Future Work :  
+  - more versatile materials like liquid 다루기
+  - more intuitive user control 포함하기
+  - LLM 기술 적용하기
+  - geometry-aware 3DGS recon. 결합하여 generative dynamics (생성 동역학) 향상시키기
+
+- 마무리하며..  
+3DGS와 전혀 다른 분야를 통합하는 논문들이 종종 나오는데  
+이 논문도 결과가 재미있게 나온 논문이었다!!
