@@ -59,10 +59,7 @@ reference :
   - MPM simulation 장점과 3DGS rendering 장점을 결합하여  
   unified simulation-rendering pipeline 제시
 
-- 결과 영상이 재미있어 보여서 리뷰해 보았는데  
-다 읽은 결과  
-추후 3D recon. 연구를 위해 기억해야 하는 중요한 기법은 딱히 없고  
-얻어갈 건 3DGS의 covariance를 잘 변형시키는 게 중요하다 정도?
+결과 영상이 재밌음!
 
 ## Overview
 
@@ -143,6 +140,12 @@ $$\int_{B_{\epsilon}^{t}} \rho (x, t) = \int_{B_{\epsilon}^{0}} \rho (\phi^{-1}(
 ## Physics-Integrated 3DGS
 
 그렇다면 어떻게 물리 법칙을 3DGS에 적용할까??
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/7.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
 
 - 방법 1) deformation gradient $$F_{p}$$ 로 approx.  
   - local affine transformation of deformation map $$\phi$$ :  
@@ -250,6 +253,12 @@ object의 deformation이 클 경우 내부가 노출될 수도 있고
 large deformation일 때 Gaussian이 object surface의 바깥쪽으로 튀어나와  
 `plush artifacts` 발생 가능  
 
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/9.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
 - $$L_{aniso} = \frac{1}{| P |} \sum_{p \in P} \text{max}(\frac{\text{max}(S_{p})}{\text{min}(S_{p})}, r) - r$$  
 where $$S_{p}$$ : scale matrix of 3DGS
   - $$\frac{\text{max}(S_{p})}{\text{min}(S_{p})} \leq r$$  
@@ -329,6 +338,24 @@ Simulation 할 때
 </div>
 <div class="caption">
     논문에서 언급한 기법들을 적용하지 않을 경우 Gaussian이 surface를 제대로 덮지 않아 artifacts 발생
+</div>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/8.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+<div class="caption">
+    E는 elasticity(탄성도), v는 poission ratio(volume 보존 정도)
+</div>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/10.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+<div class="caption">
+    당겼을 때 Physics-based Ours는 물리 법칙에 따라 volume을 잘 보존하지만, Geometry-based NeRF-Editing은 volume 보존하지 않음
 </div>
 
 ## Conclusion
