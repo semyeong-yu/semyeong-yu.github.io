@@ -258,6 +258,9 @@ large deformation일 때 Gaussian이 object surface의 바깥쪽으로 튀어나
         {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/9.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
+<div class="caption">
+    chair에 Twist deformation 가했을 때 생기는 plush artifacts
+</div>
 
 - $$L_{aniso} = \frac{1}{| P |} \sum_{p \in P} \text{max}(\frac{\text{max}(S_{p})}{\text{min}(S_{p})}, r) - r$$  
 where $$S_{p}$$ : scale matrix of 3DGS
