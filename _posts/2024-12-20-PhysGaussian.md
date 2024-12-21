@@ -239,7 +239,7 @@ object의 deformation이 클 경우 내부가 노출될 수도 있고
     - Condition 2) :  
     candidate grids를 refine하기 위해  
     additional ray를 casting하여 intersection 개수 체크
-  - Step 5)  
+  - Step 4)  
   object 내부에 채워 넣은 gaussian들도 3D 상에서 visualize할 필요가 있을 수 있음  
   internal-filled particle(Gaussian)의 경우  
   opacity $$\sigma_{p}$$ 와 color $$C_{p}$$ 는 closest Gaussian의 것을 물려받고  
