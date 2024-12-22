@@ -20,6 +20,7 @@ toc:
   - name: Anisotropy Regularizer
   - name: Experiments
   - name: Conclusion
+  - name: Question
 
 _styles: >
   .fake-img {
