@@ -3,7 +3,7 @@ layout: distill
 title: PhysGaussian
 date: 2024-12-20 12:00:00
 description: Physics-Integrated 3D Gaussians for Generative Dynamics (CVPR 2024)
-tags: 3DGS multi GPU parallel
+tags: Physics Simulation MPM 3DGS
 categories: 3d-view-synthesis
 thumbnail: assets/img/2024-12-20-PhysGaussian/0.png
 giscus_comments: false
