@@ -29,7 +29,7 @@
   --global-danger-block-bg: #ffe0e0;
   --global-danger-block-text: #600;
   --global-danger-block-title: #c00;
-  --global-comment-color: #888888; // modified
+  // --global-comment-color: #888888; // modified
 
   #light-toggle-system {
     padding-left: 10px;
@@ -52,9 +52,9 @@
     display: none;
   }
 
-  .comment {
-    color: var(--global-comment-color); // modified
-  }
+  // .comment {
+  //   color: var(--global-comment-color); // modified
+  // }
 }
 
 html[data-theme="dark"] {
@@ -71,7 +71,7 @@ html[data-theme="dark"] {
   --global-distill-app-color: #{$grey-color-light};
   --global-divider-color: #424246;
   --global-card-bg-color: #{$grey-900};
-  --global-comment-color: #cccccc; // modified
+  // --global-comment-color: #cccccc; // modified
 
   --global-tip-block: #42b983;
   --global-tip-block-bg: #e2f5ec;
@@ -127,6 +127,6 @@ html[data-theme-setting="light"] {
 }
 
 // modified
-code .comment {
-  color: var(--global-comment-color);
-}
+// code .comment {
+//   color: var(--global-comment-color);
+// }
