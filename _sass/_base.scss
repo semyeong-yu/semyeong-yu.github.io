@@ -835,8 +835,8 @@ figure.highlight {
 }
 
 pre {
-  color: var(--global-theme-color);
-  background-color: var(--global-code-bg-color);
+  color: #d4d4d4; //var(--global-theme-color);
+  background-color: #1e1e1e; // var(--global-code-bg-color);
   border-radius: 6px;
   padding: 6px 12px;
 
@@ -850,10 +850,26 @@ pre {
 }
 
 code {
-  color: var(--global-theme-color);
-  background-color: var(--global-code-bg-color);
+  color: #569cd6; // var(--global-theme-color);
+  background-color: #252526; // var(--global-code-bg-color);
   border-radius: 3px;
   padding: 3px 3px;
+}
+
+.code-keyword {
+  color: #569cd6; /* keyword */
+}
+
+.code-string {
+  color: #ce9178; /* string */
+}
+
+.code-comment {
+  color: #6a9955; /* comment */
+}
+
+.code-function {
+  color: #dcdcaa; /* function */
 }
 
 // Transitioning Themes
