@@ -850,27 +850,27 @@ pre {
 }
 
 code {
-  color: #569cd6; // var(--global-theme-color);
-  background-color: #252526; // var(--global-code-bg-color);
+  color: var(--global-theme-color); // #569cd6;
+  background-color: var(--global-code-bg-color); // #252526;
   border-radius: 3px;
   padding: 3px 3px;
 }
 
-.code-keyword {
-  color: #569cd6; /* keyword */
-}
+// .code-keyword {
+//   color: #569cd6; /* keyword */
+// }
 
-.code-string {
-  color: #ce9178; /* string */
-}
+// .code-string {
+//   color: #ce9178; /* string */
+// }
 
-.code-comment {
-  color: #6a9955; /* comment */
-}
+// .code-comment {
+//   color: #6a9955; /* comment */
+// }
 
-.code-function {
-  color: #dcdcaa; /* function */
-}
+// .code-function {
+//   color: #dcdcaa; /* function */
+// }
 
 // Transitioning Themes
 html.transition,
