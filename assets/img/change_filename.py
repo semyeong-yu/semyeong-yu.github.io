@@ -9,7 +9,7 @@ def change_imgname(root_dir):
             files = os.listdir(dir_path)
             for file in files:
                 if file.endswith('.png') or file.endswith('.PNG') or file.endswith('.jpg') or file.endswith('.JPG'):
-                    new_file = file.rsplit('.', 1)[0] + 'm.PNG'
+                    new_file = file.rsplit('.', 1)[0] + 'm.PNG' # change file name
                     os.rename(os.path.join(dir_path, file), os.path.join(dir_path, new_file))
 
 if __name__ == "__main__":
