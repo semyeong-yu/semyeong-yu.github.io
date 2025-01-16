@@ -5,7 +5,7 @@ date: 2024-04-01 17:00:00
 description: Epipolar Geometry & Image Rectification
 tags: epipolar fundamental essential image rectification
 categories: depth-estimation
-thumbnail: assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/1.png
+thumbnail: assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/1m.PNG
 giscus_comments: false
 disqus_comments: true
 related_posts: true
@@ -36,13 +36,13 @@ Multi-View Geometry 에 대해 공부하고 싶다면 아래 블로그 글 쭉 �
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/1m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/2m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -80,7 +80,7 @@ any $$\hat p = (X, Y, Z)$$ where $$(\frac{X}{Z}, \frac{Y}{Z}) = (x, y)$$처럼
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/10.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/10m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -187,7 +187,7 @@ $$F = K_{R}^{-T} t \circledast R K_{L}^{-1}$$ 임을 유도할 수 있다.
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/4.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/4m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -201,13 +201,13 @@ For `post-processing, MRF(Markov Random Field) or CRF(Conditional Random Field)`
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/5.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/5m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/6.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/6m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -216,7 +216,7 @@ For `post-processing, MRF(Markov Random Field) or CRF(Conditional Random Field)`
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/7.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/7m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -227,7 +227,7 @@ calibrated cameras에 대해서는 essential matrix가 두 camera 사이의 관�
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/11.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/11m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 

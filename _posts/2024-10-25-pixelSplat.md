@@ -5,7 +5,7 @@ date: 2024-10-25 12:00:00
 description: 3D Gaussian Splats from Image Pairs for Scalable Generalizable 3D Reconstruction (CVPR 2024)
 tags: 3DGS image pair scalable
 categories: 3d-view-synthesis
-thumbnail: assets/img/2024-10-25-pixelSplat/1.png
+thumbnail: assets/img/2024-10-25-pixelSplat/1m.PNG
 giscus_comments: false
 disqus_comments: true
 related_posts: true
@@ -106,7 +106,7 @@ reconstruct a 3DGS primitive-based parameterization of 3D radiance field from on
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/4.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/4m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -127,7 +127,7 @@ reconstruct a 3DGS primitive-based parameterization of 3D radiance field from on
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/1m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -138,7 +138,7 @@ reconstruct a 3DGS primitive-based parameterization of 3D radiance field from on
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/2m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -150,7 +150,7 @@ each view (two images)를 각각 feature $$F$$, $$\tilde F$$ 로 encode
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/3.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/3m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -177,7 +177,7 @@ attention으로 depth scale을 잘 학습하는 게 목적
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/5.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/5m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -203,7 +203,7 @@ attention으로 depth scale을 잘 학습하는 게 목적
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/9.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/9m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -246,7 +246,7 @@ Gaussian param. $$g_{k} = (\mu_{k}, \Sigma_{k}, \alpha_{k}, S_{k})$$ 를 예측
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/6.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/6m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -287,7 +287,7 @@ Gaussian param. $$g_{k} = (\mu_{k}, \Sigma_{k}, \alpha_{k}, S_{k})$$ 를 예측
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/7.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/7m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -298,13 +298,13 @@ Gaussian param. $$g_{k} = (\mu_{k}, \Sigma_{k}, \alpha_{k}, S_{k})$$ 를 예측
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/8.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/8m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/10.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-25-pixelSplat/10m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">

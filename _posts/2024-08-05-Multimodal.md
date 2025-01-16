@@ -68,7 +68,7 @@ _styles: >
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/StoryImager/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/StoryImager/1m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div> 
 
@@ -79,7 +79,7 @@ and FS-CAM (frame-story cross-attention module)
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/StoryImager/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/StoryImager/2m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div> 
 
@@ -102,7 +102,7 @@ $$\rightarrow$$ random masking to VAE latent space
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/StoryImager/4.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/StoryImager/4m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div> 
 
@@ -113,7 +113,7 @@ concat
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/StoryImager/3.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/StoryImager/3m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div> 
 
@@ -143,7 +143,7 @@ concat
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/IntelligentGrimm/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/IntelligentGrimm/1m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div> 
 
@@ -196,7 +196,7 @@ wild sound로부터 image를 생성하는 task를 최초로 제시
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/ImageSound/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/ImageSound/1m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -204,7 +204,7 @@ local minimum에 빠지지 않기 위해 audio attention과 sentence attention�
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/ImageSound/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/ImageSound/2m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -237,13 +237,13 @@ temporal info.를 반영하기 위해 tokenization 단계에서 spatial, tempora
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/ViViT/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/ViViT/1m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div> 
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/ViViT/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/ViViT/2m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -273,7 +273,7 @@ TBD
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/llamaVID/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/llamaVID/1m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -293,7 +293,7 @@ TBD
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/PEEKABOO/3.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/PEEKABOO/3m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -309,7 +309,7 @@ TBD
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/PEEKABOO/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/PEEKABOO/1m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -321,7 +321,7 @@ TBD
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/PEEKABOO/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/PEEKABOO/2m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -420,7 +420,7 @@ world (sequence of discrete events samples from unknown distribution $$P(Z)$$) �
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/MasaCtrl/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/MasaCtrl/1m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -429,7 +429,7 @@ world (sequence of discrete events samples from unknown distribution $$P(Z)$$) �
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/MasaCtrl/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-05-Multimodal/MasaCtrl/2m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">

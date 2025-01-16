@@ -5,7 +5,7 @@ date: 2024-07-09 15:00:00
 description: import torch
 tags: pytorch
 categories: others
-thumbnail: assets/img/2024-07-09-TorchTensor/1.png
+thumbnail: assets/img/2024-07-09-TorchTensor/1m.PNG
 giscus_comments: false
 disqus_comments: true
 related_posts: true
@@ -36,7 +36,7 @@ _styles: >
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/2m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -44,12 +44,12 @@ _styles: >
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/3.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/3m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/4.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/4m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -63,7 +63,7 @@ e.g. a = np.arange(10)[8:5:-1] 는 [8, 7, 6]
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/5.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/5m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -79,12 +79,12 @@ a[b, c, :] : shape (3, 3)
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/6.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/6m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/7.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/7m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -92,7 +92,7 @@ a[b, c, :] : shape (3, 3)
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/8.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/8m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -100,7 +100,7 @@ a[b, c, :] : shape (3, 3)
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/9.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/9m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -108,7 +108,7 @@ a[b, c, :] : shape (3, 3)
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/10.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/10m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -120,7 +120,7 @@ a[b, c, :] : shape (3, 3)
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/11.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/11m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -130,7 +130,7 @@ a[b, c, :] : shape (3, 3)
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/12.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/12m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -143,12 +143,12 @@ batched matrix multiplication 수행하는 a@b 권장
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/13.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/13m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/14.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/14m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -160,7 +160,7 @@ batched matrix multiplication 수행하는 a@b 권장
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/15.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/15m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -168,7 +168,7 @@ batched matrix multiplication 수행하는 a@b 권장
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/16.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-09-TorchTensor/16m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 

@@ -5,7 +5,7 @@ date: 2024-06-25 15:00:00
 description: Diffusion Study
 tags: diffusion generative
 categories: generative
-thumbnail: assets/img/2024-06-25-Diffusion/1.png
+thumbnail: assets/img/2024-06-25-Diffusion/1m.PNG
 giscus_comments: false
 disqus_comments: true
 related_posts: true
@@ -81,7 +81,7 @@ KL-diverence 특성 :
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-06-25-Diffusion/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-06-25-Diffusion/1m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -144,7 +144,7 @@ reference : [Link](https://github.com/w86763777/pytorch-ddpm)
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-06-25-Diffusion/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-06-25-Diffusion/2m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -164,7 +164,7 @@ reference : [Link](https://github.com/w86763777/pytorch-ddpm)
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-06-25-Diffusion/3.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-06-25-Diffusion/3m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 

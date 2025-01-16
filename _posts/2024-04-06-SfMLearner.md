@@ -5,7 +5,7 @@ date: 2024-04-06 17:00:00
 description: Unsupervised Learning of Depth and Ego-Motion from Video
 tags: unsupervised depth ego motion video
 categories: depth-estimation
-thumbnail: assets/img/2024-04-06-SfMLearner/3.png
+thumbnail: assets/img/2024-04-06-SfMLearner/3m.PNG
 giscus_comments: false
 disqus_comments: true
 related_posts: true
@@ -77,7 +77,7 @@ Scenes, which we are interested in, are mostly rigid, so changes across differen
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-06-SfMLearner/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-06-SfMLearner/1m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -90,7 +90,7 @@ $$\hat I_{s}(p)$$ : source view warped to target coordinate frame (= reconstruct
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-06-SfMLearner/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-06-SfMLearner/2m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -98,7 +98,7 @@ $$\hat I_{s}(p)$$ : source view warped to target coordinate frame (= reconstruct
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-06-SfMLearner/3.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-06-SfMLearner/3m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -147,7 +147,7 @@ $$\rightarrow$$ 해결 2. add `multi-scale` and `smoothness loss` term
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-06-SfMLearner/4.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-06-SfMLearner/4m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -156,7 +156,7 @@ $$\rightarrow$$ 해결 2. add `multi-scale` and `smoothness loss` term
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-06-SfMLearner/5.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-06-SfMLearner/5m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -173,7 +173,7 @@ DispNet encoder-decoder architecture
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-06-SfMLearner/6.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-06-SfMLearner/6m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -186,10 +186,10 @@ output : 6-DoF relative poses between target view and each source view
 
 <div class="row">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/2024-04-06-SfMLearner/7.png" class="img-fluid rounded z-depth-1" %}
+        {% include figure.liquid path="assets/img/2024-04-06-SfMLearner/7m.PNG" class="img-fluid rounded z-depth-1" %}
     </div>
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/2024-04-06-SfMLearner/7.png" title="example image" class="img-fluid rounded z-depth-1" %}
+        {% include figure.liquid path="assets/img/2024-04-06-SfMLearner/7m.PNG" title="example image" class="img-fluid rounded z-depth-1" %}
     </div>
 </div>
 
@@ -219,7 +219,7 @@ Test : arbitrary input image size
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-06-SfMLearner/8.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-06-SfMLearner/8m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -235,7 +235,7 @@ $$\rightarrow$$ 특히 small left/right turning magnitude (car is mostly driving
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-06-SfMLearner/9.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-06-SfMLearner/9m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">

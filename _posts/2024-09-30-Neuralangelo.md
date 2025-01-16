@@ -5,7 +5,7 @@ date: 2024-09-30 12:00:00
 description: High-Fidelity Neural Surface Reconstruction (CVPR 2023)
 tags: 3d surface hash grid numerical gradient
 categories: 3d-view-synthesis
-thumbnail: assets/img/2024-09-30-Neuralangelo/1.png
+thumbnail: assets/img/2024-09-30-Neuralangelo/10m.PNG
 bibliography: 2024-09-30-Neuralangelo.bib
 giscus_comments: false
 disqus_comments: true
@@ -67,7 +67,7 @@ with SDF-based volume rendering
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-09-30-Neuralangelo/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-09-30-Neuralangelo/10m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -112,7 +112,7 @@ with SDF-based volume rendering
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-09-30-Neuralangelo/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-09-30-Neuralangelo/2m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -124,7 +124,7 @@ with SDF-based volume rendering
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-09-30-Neuralangelo/4.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-09-30-Neuralangelo/4m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -132,7 +132,7 @@ with SDF-based volume rendering
 </div>
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-09-30-Neuralangelo/5.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-09-30-Neuralangelo/5m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -165,7 +165,7 @@ multi-resolution hash grid representation 사용
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-09-30-Neuralangelo/3.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-09-30-Neuralangelo/3m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -192,7 +192,7 @@ multi-resolution hash grid representation 사용
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-09-30-Neuralangelo/6.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-09-30-Neuralangelo/6m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -203,7 +203,7 @@ multi-resolution hash grid representation 사용
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-09-30-Neuralangelo/7.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-09-30-Neuralangelo/7m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 

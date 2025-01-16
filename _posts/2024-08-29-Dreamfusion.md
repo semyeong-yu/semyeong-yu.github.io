@@ -5,7 +5,7 @@ date: 2024-08-29 11:00:00
 description: Text-to-3D using 2D Diffusion (ICLR 2023)
 tags: sds diffusion nerf 3d rendering 
 categories: generative
-thumbnail: assets/img/2024-08-29-Dreamfusion/1.png
+thumbnail: assets/img/2024-08-29-Dreamfusion/1m.PNG
 bibliography: 2024-08-29-Dreamfusion.bib
 giscus_comments: false
 disqus_comments: true
@@ -71,7 +71,7 @@ pytorch code :
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/1m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -88,7 +88,7 @@ pytorch code :
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/2m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -107,7 +107,7 @@ pytorch code :
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/3.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/3m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -160,7 +160,7 @@ $$c = \rho \circ s$$ 또는 $$c = \rho$$
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/5.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/5m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -172,7 +172,7 @@ $$c = \rho \circ s$$ 또는 $$c = \rho$$
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/4.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/4m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -191,7 +191,7 @@ text prompt engineering 수행
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/10.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/10m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -282,7 +282,7 @@ constant $$\frac{dz_t}{dx} = \alpha_{t} \boldsymbol I$$ 를 $$w(t)$$ 에 넣으�
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/6.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/6m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -295,7 +295,7 @@ SDS Loss에서 U-Net Jacobian term은 생략
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/7.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/7m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -414,7 +414,7 @@ GT를 필요로 하는 PSNR 같은 metric은 사용하지 못함
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/8.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/8m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -439,7 +439,7 @@ DreamFusion보다 성능이 더 좋아야 하는데,
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/9.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-29-Dreamfusion/9m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
  

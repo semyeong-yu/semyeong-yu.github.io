@@ -115,7 +115,7 @@ Garg et al. :
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/13.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/13m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="row mt-3">
@@ -152,13 +152,13 @@ backward mapping :
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/3.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/3m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/4.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/4m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -169,13 +169,13 @@ backward mapping :
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/5.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/5m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/6.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/6m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -187,7 +187,7 @@ How much $$I^{r}(d^{l})$$ appears similar to $$I^{l}$$
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/7.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/7m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -195,7 +195,7 @@ How much $$I^{r}(d^{l})$$ appears similar to $$I^{l}$$
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/8.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/8m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -205,7 +205,7 @@ How much $$d^{l}$$ is smooth
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/9.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/9m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -217,7 +217,7 @@ How much $$d^{l}$$ and $$d^{r}(d^{l})$$ are consistent
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/10.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/10m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -232,13 +232,13 @@ Test : on other datasets like Make3D and CamVid
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/11.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/11m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/12.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/12m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 

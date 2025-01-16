@@ -5,7 +5,7 @@ date: 2024-07-08 11:00:00
 description: Dataset, DataLoader, Train, Attention, ...
 tags: pytorch
 categories: others
-thumbnail: assets/img/2024-07-08-PytorchBasic/1.png
+thumbnail: assets/img/2024-07-08-PytorchBasic/1m.PNG
 bibliography: 2024-07-08-PytorchBasic.bib
 giscus_comments: false
 disqus_comments: true
@@ -33,7 +33,7 @@ _styles: >
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/3.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/3m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -134,7 +134,7 @@ img = torch.tensor(img.transpose((2, 0, 1)).astype(float)).mul_(1.0) / 255.0 # t
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/4.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/4m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -163,10 +163,10 @@ class CustomDataset(Dataset):
         elif mode == 'test':
             self.data_path = os.path.join(args.data_path, 'test_blur')
         
-        # a list of data/train_blur/*.png
-        self.blur_path_list = sorted(glob.glob(os.path.join(self.data_path, '*.png')))
+        # a list of data/train_blur/*m.PNG
+        self.blur_path_list = sorted(glob.glob(os.path.join(self.data_path, '*m.PNG')))
         
-        # a list of data/train_sharp/*.png
+        # a list of data/train_sharp/*m.PNG
         self.sharp_path_list = [os.path.normpath(path.replace('blur', 'sharp') for path in self.blur_path_list)]
 
     def __getitem__(self, idx):
@@ -315,7 +315,7 @@ class CustomDataset(Dataset):
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/5.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/5m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -412,7 +412,7 @@ def main_worker(process_id, args):
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/6.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/6m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -520,7 +520,7 @@ def main_worker(process_id, args):
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/7.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/7m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -588,7 +588,7 @@ def train(train_loader, model, criterion, optimizer, scheduler, epoch, args):
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/8.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/8m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -632,7 +632,7 @@ def validate(val_loader, model, criterion, epoch, args):
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/9.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/9m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -655,7 +655,7 @@ def arg_parse():
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/10.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/10m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -684,7 +684,7 @@ def fix_seed(random_seed):
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/11.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/11m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -721,7 +721,7 @@ def load_checkpoint(checkpoint_path, model, optimizer, scheduler, rank=-1):
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/12.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/12m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -751,7 +751,7 @@ class BaseTransform(object):
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/13.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/13m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -788,7 +788,7 @@ def topk_accuracy(pred, gt, k=1):
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/2m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -825,7 +825,7 @@ DA attention은 $$Net^{D}$$ 말고 $$Net^{R}$$ 에서만 사용
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/14.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-08-PytorchBasic/14m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 

@@ -5,7 +5,7 @@ date: 2024-10-30 12:00:00
 description: ECCV 2024
 tags: 3DGS deblur
 categories: 3d-view-synthesis
-thumbnail: assets/img/2024-10-30-Deblurring3DGS/1.PNG
+thumbnail: assets/img/2024-10-30-Deblurring3DGS/1m.PNG
 giscus_comments: false
 disqus_comments: true
 related_posts: true
@@ -94,7 +94,7 @@ still real-time rendering at inference
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/1m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -199,7 +199,7 @@ where output : $$j$$-th Gaussian's rotation change, scale change
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/2m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -262,13 +262,13 @@ SfM은 유효한 feature를 식별하지 못해서
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/3.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/3m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/12.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/12m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -296,7 +296,7 @@ dataset에 기록된 `z-axis 값`은 `relative depth` from any viewpoint라고 �
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/4.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/4m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -346,13 +346,13 @@ dataset에 기록된 `z-axis 값`은 `relative depth` from any viewpoint라고 �
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/5.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/5m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/6.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/6m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -360,7 +360,7 @@ dataset에 기록된 `z-axis 값`은 `relative depth` from any viewpoint라고 �
 </div>
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/7.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/7m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -369,7 +369,7 @@ dataset에 기록된 `z-axis 값`은 `relative depth` from any viewpoint라고 �
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/8.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/8m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -377,7 +377,7 @@ dataset에 기록된 `z-axis 값`은 `relative depth` from any viewpoint라고 �
 </div>
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/9.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/9m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -386,7 +386,7 @@ dataset에 기록된 `z-axis 값`은 `relative depth` from any viewpoint라고 �
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/13.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/13m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -394,7 +394,7 @@ dataset에 기록된 `z-axis 값`은 `relative depth` from any viewpoint라고 �
 </div>
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/14.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/14m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -409,7 +409,7 @@ dataset에 기록된 `z-axis 값`은 `relative depth` from any viewpoint라고 �
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/10.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/10m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -418,7 +418,7 @@ dataset에 기록된 `z-axis 값`은 `relative depth` from any viewpoint라고 �
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/11.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-10-30-Deblurring3DGS/11m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">

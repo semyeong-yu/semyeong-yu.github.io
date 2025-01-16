@@ -5,7 +5,7 @@ date: 2024-05-29 14:00:00
 description: Promptable Image Segmentation
 tags: image segmentation
 categories: cv-tasks
-thumbnail: assets/img/2024-05-29-SegmentAnything/1.png
+thumbnail: assets/img/2024-05-29-SegmentAnything/1m.PNG
 giscus_comments: false
 disqus_comments: true
 related_posts: true
@@ -64,7 +64,7 @@ Zero-Shot transfer to various tasks
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-29-SegmentAnything/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-05-29-SegmentAnything/2m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -80,7 +80,7 @@ ambiguous prompt에 대응하기 위해, zero shot을 위해
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-29-SegmentAnything/3.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-05-29-SegmentAnything/3m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -90,7 +90,7 @@ ViT-H/16 : 14 $$\times$$ 14 windowed attention and 4 global attention blocks
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-29-SegmentAnything/4.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-05-29-SegmentAnything/4m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -143,7 +143,7 @@ generalizable (zero-shot transfer to various tasks)
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-29-SegmentAnything/4.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-05-29-SegmentAnything/4m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -155,7 +155,7 @@ compare with RITM model on 23 datasets
 - Zero-Shot Edge Detection :  
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-29-SegmentAnything/6.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-05-29-SegmentAnything/6m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 About filter : 블로그 맨 아랫 부분에 설명해놓음
@@ -166,7 +166,7 @@ mask 예측 후 object의 identity(class)를 얼마나 잘 맞추는가
 - Zero-Shot Instance Segmentation :  
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-29-SegmentAnything/7.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-05-29-SegmentAnything/7m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -175,14 +175,14 @@ image $$\rightarrow$$ CLIP $$\rightarrow$$ image embedding as input
 text $$\rightarrow$$ CLIP $$\rightarrow$$ text embedding as SAM prompt  
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-29-SegmentAnything/8.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-05-29-SegmentAnything/8m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
 SAM's latent space에서 similar mask embedding vectors within threshold를 추출한 결과 실제로도 semantically similar
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-05-29-SegmentAnything/9.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-05-29-SegmentAnything/9m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">

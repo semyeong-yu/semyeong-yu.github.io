@@ -5,7 +5,7 @@ date: 2024-12-20 12:00:00
 description: Physics-Integrated 3D Gaussians for Generative Dynamics (CVPR 2024)
 tags: Physics Simulation MPM 3DGS
 categories: 3d-view-synthesis
-thumbnail: assets/img/2024-12-20-PhysGaussian/0.png
+thumbnail: assets/img/2024-12-20-PhysGaussian/0m.PNG
 giscus_comments: false
 disqus_comments: true
 related_posts: true
@@ -66,7 +66,7 @@ reference :
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/1m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -122,7 +122,7 @@ $$\int_{B_{\epsilon}^{t}} \rho (x, t) = \int_{B_{\epsilon}^{0}} \rho (\phi^{-1}(
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/2m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -144,7 +144,7 @@ $$\int_{B_{\epsilon}^{t}} \rho (x, t) = \int_{B_{\epsilon}^{0}} \rho (\phi^{-1}(
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/7.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/7m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -194,7 +194,7 @@ $$\int_{B_{\epsilon}^{t}} \rho (x, t) = \int_{B_{\epsilon}^{0}} \rho (\phi^{-1}(
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/3.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/3m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -217,7 +217,7 @@ object의 deformation이 클 경우 내부가 노출될 수도 있고
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/4.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/4m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -256,7 +256,7 @@ large deformation일 때 Gaussian이 object surface의 바깥쪽으로 튀어나
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/9.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/9m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -302,7 +302,7 @@ Simulation 할 때
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/5.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/5m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -337,7 +337,7 @@ Simulation 할 때
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/6.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/6m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -346,7 +346,7 @@ Simulation 할 때
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/8.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/8m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -355,7 +355,7 @@ Simulation 할 때
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/10.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-12-20-PhysGaussian/10m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">

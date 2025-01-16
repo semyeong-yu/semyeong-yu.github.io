@@ -5,7 +5,7 @@ date: 2025-01-27 12:00:00
 description: brief summary
 tags: 3DGS deblur
 categories: 3d-view-synthesis
-thumbnail: assets/img/2025-01-27-DeblurNeRF/1.PNG
+thumbnail: assets/img/2025-01-27-DeblurNeRF/1m.PNG
 giscus_comments: false
 disqus_comments: true
 related_posts: true

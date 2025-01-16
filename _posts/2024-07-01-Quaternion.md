@@ -5,7 +5,7 @@ date: 2024-07-01 14:00:00
 description: Quaternion for Rotation Matrix
 tags: quaternion rotation
 categories: 3d-view-synthesis
-thumbnail: assets/img/2024-07-01-Quaternion/2.png
+thumbnail: assets/img/2024-07-01-Quaternion/2m.PNG
 giscus_comments: false
 disqus_comments: true
 related_posts: true
@@ -48,7 +48,7 @@ Euler angles $$\theta_{x}, \theta_{y}, \theta_{z}$$ 로 회전시킬 때 두 축
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-01-Quaternion/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-01-Quaternion/2m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="caption">
@@ -60,7 +60,7 @@ $$x$$축(초록)을 회전시키면 그의 자식들인 $$y, z$$축(빨강, 파�
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-01-Quaternion/3.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-01-Quaternion/3m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -70,7 +70,7 @@ $$x$$축(초록)을 회전시키면 그의 자식들인 $$y, z$$축(빨강, 파�
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-01-Quaternion/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-01-Quaternion/1m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div> 
 
@@ -137,7 +137,7 @@ Quaternion은 `한 번에 계산 가능`하여 `동시에 회전`시킬 수 있�
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-07-01-Quaternion/4.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-07-01-Quaternion/4m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div> 
 

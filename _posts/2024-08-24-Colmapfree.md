@@ -5,7 +5,7 @@ date: 2024-08-24 11:00:00
 description: COLMAP-Free 3D Gaussian Splatting (CVPR 2024)
 tags: COLMAP SfM GS depth pose rendering 3d
 categories: 3d-view-synthesis
-thumbnail: assets/img/2024-08-24-Colmapfree/1.png
+thumbnail: assets/img/2024-08-24-Colmapfree/1m.PNG
 giscus_comments: false
 disqus_comments: true
 related_posts: true
@@ -99,7 +99,7 @@ COLMAP과 3DGS로 나눠서 하지 말고
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-24-Colmapfree/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-24-Colmapfree/1m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -142,7 +142,7 @@ COLMAP과 3DGS로 나눠서 하지 말고
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-24-Colmapfree/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-24-Colmapfree/2m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -156,18 +156,18 @@ pose trajectory와 scene reconstruction 측면에서
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-24-Colmapfree/3.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-24-Colmapfree/3m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-24-Colmapfree/4.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-24-Colmapfree/4m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-08-24-Colmapfree/5.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-08-24-Colmapfree/5m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
