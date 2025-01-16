@@ -86,7 +86,7 @@ training 필요 없이 unsupervised method로 fast
 triplet loss로 fg pixel끼리는 가까이, bg pixel은 멀리 있도록 learn pixel-level embedding  
 
 <swiper-container keyboard="true" navigation="true" pagination="true" pagination-clickable="true" pagination-dynamic-bullets="true" rewind="true">
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-video-segmentation/img72.jpg" class="img-fluid rounded z-depth-1" %}</swiper-slide>
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-video-segmentation/img77.jpg" class="img-fluid rounded z-depth-1" %}</swiper-slide>
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-video-segmentation/img82.jpg" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-video-segmentation/img72m.PNG" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-video-segmentation/img77m.PNG" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-video-segmentation/img82m.PNG" class="img-fluid rounded z-depth-1" %}</swiper-slide>
 </swiper-container>

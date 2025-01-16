@@ -66,7 +66,7 @@ $$e_L, e_R$$ : epipole of left and right camera
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/3.JPG" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/3m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -243,7 +243,7 @@ Image rectification을 수행하기 위해서는 projective transformation을 �
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/8.JPG" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/8m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -259,7 +259,7 @@ projection matrix는 $$P_{L} = K_{L}[I \vert 0], P_{R} = K_{R}[R \vert t]$$ 라 
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/9.JPG" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-01-Epipolar_Geometry_Image_Rectification/9m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 

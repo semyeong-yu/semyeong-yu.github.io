@@ -62,7 +62,7 @@ GAN의 원리 사용하여 unlabelled real data와 labelled synthetic data의 di
 image에 transformation을 가하더라도 robust하게 consistent prediction을 하도록 consistency loss 추가  
 
 <swiper-container keyboard="true" navigation="true" pagination="true" pagination-clickable="true" pagination-dynamic-bullets="true" rewind="true">
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-semisupervised-learning/img112.jpg" class="img-fluid rounded z-depth-1" %}</swiper-slide>
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-semisupervised-learning/img117.jpg" class="img-fluid rounded z-depth-1" %}</swiper-slide>
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-semisupervised-learning/img122.jpg" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-semisupervised-learning/img112m.PNG" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-semisupervised-learning/img117m.PNG" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-semisupervised-learning/img122m.PNG" class="img-fluid rounded z-depth-1" %}</swiper-slide>
 </swiper-container>

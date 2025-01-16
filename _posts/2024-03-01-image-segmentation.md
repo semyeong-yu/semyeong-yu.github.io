@@ -123,8 +123,8 @@ PQ = SQ x RQ = MOTP x F1-score
 under unique matching theorem  
 
 <swiper-container keyboard="true" navigation="true" pagination="true" pagination-clickable="true" pagination-dynamic-bullets="true" rewind="true">
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-image-segmentation/img52.jpg" class="img-fluid rounded z-depth-1" %}</swiper-slide>
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-image-segmentation/img57.jpg" class="img-fluid rounded z-depth-1" %}</swiper-slide>
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-image-segmentation/img62.jpg" class="img-fluid rounded z-depth-1" %}</swiper-slide>
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-image-segmentation/img67.jpg" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-image-segmentation/img52m.PNG" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-image-segmentation/img57m.PNG" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-image-segmentation/img62m.PNG" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-image-segmentation/img67m.PNG" class="img-fluid rounded z-depth-1" %}</swiper-slide>
 </swiper-container>

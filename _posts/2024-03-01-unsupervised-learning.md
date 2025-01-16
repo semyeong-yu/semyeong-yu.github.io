@@ -102,8 +102,8 @@ network I : masked optical flow & image -> reconstruct optical flow
 cycle consistency loss (cross-entropy loss b.w. label_t=0 and label_t=T)  
 
 <swiper-container keyboard="true" navigation="true" pagination="true" pagination-clickable="true" pagination-dynamic-bullets="true" rewind="true">
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-unsupervised-learning/img97.jpg" class="img-fluid rounded z-depth-1" %}</swiper-slide>
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-unsupervised-learning/img102.jpg" class="img-fluid rounded z-depth-1" %}</swiper-slide>
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-unsupervised-learning/img107.jpg" class="img-fluid rounded z-depth-1" %}</swiper-slide>
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-unsupervised-learning/img112.jpg" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-unsupervised-learning/img97m.PNG" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-unsupervised-learning/img102m.PNG" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-unsupervised-learning/img107m.PNG" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-unsupervised-learning/img112m.PNG" class="img-fluid rounded z-depth-1" %}</swiper-slide>
 </swiper-container>

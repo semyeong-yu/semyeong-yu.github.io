@@ -5,7 +5,7 @@ date: 2024-04-05 17:00:00
 description: Unsupervised Monocular Depth Estimation with Left-Right Consistency
 tags: unsupervised monocular depth consistency
 categories: depth-estimation
-thumbnail: assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/2.JPG
+thumbnail: assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/2m.PNG
 giscus_comments: false
 disqus_comments: true
 related_posts: true
@@ -120,7 +120,7 @@ Garg et al. :
 </div>
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/1.JPG" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/1m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 
@@ -138,7 +138,7 @@ $$x = \frac{f_x \cdot X}{Z} + p_x$$
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/2.JPG" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.liquid loading="eager" path="assets/img/2024-04-05-Monocular_Depth_Estimation_LR_Consistency/2m.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
 

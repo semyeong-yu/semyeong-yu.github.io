@@ -130,7 +130,7 @@ pixel decoder에 있는 multiple scale의 feature map을 Transformer decoder에 
 N개의 learnable query를 이용해서 predict mask of shape (N, H, W), and apply masked-attention (fg area에 대해서만 attention 하기 위해) : masked localized feature 만으로 attention 해도 충분하고 오히려 더 efficient  
 
 <swiper-container keyboard="true" navigation="true" pagination="true" pagination-clickable="true" pagination-dynamic-bullets="true" rewind="true">
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-transformer/img82.jpg" class="img-fluid rounded z-depth-1" %}</swiper-slide>
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-transformer/img87.jpg" class="img-fluid rounded z-depth-1" %}</swiper-slide>
-  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-transformer/img92.jpg" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-transformer/img82m.PNG" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-transformer/img87m.PNG" class="img-fluid rounded z-depth-1" %}</swiper-slide>
+  <swiper-slide>{% include figure.liquid loading="eager" path="assets/img/2024-03-01-transformer/img92m.PNG" class="img-fluid rounded z-depth-1" %}</swiper-slide>
 </swiper-container>
