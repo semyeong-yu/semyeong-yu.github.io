@@ -9,6 +9,7 @@ thumbnail: assets/img/2024-10-25-pixelSplat/1m.PNG
 giscus_comments: false
 disqus_comments: true
 related_posts: true
+featured: true
 toc:
   - name: Abstract
   - name: Introduction
