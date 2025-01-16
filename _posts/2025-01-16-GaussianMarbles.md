@@ -38,8 +38,15 @@ project website :
 
 ## Contribution
 
-- 기존 dynamic GS 기법들은 dense multi-view video (controlled capture setting)를 supervision으로 필요로 했는데  
-본 논문은 `평소 casually captured monocular video만으로` dynamic GS 수행!  
+- Dynamic 4D Gaussian Splatting :  
+  - 이전까지는 multiple simultaneous viewpoints of a scene 세팅 (dense multi-camera setup)에서의 recon. 논문들이 많았음  
+  $$\rightarrow$$  
+  평소의 `monocular video`로 4D recon.을 수행해보자!
+  - input에 multi-view info.가 없는 underconstrained monocular video더라도  
+  `careful optimization strategy` 및 `off-the-shelf depth and motion estimation` 및 `geometry-based regularization` 이용해서  
+  적절한 constraint를 복원할 수 있다! 
+
+TBD Concretely,
 
 - `Dynamic Gaussian Marbles` :  
 monocular setting의 어려움을 해결하기 위해 GS에서 세 가지 사항을 변경  
@@ -52,11 +59,6 @@ monocular setting의 어려움을 해결하기 위해 GS에서 세 가지 사항
   - prior :  
   point tracking에 이점 있는  
   `tracking loss`를 통해 `image-level and geometry-level prior`를 추가  
-
-## Introduction
-
-- challenging monocular video :  
-
 
 ## Related Work
 
