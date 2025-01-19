@@ -107,9 +107,9 @@ TBD
     - anisotropic Gaussian은 expensive할 뿐만 아니라  
     underconstrained monocular cam. setting에서는 오히려 degrees of freedom 많으면 poor하다는 걸 실험적으로 발견
   - `semantic instance` :  
-  assign each Gaussian marble to semantic instance $$y \in N$$ by SAM
+  assign each Gaussian marble to semantic instance $$y \in N$$ by SAM-driven TrackAnything
   - `dynamic trajectory` :  
-  trajectory $$\Delta X \in R^{T \times 3}$$ : a sequence of translations which map position change at each timestep
+  trajectory $$\Delta X \in R^{T-1 \times 3}$$ : a sequence of translations which maps marble's position change at each timestep
 
 ### Divide-and-Conquer Motion Estimation
 
@@ -121,17 +121,36 @@ TBD
 
 - Training Procedure :  
   - Step 1) `initialization for each frame`  
-  initialize Gaussian marbles for each frame  
-  (initial marbles have trajectory length 1)
+  initialize Gaussian marbles $$[G_{11}, G_{22}, \ldots, G_{TT}]$$ for each frame  
+  (initial marbles $$G_{ii}$$ have trajectory length 1)
+    - Step 1-1) obtain prior (`depthmap` and `segmentation`)  
+    obtain monocular (LiDAR) depthmap and segmentation from SAM-driven TrackAnything <d-cite key="TrackAnything">[1]</d-cite>
+    - Step 1-2) `unproject` from 2D to 3D  
+    unproject the depthmap into point cloud  
+    perform outlier removal and downsampling
+    - Step 1-3) initialize Gaussian marbles and trajectory 
+      - mean $$\mu$$ : Step 1-2)에서 얻은 pcd
+      - color $$c$$ : pixel color (pixel-aligned Gaussians)
+      - `instance class` $$y$$ : Step 1-1)에서 얻은 segmentation
+      - scale $$s \in R^{1}$$ and opacity $$\alpha$$ : 3DGS 논문에서 했던대로 초기화
+      - `trajectory` $$\Delta X = [\boldsymbol 0] \in R^{T-1 \times 3}$$  
+      where $$T$$ : frame length  
   - Step 2) bottom-up divide-and-conquer merge  
-  merge short-trajectory marbles into longer trajectories  
-  (아래 그림 참고)  
+  merge short-trajectories into longer trajectories  
+  e.g. $$G = [G_{12}, G_{34}, G_{56}, G_{78}]  
     - Step 2-1) `motion estimation`  
-    estimate motion b.w. sets of Gaussian marbles
+    To learn motion,  
+      - Step 2-1-1)  
+      adjacent Gaussian marble set끼리 a pair로 묶음  
+      e.g. $$[(G_{12}^{a}, G_{34}^{b}), (G_{56}^{a}, G_{78}^{b})]$$
+      - Step 2-1-2)  
+      $$G^{a}$$ 에 있는 Gaussians를 $$G^{b}$$ 의 frames에 render하여  
+      `only `$$G^{a}$$ 의 Gaussian trajectories 만 update  
+      TBD
+      - Step 2-1-3)  
+      ddd
     - Step 2-2) `merge`  
     merge s.t. gaussian marbles have correspondence  
-    by short optimization `???`  
-    with rendering loss, tracking loss, and geometric regularization
     - Step 2-3) `global adjustment`  
     merged sets를 이용해서 global adjustment to global Gaussian marbles
  
