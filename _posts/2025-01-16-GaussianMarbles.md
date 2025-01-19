@@ -46,7 +46,7 @@ project website :
   prior (`careful optimization strategy` 및 `off-the-shelf depth and motion estimation` 및 `geometry-based regularization`) 이용해서  
   적절한 constraint를 복원할 수 있다! 
 
-- `Dynamic Gaussian Marbles` :  
+- Dynamic Gaussian Marbles :  
 monocular setting의 어려움을 해결하기 위해 GS에서 세 가지 사항을 변경  
 이를 통해 Gaussian trajectories를 학습할 수 있음
   - isotropic Gaussian Marbles :  
@@ -55,7 +55,7 @@ monocular setting의 어려움을 해결하기 위해 GS에서 세 가지 사항
     `local shape보다는 motion과 apperance` 표현하는 데 더 집중하도록 제한
   - hierarchical divide-and-conquer learning strategy :  
     - time 길이가 어느 정도 짧아야 잘 포착할 수 있으므로    
-    `long video를 subsequences로 나누고` 각각 independently optimize한 뒤 merge  
+    long video를 short `subsequences로 나누고 optimize by iteratively merging the subsequences`  
     - long-sequence tracking 대신 인접한 subsequences를 붙이는 task로!  
     (guide towards solution with globally coherent motion)  
   - prior :  
@@ -76,7 +76,7 @@ TBD
 
 ## Method
 
-### Dynamic Gaussian Marbles
+### Overview
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
@@ -84,11 +84,60 @@ TBD
     </div>
 </div>
 
-TBD
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2025-01-16-GaussianMarbles/3.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
+### Dynamic Gaussian Marbles
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2025-01-16-GaussianMarbles/2.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+<div class="caption">
+    simpler Gaussian Marble의 경우에만 generalize well to novel view
+</div>
+
+- Gaussian marble :  
+  - `isotropic` :  
+  $$R = I$$ and $$S = s \in R^{1}$$
+    - anisotropic Gaussian은 expensive할 뿐만 아니라  
+    underconstrained monocular cam. setting에서는 오히려 degrees of freedom 많으면 poor하다는 걸 실험적으로 발견
+  - `semantic instance` :  
+  assign each Gaussian marble to semantic instance $$y \in N$$ by SAM
+  - `dynamic trajectory` :  
+  trajectory $$\Delta X \in R^{T \times 3}$$ : a sequence of translations which map position change at each timestep
 
 ### Divide-and-Conquer Motion Estimation
 
-TBD
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2025-01-16-GaussianMarbles/3.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
+- Training Procedure :  
+  - Step 1) `initialization for each frame`  
+  initialize Gaussian marbles for each frame  
+  (initial marbles have trajectory length 1)
+  - Step 2) bottom-up divide-and-conquer merge  
+  merge short-trajectory marbles into longer trajectories  
+  (아래 그림 참고)  
+    - Step 2-1) `motion estimation`  
+    estimate motion b.w. sets of Gaussian marbles
+    - Step 2-2) `merge`  
+    merge s.t. gaussian marbles have correspondence  
+    by short optimization `???`  
+    with rendering loss, tracking loss, and geometric regularization
+    - Step 2-3) `global adjustment`  
+    merged sets를 이용해서 global adjustment to global Gaussian marbles
+ 
+- Inference Procedure :  
+  - learned Gaussian trajectories 이용해서  
+  render (roll out) into specific timestep $$t$$
 
 ### Loss
 
