@@ -50,14 +50,21 @@ project website :
 monocular setting의 어려움을 해결하기 위해 GS에서 세 가지 사항을 변경  
 이를 통해 Gaussian trajectories를 학습할 수 있음
   - isotropic Gaussian Marbles :  
-    - `isotropic` Gaussian을 사용함으로써  
-    Gaussian의 `degrees of freedom을 줄이고`  
-    `local shape보다는 motion과 apperance` 표현하는 데 더 집중하도록 제한
+  `isotropic` Gaussian을 사용함으로써  
+  Gaussian의 `degrees of freedom을 줄이고`  
+  `local shape보다는 motion과 apperance` 표현하는 데 더 집중하도록 제한
   - hierarchical divide-and-conquer learning strategy :  
-    - time 길이가 어느 정도 짧아야 잘 포착할 수 있으므로    
-    long video를 short `subsequences로 나누고 optimize by iteratively merging the subsequences`  
-    - long-sequence tracking 대신 인접한 subsequences를 붙이는 task로!  
-    (guide towards solution with globally coherent motion)  
+  time 길이가 어느 정도 짧아야 잘 포착할 수 있으므로    
+  long video를 short `subsequences로 나누고 optimize by iteratively merging the subsequences`  
+  (long-sequence tracking 대신 인접한 subsequences를 붙이는 task로!)  
+    - procedure :  
+    아래의 과정을 반복하며 locality와 global coherence를 모두 챙김!
+      - `motion estimation` :  
+      $$G^{b}$$ 의 frame을 $$G^{a}$$ 의 trajectory에 하나씩 더해 가며 motion estimation을 수행하므로  
+      <d-cite key="Dynamic3DGS">[1]</d-cite> 처럼 `locality`와 smoothness로부터 benefit
+      - `merge`
+      - `global adjustment` :  
+      <d-cite key="4DGS">[2]</d-cite> 처럼 `global coherence`라는 benefit
   - prior :  
   monocular video로도 recon. 잘 수행하기 위해 prior 이용  
     - `image(2D)-space prior` : SAM, CoTracker, DepthAnything
@@ -124,7 +131,7 @@ TBD
   initialize Gaussian marbles $$[G_{11}, G_{22}, \ldots, G_{TT}]$$ for each frame  
   (initial marbles $$G_{ii}$$ have trajectory length 1)
     - Step 1-1) obtain prior (`depthmap` and `segmentation`)  
-    obtain monocular (LiDAR) depthmap and segmentation from SAM-driven TrackAnything <d-cite key="TrackAnything">[1]</d-cite>
+    obtain monocular (LiDAR) depthmap and segmentation from SAM-driven TrackAnything <d-cite key="TrackAnything">[3]</d-cite>
     - Step 1-2) `unproject` from 2D to 3D  
     unproject the depthmap into point cloud  
     perform outlier removal and downsampling
@@ -156,7 +163,7 @@ TBD
         ($$\eta$$ 번 반복 by 아래에서 설명할 Loss)
       - Step 2-1-4) repeat  
         - Step 2-1-2), Step 2-1-3)을 반복  
-        until trajectory가 $$G_{34}^{b}$$ 내 모든 frames를 커버할 때까지  
+        until $$G^{a}$$ 의 trajectory가 $$G_{34}^{b}$$ 내 모든 frames를 커버할 때까지  
         - e.g. $$G^{a}$$ 의 trajectory를 $$\Delta X = [\Delta X_{1}, \Delta X_{2}, \Delta X_{3}, \Delta X_{4}^{init}]$$ 로 확장한 뒤  
         $$G^{a}$$ 를 frame $$4$$ 에 render한 뒤  
         $$\Delta X_{4}$$ 가 frame $$4$$ 으로의 motion을 잘 반영하도록 $$\Delta X_{4}$$ 을 업데이트  
@@ -184,17 +191,40 @@ TBD
 
 ### Loss
 
-- Tracking Loss :  
-TBD
+- `Tracking` Loss :  
+$$L_{track} = \sum_{p \in P} \sum_{g \in N(p_{i})} \alpha_{i}^{'} \| D_{i} \| \mu_{i}^{'} - p_{i} \| - D_{j} \| \mu_{j}^{'} - p_{j} \| \|$$  
+where $$\mu_{i}^{'}$$ and $$D_{i}$$ : mean and depth of projected 2D Gaussian  
+where $$P$$ : tracked points by CoTracker <d-cite key="CoTracker">[4]</d-cite>  
+where $$N(p_{i})$$ : tracked point $$p_{i}$$ 와 가장 가까운 3D Gaussians  
+where $$\alpha_{i}^{'}$$ : Gaussian's opacity
+  - 2D point track인 CoTracker <d-cite key="CoTracker">[4]</d-cite> (2D prior)를 사용하여  
+  Gassian marble trajectories를 regularize
+  - Step 1)  
+  $$G^{b}$$ 의 frame $$j$$ 로의 $$\Delta X_{j}$$ 를 optimize하고자 할 때,  
+  CoTracker <d-cite key="CoTracker">[4]</d-cite> 를 이용하여 frames $$[j - w , j + w]$$ ($$w = 12$$)에서의 point tracks $$P$$ 를 estimate  
+  (from 2D frame to 2D frame)
+  - Step 2)  
+  a source frame $$i \in [j - w , j + w]$$ 을 randomly sampling  
+  - Step 3)  
+  Gaussian marble trajectory $$\Delta X$$ 로부터 frame $$i$$ 와 frame $$j$$ 에서의 3DGS position을 sampling하고  
+  3DGS를 2D Gaussian in image plane으로 project시켜 2D mean, depth, covariance 구함
+  - Step 4)  
+  Step 1)의 tracked point $$p_{i \rightarrow j}$$ 와 가장 가까운 $$K = 32$$ 개의 Step 3)의 2D Gaussians를 구한 뒤  
+  `tracked point와 2D Gaussian 사이의 거리`가 frame $$i$$, $$j$$ 에서 거의 `일정하게 유지되도록` loss term 걸어줌
 
 - Rendering Loss :  
-TBD
+  - `image` rendering하여  
+  GT image와의 L1 loss 및 LPIPS loss 구함
+  - `disparity map` rendering하여  
+  initial disparity estimation과의 L1 loss 구함
+  - `segmentation map` rendering하여  
+  SAM(off-the-shelf instance segmentation)과의 L1 loss 구함
 
 - Geometry Loss :  
-TBD
-
-- 3D Alignment Loss :  
-TBD
+  - `Isometry` Loss :  
+  TBD
+  - `3D Alignment` Loss :  
+  TBD
 
 ## Experiment
 
