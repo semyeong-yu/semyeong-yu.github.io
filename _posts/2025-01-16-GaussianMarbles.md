@@ -60,11 +60,9 @@ monocular setting의 어려움을 해결하기 위해 GS에서 세 가지 사항
     - procedure :  
     아래의 과정을 반복하며 locality와 global coherence를 모두 챙김!
       - `motion estimation` :  
-      $$G^{b}$$ 의 frame을 $$G^{a}$$ 의 trajectory에 하나씩 더해 가며 motion estimation을 수행하므로  
-      <d-cite key="Dynamic3DGS">[1]</d-cite> 처럼 `locality`와 smoothness로부터 benefit
+      $$G^{b}$$ 의 frame을 $$G^{a}$$ 의 trajectory에 하나씩 더해 가며 motion estimation을 수행하므로 <d-cite key="Dynamic3DGS">[1]</d-cite> 처럼 `locality`와 smoothness로부터 benefit
       - `merge`
-      - `global adjustment` :  
-      <d-cite key="4DGS">[2]</d-cite> 처럼 `global coherence`라는 benefit
+      - `global adjustment` : <d-cite key="4DGS">[2]</d-cite> 처럼 `global coherence`라는 benefit
   - prior :  
   monocular video로도 recon. 잘 수행하기 위해 prior 이용  
     - `image(2D)-space prior` : SAM, CoTracker, DepthAnything
