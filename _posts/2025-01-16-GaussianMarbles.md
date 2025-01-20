@@ -109,7 +109,7 @@ TBD
   - `semantic instance` :  
   assign each Gaussian marble to semantic instance $$y \in N$$ by SAM-driven TrackAnything
   - `dynamic trajectory` :  
-  trajectory $$\Delta X \in R^{T-1 \times 3}$$ : a sequence of translations which maps marble's position change at each timestep
+  trajectory $$\Delta X \in R^{T \times 3}$$ : a sequence of translations which maps marble's position change at each timestep
 
 ### Divide-and-Conquer Motion Estimation
 
@@ -129,30 +129,54 @@ TBD
     unproject the depthmap into point cloud  
     perform outlier removal and downsampling
     - Step 1-3) initialize Gaussian marbles and trajectory 
-      - mean $$\mu$$ : Step 1-2)에서 얻은 pcd
-      - color $$c$$ : pixel color (pixel-aligned Gaussians)
-      - `instance class` $$y$$ : Step 1-1)에서 얻은 segmentation
-      - scale $$s \in R^{1}$$ and opacity $$\alpha$$ : 3DGS 논문에서 했던대로 초기화
-      - `trajectory` $$\Delta X = [\boldsymbol 0] \in R^{T-1 \times 3}$$  
-      where $$T$$ : frame length  
+      - Gaussian marbles :  
+        - mean $$\mu \in R^{3}$$ : Step 1-2)에서 얻은 pcd
+        - color $$c \in R^{3}$$ : pixel color (pixel-aligned Gaussians)
+        - `instance class` $$y \in R^{1}$$ : Step 1-1)에서 얻은 segmentation
+        - scale $$s \in R^{1}$$ and opacity $$\alpha \in R^{1}$$ : 3DGS 논문에서 했던대로 초기화
+      - trajectory :  
+        - `trajectory` : $$\Delta X = [\boldsymbol 0] \in R^{T \times 3}$$
   - Step 2) bottom-up divide-and-conquer merge  
   merge short-trajectories into longer trajectories  
-  e.g. $$G = [G_{12}, G_{34}, G_{56}, G_{78}]  
+  e.g. $$G = [G_{12}, G_{34}, G_{56}, G_{78}] \rightarrow G = [G_{14}, G{58}]$$ 
     - Step 2-1) `motion estimation`  
-    To learn motion,  
-      - Step 2-1-1)  
-      adjacent Gaussian marble set끼리 a pair로 묶음  
-      e.g. $$[(G_{12}^{a}, G_{34}^{b}), (G_{56}^{a}, G_{78}^{b})]$$
-      - Step 2-1-2)  
-      $$G^{a}$$ 에 있는 Gaussians를 $$G^{b}$$ 의 frames에 render하여  
-      `only `$$G^{a}$$ 의 Gaussian trajectories 만 update  
-      TBD
-      - Step 2-1-3)  
-      ddd
+      - Step 2-1-1) make a pair b.w. adjacent marbles  
+        - adjacent Gaussian marble set끼리 a pair로 묶음  
+        e.g. $$[(G_{12}^{a}, G_{34}^{b}), (G_{56}^{a}, G_{78}^{b})]$$
+        - $$G^{a}$$ 는 merge할 prev. frames' Gaussians이고,  
+        $$G^{b}$$ 는 merge할 next frames' Gaussians  
+      - Step 2-1-2) $$G^{a}$$ 의 trajectory 확장  
+        - goal :  
+        $$G_{12}^{a}$$ 의 trajectory인 $$\Delta X = [\Delta X_{1}, \Delta X_{2}]$$ 는 이미 학습되어 merge된 motion이고,  
+        $$G_{12}^{a}$$ 의 trajectory와 $$G_{34}^{b}$$ 의 frame $$3$$ 을 잇는 motion $$\Delta X_{3}$$ 을 학습해야 함!  
+        - constant-velocity assumption에 따라 trajectory를 $$\Delta X = [\Delta X_{1}, \Delta X_{2}, \Delta X_{3}^{init}]$$ 로 확장
+      - Step 2-1-3) trajectory optimization  
+        - $$G_{12}^{a}$$ 를 frame $$3$$ 에 render한 뒤  
+        $$\Delta X_{3}$$ 이 frame $$3$$ 으로의 motion을 잘 반영하도록 $$\Delta X_{3}$$ 을 업데이트  
+        ($$\eta$$ 번 반복 by 아래에서 설명할 Loss)
+      - Step 2-1-4) repeat  
+        - Step 2-1-2), Step 2-1-3)을 반복  
+        until trajectory가 $$G_{34}^{b}$$ 내 모든 frames를 커버할 때까지  
+        - e.g. $$G^{a}$$ 의 trajectory를 $$\Delta X = [\Delta X_{1}, \Delta X_{2}, \Delta X_{3}, \Delta X_{4}^{init}]$$ 로 확장한 뒤  
+        $$G^{a}$$ 를 frame $$4$$ 에 render한 뒤  
+        $$\Delta X_{4}$$ 가 frame $$4$$ 으로의 motion을 잘 반영하도록 $$\Delta X_{4}$$ 을 업데이트  
     - Step 2-2) `merge`  
-    merge s.t. gaussian marbles have correspondence  
+      - motion estimation을 거치고 나면 $$G_{ij}^{a}$$ 와 $$G_{ij}^{b}$$ 가 같은 frame subsequence $$[i, j]$$ 를 recon.할 것이므로  
+      merge by just union $$G_{ij} = G_{ij}^{a} \cup G_{ij}^{b}$$  
+      (set size 2배 됨)
+      - computational load 줄이기 위해  
+      opacity 또는 scale이 너무 작은 Gaussians는 drop하고,  
+      random downsampling 수행하여  
+      set size를 constant하게 유지
     - Step 2-3) `global adjustment`  
-    merged sets를 이용해서 global adjustment to global Gaussian marbles
+      - merge로 합치고 나서도 still optimized라는 보장이 없기 때문에  
+      newly merged Gaussians를 모두 jointly optimize
+      - merged set가 $$G_{ij}$$ 라고 했을 때  
+      $$[i, j]$$ 내 a frame을 randomly sampling하고  
+      $$G_{ij}$$ 의 모든 Gaussians를 해당 frame에 render한 뒤  
+      Gaussian $$c, s, \alpha, \Delta X$$ 을 업데이트  
+      ($$\beta$$ 번 반복)
+      - 그럼 merged Gaussians $$G_{ij}$$ 가 global Gaussians로 인정받을 수 있음!
  
 - Inference Procedure :  
   - learned Gaussian trajectories 이용해서  
@@ -160,6 +184,16 @@ TBD
 
 ### Loss
 
+- Tracking Loss :  
+TBD
+
+- Rendering Loss :  
+TBD
+
+- Geometry Loss :  
+TBD
+
+- 3D Alignment Loss :  
 TBD
 
 ## Experiment
@@ -188,7 +222,7 @@ TBD
 ## Question
 
 - Q1 :  
-TBD
+Gaussian의 motion을 학습하는 것이라면 없던 object가 등장하거나 원래 있던 object가 frame 밖으로 벗어나는 경우에도 잘 대응할 수 있는지?
 
 - A1 :  
 TBD
