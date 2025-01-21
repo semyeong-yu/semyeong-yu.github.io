@@ -65,8 +65,8 @@ monocular setting의 어려움을 해결하기 위해 GS에서 세 가지 사항
       - `global adjustment` : <d-cite key="4DGS">[2]</d-cite> 처럼 `global coherence`라는 benefit
   - prior :  
   monocular video로도 recon. 잘 수행하기 위해 prior 이용  
-    - `image(2D)-space prior` : SAM, CoTracker, DepthAnything
-    - `geometry(3D)-space prior` : regularization of Gaussian trajectories with rigidity and Chamfer priors `???`
+    - `image(2D)-space prior` : SAM (Rendering loss-segmentation), CoTracker (Tracking loss), DepthAnything (Rendering loss-depthmap)
+    - `geometry(3D)-space prior` : regularization of Gaussian trajectories with rigidity (Isometry loss) and Chamfer priors (3D Alignment loss)
 
 ## Related Work
 
@@ -193,14 +193,16 @@ TBD
 $$L_{track} = \sum_{p \in P} \sum_{g \in N(p_{i})} \alpha_{i}^{'} \| D_{i} \| \mu_{i}^{'} - p_{i} \| - D_{j} \| \mu_{j}^{'} - p_{j} \| \|$$  
 where $$\mu_{i}^{'}$$ and $$D_{i}$$ : mean and depth of projected 2D Gaussian  
 where $$P$$ : tracked points by CoTracker <d-cite key="CoTracker">[4]</d-cite>  
-where $$N(p_{i})$$ : tracked point $$p_{i}$$ 와 가장 가까운 3D Gaussians  
+where $$N(p_{i})$$ : tracked point $$p_{i}$$ 와의 the nearest 3D Gaussians  
 where $$\alpha_{i}^{'}$$ : Gaussian's opacity
-  - 2D point track인 CoTracker <d-cite key="CoTracker">[4]</d-cite> (2D prior)를 사용하여  
-  Gassian marble trajectories를 regularize
+  - goal :  
+  `2D point track`인 CoTracker <d-cite key="CoTracker">[4]</d-cite> (2D prior)를 사용하여  
+  `Gassian marble trajectories`를 regularize
   - Step 1)  
   $$G^{b}$$ 의 frame $$j$$ 로의 $$\Delta X_{j}$$ 를 optimize하고자 할 때,  
   CoTracker <d-cite key="CoTracker">[4]</d-cite> 를 이용하여 frames $$[j - w , j + w]$$ ($$w = 12$$)에서의 point tracks $$P$$ 를 estimate  
-  (from 2D frame to 2D frame)
+  (from 2D frame to 2D frame)  
+  (일종의 GT로 사용)
   - Step 2)  
   a source frame $$i \in [j - w , j + w]$$ 을 randomly sampling  
   - Step 3)  
@@ -208,7 +210,8 @@ where $$\alpha_{i}^{'}$$ : Gaussian's opacity
   3DGS를 2D Gaussian in image plane으로 project시켜 2D mean, depth, covariance 구함
   - Step 4)  
   Step 1)의 tracked point $$p_{i \rightarrow j}$$ 와 가장 가까운 $$K = 32$$ 개의 Step 3)의 2D Gaussians를 구한 뒤  
-  `tracked point와 2D Gaussian 사이의 거리`가 frame $$i$$, $$j$$ 에서 거의 `일정하게 유지되도록` loss term 걸어줌
+  `2D tracked point와 2D Gaussian 사이의 거리`가 frame $$i$$, $$j$$ 에서 거의 `일정하게 유지되도록` loss term 걸어줌  
+  (for `temporal consistency`)
 
 - Rendering Loss :  
   - `image` rendering하여  
@@ -219,24 +222,82 @@ where $$\alpha_{i}^{'}$$ : Gaussian's opacity
   SAM(off-the-shelf instance segmentation)과의 L1 loss 구함
 
 - Geometry Loss :  
-  - `Isometry` Loss :  
-  TBD
+  - `Local Isometry` Loss :  
+  $$L_{iso-local} = \sum_{g^{a} \in G} \sum_{g^{b} \in N(g^{a})} | \| \mu_{i}^{a} - \mu_{i}^{b} \| - \| \mu_{j}^{a} - \mu_{j}^{b} \| |$$
+    - goal :  
+    prev. works <d-cite key="Dynamic3DGS">[2]</d-cite>, <d-cite key="DynamicPointFields">[5]</d-cite> 에서처럼  
+    Gaussian marbles가 `locally rigid motion`을 따르도록 regularize
+    - Step 1)  
+    $$G^{b}$$ 의 frame $$j$$ 로의 $$\Delta X_{j}$$ 를 optimize하고자 할 때,  
+    우선 a source timestep $$i \in [j - 1 , j + 1]$$ 을 randomly sampling
+    - Step 2)  
+    3DGS $$g^{a} \in G$$ 및 이와 가까운 3DGS들 $$g^{b} \in N(g^{a})$$ 에 대해  
+    `nearest 3D Gaussians끼리의 거리`가 frame $$i$$, $$j$$ 에서 거의 `일정하게 유지되도록` loss term 걸어줌  
+  - `Instance Isometry` Loss :  
+  $$L_{iso-instance} = \sum_{g^{a} \in G} \sum_{g^{b} \in Y(g^{a})} | \| \mu_{i}^{a} - \mu_{i}^{b} \| - \| \mu_{j}^{a} - \mu_{j}^{b} \| |$$
+    - goal :  
+    각 semantic instance가 일관적으로 움직이도록 regularize
+    - Step 1)  
+    $$G^{b}$$ 의 frame $$j$$ 로의 $$\Delta X_{j}$$ 를 optimize하고자 할 때,  
+    우선 a source timestep $$i \in [j - 1 , j + 1]$$ 을 randomly sampling
+    - Step 2)  
+    3DGS $$g^{a} \in G$$ 및 이와 semantic label이 같은 3DGS들 $$g^{b} \in Y(g^{a})$$ 에 대해  
+    `semantic label이 같은 3D Gaussians끼리의 거리`가 frame $$i$$, $$j$$ 에서 거의 `일정하게 유지되도록` loss term 걸어줌  
   - `3D Alignment` Loss :  
-  TBD
+  $$L_{chamfer} = \sum_{g^{1} \in G^{1}} \text{min}_{g^{2} \in G^{2}} \| \mu^{1} - \mu^{2} \| + \sum_{g^{2} \in G^{2}} \text{min}_{g^{1} \in G^{1}} \| \mu^{1} - \mu^{2} \|$$
+    - goal :  
+    merge하고나서 `Global Adjustment`할 때 a frame에 전부 rendering해서 optimize하므로 `projected 2D image plane 상에서는 align` 되어 있음  
+    그런데 merge하고나서 `3D space 상에서도 align`할 필요 있음  
+    (만약에 3D alignment 하지 않으면 3D and novel-view 상에서 `cloudy artifacts` 생김)  
+    (off-the-shelf depth estimation이 time에 따라 inconsistent할 경우 이와 같은 상황 발생)
+    - Step 1)  
+    두 pcd 집합을 서로 가깝게 만드는 Chamfer loss를 적용할 건데,  
+    merge할 Gaussian set $$G^{a}$$ 와 $$G^{b}$$ 는 scene의 명확히 서로 다른 부분을 관측하고 있으므로  
+    둘 사이에 Chamfer loss를 바로 적용하면 안 됨  
+    - Step 2)  
+    set $$G_{12}^{a}$$ 와 $$G_{34}^{b}$$ 를 single frame의 subsets $$[G_{1}^{a}, G_{2}^{a}, G_{3}^{b}, G_{4}^{b}]$$ 로 나눔  
+    where $$G_{1}^{a}$$ contains Gaussians initialized from frame $$1$$  
+    - Step 3)  
+    해당 subsets list를 random shuffle한 뒤  
+    맨 앞의 25%는 set $$G^{1}$$ 으로 묶고, 다음 25%는 set $$G^{2}$$ 로 묶음  
+    ($$G^{1}$$ 과 $$G^{2}$$ 가 `scene의 어떤 부분을 보고 있는지 명확히 정해지지 않도록 randomness 부여`)  
+    (만약 이렇게 randomness 부여하지 않는다면 observed scene content difference에 overfitting될 수 있음 `???`)
+    - Step 4)  
+    $$G^{1}$$ 과 $$G^{2}$$ 에 대해 2-way Chamfer distance 계산  
 
 ## Experiment
 
 ### Dataset
 
-TBD
+- training :  
+아래의 두 가지 datasets는 multi-view info.를 포함하고 있으므로  
+monocular setting을 모방하기 위해  
+training and evaluation protocol을 수정 `어떻게 ???`
+  - NVIDIA Dynamic Scenes Dataset :  
+  7 videos 
+  - DyCheck iPhone Dataset
+
+- test :  
+  - Total-Recon Dataset
+  - Davis Dataset
+  - YouTube-VOS Dataset
+  - real-world videos
 
 ### Implementation
 
-TBD
+- Implementation :  
+  - TBD
+
+- Runtime and Memory :  
+  - TBD
 
 ### Results
 
-TBD
+- Dynamic Novel View Synthesis :  
+  - TBD
+
+- Tracking and Editing :  
+  - TBD
 
 ### Ablation Study
 
