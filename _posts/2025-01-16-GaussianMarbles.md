@@ -274,8 +274,19 @@ where $$\alpha_{i}^{'}$$ : Gaussian's opacity
 monocular setting을 모방하기 위해  
 training and evaluation protocol을 수정 `어떻게 ???`
   - NVIDIA Dynamic Scenes Dataset :  
-  7 videos 
-  - DyCheck iPhone Dataset
+    - 구성 :  
+    7 videos  
+    12 calibrated cameras  
+    - setting :  
+    prev. benchmarked evaluations는 각 timestep마다 different training camera를 사용하는데,  
+    (monocular teleporting camera <d-cite key="monocular">[6]</d-cite>)  
+    이는 realistic monocular video setting이 아니므로  
+    본 논문에서는 single camera 4를 training에 사용하고 single camera 3, 5, 6을 evaluation에 사용
+  - DyCheck iPhone Dataset :  
+    - 구성 :  
+    TBD
+    - setting :  
+    TBD
 
 - test :  
   - Total-Recon Dataset
