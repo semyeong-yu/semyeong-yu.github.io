@@ -41,7 +41,7 @@ project website :
 - Dynamic 4D Gaussian Splatting :  
   - 이전까지는 multiple simultaneous viewpoints of a scene 세팅 (dense multi-camera setup)에서의 recon. 논문들이 많았음  
   $$\rightarrow$$  
-  평소의 casual `monocular video`로 4D recon.을 수행해보자!
+  평소의 casual `monocular video` (challenging)로 4D recon.을 수행해보자!
   - input에 multi-view info.가 없는 underconstrained monocular video더라도  
   prior (`careful optimization strategy` 및 `off-the-shelf depth and motion estimation` 및 `geometry-based regularization`) 이용해서  
   적절한 constraint를 복원할 수 있다! 
@@ -189,6 +189,8 @@ TBD
 
 ### Loss
 
+Motion Estimation 단계에서 아래의 Loss들 사용!
+
 - `Tracking` Loss :  
 $$L_{track} = \sum_{p \in P} \sum_{g \in N(p_{i})} \alpha_{i}^{'} \| D_{i} \| \mu_{i}^{'} - p_{i} \| - D_{j} \| \mu_{j}^{'} - p_{j} \| \|$$  
 where $$\mu_{i}^{'}$$ and $$D_{i}$$ : mean and depth of projected 2D Gaussian  
@@ -248,6 +250,7 @@ where $$\alpha_{i}^{'}$$ : Gaussian's opacity
     - goal :  
     merge하고나서 `Global Adjustment`할 때 a frame에 전부 rendering해서 optimize하므로 `projected 2D image plane 상에서는 align` 되어 있음  
     그런데 merge하고나서 `3D space 상에서도 align`할 필요 있음  
+    (3DGS를 align한다는 게 무슨 의미지? 모든 3DGS가 함께 scene recon.에 기여하도록 서로 가깝게 만든다는 건가 `???`)  
     (만약에 3D alignment 하지 않으면 3D and novel-view 상에서 `cloudy artifacts` 생김)  
     (off-the-shelf depth estimation이 time에 따라 inconsistent할 경우 이와 같은 상황 발생)
     - Step 1)  
@@ -272,24 +275,30 @@ where $$\alpha_{i}^{'}$$ : Gaussian's opacity
 - training :  
 아래의 두 가지 datasets는 multi-view info.를 포함하고 있으므로  
 monocular setting을 모방하기 위해  
-training and evaluation protocol을 수정 `어떻게 ???`
+training and evaluation protocol을 수정
   - NVIDIA Dynamic Scenes Dataset :  
     - 구성 :  
     7 videos  
     12 calibrated cameras  
     - setting :  
     prev. benchmarked evaluations는 각 timestep마다 different training camera를 사용하는데,  
-    (monocular teleporting camera <d-cite key="monocular">[6]</d-cite>)  
+    (monocular teleporting camera 방식 <d-cite key="monocular">[6]</d-cite>)  
     이는 realistic monocular video setting이 아니므로  
     본 논문에서는 single camera 4를 training에 사용하고 single camera 3, 5, 6을 evaluation에 사용
   - DyCheck iPhone Dataset :  
     - 구성 :  
-    TBD
+    7 videos
     - setting :  
-    TBD
-
+    single camera로 구성되어 있는 monocular video setting이긴 하지만  
+    multi-view info.를 포함하도록 3D trajectory가 scene 전체를 돌기 때문에  
+    camera의 calculated motion은 일상 video와 다르다  
+      - 방법 1) official benchmark 그대로 사용
+      - 방법 2) camera pose 제거  
+      We remove camera poses, offloading the camera motion into the learned 4D scene representation’s dynamics. We find this setting interesting because it simulates additional dynamic content, where previously “static" regions of the scene now have rigid dynamics equal to the inverse camera motion, which must be solved by the scene representation itself. `???`
+    
 - test :  
-  - Total-Recon Dataset
+  - Total-Recon Dataset :  
+  2 time-synchronized and calibrated videos with LiDAR
   - Davis Dataset
   - YouTube-VOS Dataset
   - real-world videos
@@ -297,32 +306,84 @@ training and evaluation protocol을 수정 `어떻게 ???`
 ### Implementation
 
 - Implementation :  
-  - TBD
-
-- Runtime and Memory :  
-  - TBD
+  - NVIDIA Dynamic Scenes Dataset :  
+    - 120,000 Gaussians per frame and upsample to 240,000 Gaussians during the last stage of global adjustment
+    - $$\eta = 128$$ on motion estimation and $$\beta = 48$$ on global adjustment
+    - stop divide-and-conquer after learning subsequences of length 32 on both fg and bg
+  - DyCheck iPhone Dataset :  
+    - 220,000 Gaussians per frame if camear pose exists else 180,000 Gaussians
+    - $$\eta = 80$$ on motion estimation and $$\beta = 32$$ on global adjustment
+    - stop divide-and-conquer after learning subsequences of length 8 on fg and length 32(512) on bg  
+    (when there exists camera pose, need to learn more a dynamic bg)
+  - Total-Recon Dataset :  
+    - 120,000 Gaussians per frame
+    - $\eta = 80$$ on motion estimation and $$\beta = 32$$ on global adjustment
+    - stop divide-and-conquer after learning subsequences of length 8 on fg and length 32 on bg
 
 ### Results
 
 - Dynamic Novel View Synthesis :  
   - TBD
 
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2025-01-16-GaussianMarbles/4.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2025-01-16-GaussianMarbles/8.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2025-01-16-GaussianMarbles/6.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
 - Tracking and Editing :  
   - TBD
 
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2025-01-16-GaussianMarbles/5.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
 ### Ablation Study
 
-TBD
+- motion estimation :  
+  - frame 간의 motion 정보를 학습
+  - locality and smoothness 보장  
+
+- global adjustment :  
+  - merge하고나서 global Gaussian이 specific frame을 잘 render하도록
+  - global coherence 보장 
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2025-01-16-GaussianMarbles/7.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
 
 ## Conclusion
 
 - Limitation :  
-  - TBD
+extremely challenging open-world dynamic and monocular novel-view-synthesis는 잘 못 함  
+  - 2D image prior에 의존하기 때문에  
+  SAM (segmentation), CoTracker (tracking), DepthAnything (depth estimation) 가 부정확할 경우  
+  결과 안 좋음
+  - 3D geometric prior에도 의존하는데,  
+  rapid and non-rigid motion을 포함한 scene의 경우  
+  잘 대응 못 함
 
 ## Question
 
 - Q1 :  
-Gaussian의 motion을 학습하는 것이라면 없던 object가 등장하거나 원래 있던 object가 frame 밖으로 벗어나는 경우에도 잘 대응할 수 있는지?
+Gaussian의 motion을 학습하는 것이라면 없던 object가 등장하거나 원래 있던 object가 frame 밖으로 벗어나는 경우에도 잘 대응할 수 있는지?  
+CoTracker 등 여러 prior들도 위의 상황에 잘 대응하는지?
 
 - A1 :  
 TBD
