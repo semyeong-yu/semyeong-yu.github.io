@@ -1,15 +1,15 @@
 ---
 layout: distill
 title: Deblurring NeRF Summary
-date: 2025-01-27 12:00:00
+date: 2026-01-27 12:00:00
 description: brief summary
 tags: 3DGS deblur
 categories: 3d-view-synthesis
-thumbnail: assets/img/2025-01-27-DeblurNeRF/1m.PNG
+thumbnail: assets/img/2026-01-27-DeblurNeRF/1m.PNG
 giscus_comments: false
 disqus_comments: true
 related_posts: true
-bibliography: 2025-01-27-DeblurNeRF.bib
+bibliography: 2026-01-27-DeblurNeRF.bib
 toc:
   - name: DoF-NeRF
   - name: Deblur-NeRF
