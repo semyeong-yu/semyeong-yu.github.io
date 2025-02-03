@@ -70,10 +70,11 @@ code :
     - 정확히 pose-estimation 수행하는 two-stage coarse-to-fine pipeline 제시
 
 - Gaussian Space :  
-  - `하나의 input view의 local camera coordinate`을 `canonical space`로 잡고 해당 space에서 directly 3DGS 예측
-  - local coordinate에서 `global coordinate으로 3DGS를 변환할 필요가 없음`  
+  - `first input view의 local camera coordinate`을 `canonical space`로 고정하고 모든 input view의 3DGS들을 해당 space에서 directly 예측
+  - 기존에는 transform-then-fuse pipeline이었는데, 본 논문은 canonical space 내에서의 `different views의 fusion 자체를 network로 학습`
+  - local coordinate에서 `global coordinate으로 3DGS를 explicitly transform할 필요가 없음`  
   $$\rightarrow$$  
-  per-frame Gaussians 및 pose estimation에서 유래되는 error 없고, pose 없이도 3D recon. 가능
+  explicitly transform하면서 생기는 per-frame Gaussians의 misalignment를 방지할 수 있고, pose 없이도 3D recon. 가능
 
 ## Related Works
 
@@ -91,26 +92,23 @@ code :
   - DUSt3R, MASt3R 계열
 
 - DUSt3R, MASt3R :  
-  - 공통점)  
-  pose-free method
+  - 공통점 1)  
+  pose-free method  
+  - 공통점 2)  
+  directly predict in canonical space
   - 차이점 1)  
   DUSt3R, MASt3R는 transformer output이 3D pointmap (point cloud)인데,  
   NoPoSplat은 mean, covariance, opacity, color를 가진 3DGS (rasterization) 사용
   - 차이점 2)  
-  NoPoSplat은 DUSt3R, MASt3R와 달리 GT depth 필요 없고 photometric loss만으로 훈련 가능
+  NoPoSplat은 DUSt3R, MASt3R와 달리 GT depth 필요 없고 photometric loss만으로 훈련 가능 
 
-- MonST3R :  
-  - 차이점 1)  
-  MonST3R는 transformer output이 3D pointmap (point cloud)인데,  
-  NoPoSplat은 mean, covariance, opacity, color를 가진 3DGS (rasterization) 사용
-  - 차이점 2)  
-  MonST3R는 pairwise pointmaps를 global pointmap으로 변환하는 $$P_{W}$$ 를 학습하는데,  
-  NoPoSplat은 global coordinate으로 3DGS를 변환할 필요 없음 `???`
-
-- pixelSplat :  
+- pixelSplat, MVSplat :  
   - 차이점 1)  
   inference할 때 pixelSplat은 2D-to-3D로 unproject하여 3D Gaussian 만들고자 ray direction $$d = R K^{-1} [u, 1]^{T}$$ 에서 camera pose를 input으로 사용하는데,  
-  inference할 때 NoPoSplat은 `???` TBD
+  inference할 때 NoPoSplat은 `???` pose-free TBD
+  - 차이점 2)  
+  pixelSplat, MVSplat은 먼저 each local-coordinate에서 예측한 뒤 camera pose를 이용해 world-coordinate으로 transform한 뒤 fuse했는데,  
+  NoPoSplat은 canonical space 내에서의 different views의 fusion 자체를 network로 학습하기 때문에 global coordinate으로 transform하면서 생기는 misalignment를 방지할 수 있음
 
 ## Method
 
