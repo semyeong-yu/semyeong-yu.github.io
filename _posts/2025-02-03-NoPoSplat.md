@@ -56,25 +56,26 @@ code :
 
 ## Contribution
 
-`pose-free generalizable 3D recon.!`
-
 - inference :  
-  - `unposed sparse` images로부터 3DGS를 통해 3D scene recon.
+  - `unposed sparse-view` images로부터 3DGS를 통해 3D scene recon.하는 feed-forward network 제시
+
+- training :  
+  - `scale ambiguity` 문제 해결을 위해 `intrinsic embedding method` 사용
+  - photometric loss만으로 train 가능  
+  (GT depth나 explicit matching loss 사용 X)
+
+- downstream tasks :  
   - recon.된 3DGS를 이용하여 novel-view-synthesis 및 pose-estimation task 수행 가능  
-  특히 limited input image overlap (sparse) 상황에서는 pose-required methods보다 더 좋은 성능
+    - 특히 limited input image overlap (sparse) 상황에서는 pose-required methods보다 더 좋은 성능
+    - 정확히 pose-estimation 수행하는 two-stage coarse-to-fine pipeline 제시
 
 - Gaussian Space :  
   - `하나의 input view의 local camera coordinate`을 `canonical space`로 잡고 해당 space에서 3DGS 표현
   - local coordinate에서 `global coordinate으로 3DGS를 변환할 필요가 없음`  
   $$\rightarrow$$  
-  per-frame Gaussians 및 pose estimation에서 유래되는 error 없음
-  - pose 없이도 3D recon. 가능
+  per-frame Gaussians 및 pose estimation에서 유래되는 error 없고, pose 없이도 3D recon. 가능
 
-- training :  
-  - `scale ambiguity` 문제 해결을 위해  
-  `intrinsic embedding method` 사용
-  - GT depth나 explicit matching loss 사용 X
-  - two-stage coarse-to-fine pipeline 제시
+Introduction TBD
 
 ## Related Works
 
