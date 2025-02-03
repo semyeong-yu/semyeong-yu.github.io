@@ -79,6 +79,18 @@ Introduction TBD
 
 ## Related Works
 
+- SfM :  
+  - bundle adjustment 등 최적화 과정을 거치는데,  
+  off-the-shelf pose estimation method 사용하는 것 자체가 많은 연산을 필요로 하고 runtime 늘림
+  - 3D recon.에 only two frames만 input으로 사용하더라도  
+  SfM을 통해 해당 two frames의 camera pose를 구하려면 many poses from dense videos 필요 (impractical)
+  - textureless area 또는 image가 sparse한 영역에서는 잘 못 함
+
+- Pose-Free Methods :  
+  - pose-estimation과 3D recon.을 single pipeline으로 통합하자! : <d-cite key="DBARF">[1]</d-cite>, <d-cite key="Flowcam">[2]</d-cite>, <d-cite key="Unifying">[3]</d-cite>
+    - TBD
+  - TBD
+
 - MonST3R :  
   - 차이점 1)  
   MonST3R는 transformer의 output이 3D pointmap(pcd)인데,  
