@@ -60,14 +60,16 @@ code :
   - `unposed sparse-view` images로부터 3DGS를 통해 3D scene recon.하는 feed-forward network 제시
 
 - training :  
-  - `scale ambiguity` 문제 해결을 위해 `intrinsic embedding method` 사용
   - `photometric loss만으로` train 가능  
   (GT depth나 explicit matching loss 사용 X)
+  - 본 논문은 intrinsic의 영향을 받는 image appearance에만 의존하여 recon.을 수행하므로  
+  `scale ambiguity` 문제 해결을 위해 `intrinsic embedding method` 사용
 
 - downstream tasks :  
   - recon.된 3DGS를 이용하여 novel-view-synthesis 및 pose-estimation task 수행 가능  
     - 특히 limited input image overlap (sparse) 상황에서는 pose-required methods보다 더 좋은 성능
     - 정확히 pose-estimation 수행하는 two-stage coarse-to-fine pipeline 제시
+  - generalize well to out-of-distribution data
 
 - Gaussian Space :  
   - `first input view의 local camera coordinate`을 `canonical space`로 고정하고 모든 input view의 3DGS들을 해당 space에서 directly 예측
@@ -106,19 +108,36 @@ code :
   - 차이점 1)  
   inference할 때 pixelSplat은 2D-to-3D로 unproject하여 3D Gaussian 만들고자 ray direction $$d = R K^{-1} [u, 1]^{T}$$ 에서 camera pose를 input으로 사용하는데,  
   inference할 때 NoPoSplat은 `???` pose-free TBD
-  - 차이점 2)  
+  - 차이점 2) (아래 그림 참고)  
   pixelSplat, MVSplat은 먼저 each local-coordinate에서 예측한 뒤 camera pose를 이용해 world-coordinate으로 transform한 뒤 fuse했는데,  
   NoPoSplat은 canonical space 내에서의 different views의 fusion 자체를 network로 학습하기 때문에 global coordinate으로 transform하면서 생기는 misalignment를 방지할 수 있음
+  - 차이점 3)  
+  pixelSplat은 epipolar geometry, MVSplat은 cost volume이라는 geometry prior를 사용하였는데,  
+  NoPoSplat은 (image overlap이 클 때 유리한) geometry prior들을 사용하지 않음
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2025-02-03-NoPoSplat/2.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
 
 ## Method
 
 ### Architecture
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2025-02-03-NoPoSplat/3.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
 
 ### Gaussian Space
 
 ### Camera Intrinsic Embedding
 
 ### Training and Inference
+
+pose-estimation coarse-to-fine two-stage pipeline : 처음에 Gaussian center에 PnP algorithm 적용하여 initial rough pose estimate 구한 뒤 photometric loss로 input view와의 alignment를 optimize하면서 pose estimate을 refine
 
 ## Experiment
 
