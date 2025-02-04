@@ -208,12 +208,24 @@ only photometric loss
 (linear comb. of MSE and LPIPS)
 
 - Relative Pose Estimation :  
-  - TBD
-
-pose-estimation coarse-to-fine two-stage pipeline : 처음에 Gaussian center에 PnP algorithm 적용하여 initial rough pose estimate 구한 뒤 photometric loss로 input view와의 alignment를 optimize하면서 pose estimate을 refine
+canonical space에 3DGS들이 있다는 전제 하에  
+`two-stage coarse-to-fine pipeline`
+  - Coarse Stage :  
+  Gaussian center에 `PnP algorithm with RANSAC` (efficient as done in ms) 적용하여  
+  `initial rough pose estimate` 구하기
+  - Fine Stage :  
+  `3DGS param.을 freeze`한 채  
+  training에 사용했던 `photometric loss`를 이용해  
+  target view와 align되도록 rough `target camera pose를 optimize`(refine)
+    - automatic diff.에서의 overhead를 줄이기 위해  
+    camera Jacobian을 계산 <d-cite key="GSslam">[5]</d-cite>
 
 - Evaluation-Time Pose Alignment :  
-  - TBD
+  - unposed input images의 경우  
+  scene은 다른데 rendered two images는 같을 수 있으므로  
+  just two input views로 3D scene recon. 수행하는 건 사실 ambiguous
+  - GT camera pose를 이용하는 other baseline들 <d-cite key="pose1">[6]</d-cite>, [7](https://semyeong-yu.github.io/blog/2024/pixelSplat/)과 비교하기 위해 (evaluation purpose)  
+  pose-free methods <d-cite key="nopose1">[8]</d-cite>, <d-cite key="nopose2">[9]</d-cite>의 경우 target view에 대한 camera pose를 optimize  
 
 ## Experiment
 
