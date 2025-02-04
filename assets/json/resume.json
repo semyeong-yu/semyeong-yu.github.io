@@ -183,11 +183,6 @@
       "language": "C",
       "fluency": "Proficient",
       "icon": ""
-    },
-    {
-      "language": "Scala",
-      "fluency": "Proficient",
-      "icon": ""
     }
   ],
   "interests": [
@@ -232,6 +227,13 @@
       "startDate": "2024-03-04",
       "endDate": "2024-06-07",
       "url": "https://www.youtube.com/watch?v=lC3vR2oJAB4"
+    },
+    {
+      "name": "Video Colorization, Joint SR and VFI",
+      "summary": "User-tunable Video Colorization and Joint Video Super-Resolution and Frame Interpolation",
+      "highlights": ["SVCNet: Sribble-based Video Colorization", "DeMFI: Video Frame Interpolation", "PixelShuffle: SR", "MoTIF: Continuous Space-Time Video Super Resolution (C-STVSR)"],
+      "startDate": "2024-10-30",
+      "endDate": "2024-12-07"
     }
   ]
 }
