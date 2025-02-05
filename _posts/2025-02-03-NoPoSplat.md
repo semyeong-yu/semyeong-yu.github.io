@@ -115,6 +115,7 @@ code :
   NoPoSplat은 canonical space 내에서의 different views의 fusion 자체를 directly network로 학습하기 때문에 `global coordinate으로 transform할 필요가 없으므로` 이에 따른 `misalignment를 방지`할 수 있고 `camera pose (extrinsic)도 필요 없음`
   - 차이점 2)  
   pixelSplat에선 epipolar constraint, MVSplat에선 cost volume이라는 geometry prior를 사용하였는데,  
+  image view overlap이 적을 때는 geometry prior가 정확하지 않음  
   NoPoSplat은 (image overlap이 클 때 유리한) `geometry prior들을 사용하지 않음`
 
 <div class="row mt-3">
@@ -233,18 +234,53 @@ canonical space에 3DGS들이 있다는 전제 하에
 
 - Experiment :  
   - Dataset :  
-  TBD
-  - Metrics :  
-  TBD
+    - training and evaluation :  
+    RE10K (RealEstate10k) : indoor real estate  
+    DL3DV : outdoor  
+    ACID : nature scene by drone
+    - zero-shot generalization :  
+    DTU  
+    ScanNet  
+    ScanNet++  
+    in-the-whild mobile phone capture  
+    SORA-generated images
+  - camera overlap :  
+  SOTA dense feature matching method <d-cite key="ROMA">[10]</d-cite> 로  
+  input images' camera overlap 정도를 측정하여  
+  small (0.05%-0.3%), medium (0.3%-0.55%), large (0.55%-0.8%)로 나눔
   - Baseline :  
-  TBD
+    - pose-required novel-view-synthesis :  
+    pixelNeRF, AttnRend, pixelSplat, MVSplat
+    - pose-free novel-view-synthesis and relative pose estimation :  
+    DUSt3R, MASt3R, Splatt3R, CoPoNeRF, RoMa
   - Implementation :  
-  TBD 
+  encoder, decoder, Gaussian center head는 MASt3R의 weights로 initialize하고  
+  (사실 scratch부터 training해도 성능 비슷하긴 함)  
+  Gaussian param head는 randomly initialize  
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2025-02-03-NoPoSplat/5.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
 
 ### Result
 
 - Novel View Synthesis :  
-TBD
+  - SOTA pose-free (DUSt3R, MASt3R, Splatt3R) :  
+    - DUSt3R 계열은 `per-pixel depth loss`에 의존하기 때문에 each views를 `fuse하는 게 어렵`  
+    그래서 대부분 상황에서 NoPoSplat이 훨씬 더 좋음
+  - SOTA pose-required (pixelSplat, MVSplat) :  
+    - pixelSplat, MVSplat은 `input view overlap이 작을 때 부정확한 geometry prior` (epipolar constraint, cost volume)을 사용하기 때문에  
+    image view overlap이 작은 상황에서는 NoPoSplat이 더 좋음  
+    - pixelSplat, MVSplat은 `transform-then-fuse strategy`를 사용하는데 `misalignment`로 부정확할 수 있기 때문에  
+    canonical space에서 directly 예측하는 NoPoSplat이 더 좋을 수 있음
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2025-02-03-NoPoSplat/6.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
 
 - Relative Pose Estimation :  
 TBD
