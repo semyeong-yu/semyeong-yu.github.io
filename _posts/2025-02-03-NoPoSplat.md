@@ -84,7 +84,7 @@ code :
   - 기존에는 transform-then-fuse pipeline이었는데,  
   본 논문은 global coordinate으로의 `explicit transform 없이` canonical space 내에서의 different views의 fusion 자체를 직접 network로 학습
   - local coordinate에서 global coordinate으로 3DGS를 explicitly transform할 필요가 없으므로  
-  explicitly transform하면서 생기는 per-frame Gaussians의 misalignment를 방지할 수 있고, extrinsic pose 없이도 3D recon. 가능
+  explicitly transform하면서 생기는 per-frame Gaussians의 misalignment를 방지할 수 있고, extrinsic pose 없이도 (pose-free) 3D recon. 가능
 
 ## Related Works
 
@@ -93,7 +93,7 @@ code :
   off-the-shelf pose estimation method 사용하는 것 자체가 많은 연산을 필요로 하고 runtime 늘림
   - 3D recon.에 only two frames만 input으로 사용하더라도  
   SfM을 통해 해당 two frames의 camera pose를 구하려면 many poses from dense videos 필요 (impractical)
-  - textureless area 또는 image가 sparse한 영역에서는 잘 못 함
+  - textureless area (원형 호수 등) 또는 image가 sparse한 영역에서는 잘 못 함
 
 - Pose-Free Method :  
   - pose-estimation과 3D recon.을 single pipeline으로 통합하자! : <d-cite key="DBARF">[1]</d-cite>, <d-cite key="Flowcam">[2]</d-cite>, <d-cite key="Unifying">[3]</d-cite>
@@ -182,6 +182,7 @@ $$f_{\theta} : \left\{ (I^{v}, k^{v}) \right\}_{v=1}^{V} \mapsto \left\{ \bigcup
   - how :  
   first input view를 global referecne coordinate으로 고정한 뒤 ($$[R | t] = [\boldsymbol I | \boldsymbol 0]$$)  
   해당 coordinate 내에서 each input view $$v$$ 마다 set $$\left\{ \mu_{j}^{v \rightarrow 1}, r_{j}^{v \rightarrow 1}, c_{j}^{v \rightarrow 1}, \alpha_{j}, s_{j} \right\}$$ 을 예측  
+  where view $$1$$ : canonical Gaussian space
   - benefit :  
     - global coordinate으로 explicitly transform할 필요가 없으므로 camera pose (extrinsic) 필요 없음
     - explicitly transform-then-fuse하는 게 아니라 fuse 자체를 network로 학습하는 것이기 때문에  
@@ -229,7 +230,7 @@ canonical space에 3DGS들이 있다는 전제 하에
   scene은 다른데 rendered two images는 같을 수 있으므로  
   just two input views로 3D scene recon. 수행하는 건 사실 ambiguous
   - GT camera pose를 이용하는 other baseline들 <d-cite key="pose1">[6]</d-cite>, [7](https://semyeong-yu.github.io/blog/2024/pixelSplat/)과 비교하기 위해 (evaluation purpose)  
-  pose-free methods <d-cite key="nopose1">[8]</d-cite>, <d-cite key="nopose2">[9]</d-cite>의 경우 target view에 대한 camera pose를 optimize  
+  pose-free methods <d-cite key="nopose1">[8]</d-cite>, <d-cite key="nopose2">[9]</d-cite>의 경우 target view에 대한 camera pose를 optimize한 뒤 비교에 사용  
 
 ## Experiment
 
@@ -239,7 +240,7 @@ canonical space에 3DGS들이 있다는 전제 하에
   - Dataset :  
     - training :  
     RE10K (RealEstate10k) : indoor real estate  
-    DL3DV : outdoor (camera motion 더 다양)
+    DL3DV : outdoor (camera motion pattern 더 다양)
     - zero-shot generalization :  
     ACID : nature scene by drone  
     DTU  
@@ -338,6 +339,12 @@ NoPoSplat은 0.015초만에 (66 FPS) 3DGS 예측 가능
 먼저 text/image to multi-image/video model 이용해서 sparse scene-level multi-view images 얻은 뒤  
 Ours (NoPoSplat) 이용해서 3D model 얻음
 
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2025-02-03-NoPoSplat/13.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
 ### Ablation Study
 
 <div class="row mt-3">
@@ -364,12 +371,24 @@ Ours (NoPoSplat) 이용해서 3D model 얻음
 - Future Work :  
 NoPoSplat은 static scene에만 적용했는데, dynamic scene에 NoPoSplat의 pipeline을 확장 적용!
 
+- Limitation :  
+  - `camera intrinsic은 known`이라는 걸 가정!
+  - feed-forward model은 `non-generative`하므로 `unseen region`에는 대응 못 함
+  - `static scene`에 적용
+
 ## Question
 
 - Q1 :  
-사실 NoPoSplat은 global coordinate으로의 explicit transform이나 geometry prior (epopiolar constraint, cost volume 등)나 GT depth 없이  
+사실 NoPoSplat은 camera pose 이용한 global coordinate으로의 explicit transform이나 geometry prior (epopiolar constraint, cost volume 등)나 GT depth 없이  
 오로지 implicit network의 학습에 의존하여 scene recon. 능력을 학습하겠다는 건데  
 photometric loss만으로도 잘 학습이 되나? two input images 경계면의 smoothness 등 추가 regularization loss 추가해주는 게 낫지 않음?
 
 - A1 :  
+TBD
+
+- Q2 :  
+photometric loss에만 의존하기 때문에 ViT semantic info. 말고도 more info. 주기 위해 intrinsic과 RGB shortcut을 사용하는데  
+둘 말고 또 추가하면 좋은 거 있을까?
+
+- A2 :  
 TBD

@@ -372,11 +372,11 @@ training and evaluation protocol을 수정
 
 - Limitation :  
 extremely challenging open-world dynamic and monocular novel-view-synthesis는 잘 못 함  
-  - 2D image prior에 의존하기 때문에  
+  - `2D image prior에 의존`하기 때문에  
   SAM (segmentation), CoTracker (tracking), DepthAnything (depth estimation) 가 부정확할 경우  
   결과 안 좋음
-  - 3D geometric prior에도 의존하는데,  
-  rapid and non-rigid motion을 포함한 scene의 경우  
+  - `3D geometric prior에도 의존`하는데,  
+  `rapid and non-rigid motion`을 포함한 scene의 경우  
   잘 대응 못 함
 
 ## Question
