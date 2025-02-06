@@ -62,6 +62,8 @@ code :
 
 ## Contribution
 
+`pose-free generalizable sparse-view 3D recon. model in canonical Gaussian space!`
+
 - model :
   - `unposed` (no extrinsic) `sparse-view` images로부터 3DGS를 통해 3D scene recon.하는 feed-forward network 제시
   - `photometric loss만으로` train 가능  
@@ -69,6 +71,7 @@ code :
   - 본 논문은 intrinsic의 영향을 받는 image appearance에만 의존하여 recon.을 수행하므로  
   `scale ambiguity` 문제 해결을 위해 `intrinsic embedding method` 사용  
   (intrinsic은 input으로 사용)
+  - covariance, opacity, color를 예측하는 Gaussian Param. Head에서 fine texture detail 주기 위해 `RGB shortcut` 사용
 
 - downstream tasks :  
   - recon.된 3DGS를 이용하여 novel-view-synthesis 및 pose-estimation task 수행 가능  
@@ -114,8 +117,8 @@ code :
   pixelSplat, MVSplat은 먼저 intrinsic을 이용해 2D-to-3D로 unproject(lift)하여 each local-coordinate에서 3DGS를 예측한 뒤 extrinsic을 이용해 world-coordinate으로 transform한 뒤 fuse했는데,  
   NoPoSplat은 canonical space 내에서의 different views의 fusion 자체를 directly network로 학습하기 때문에 `global coordinate으로 transform할 필요가 없으므로` 이에 따른 `misalignment를 방지`할 수 있고 `camera pose (extrinsic)도 필요 없음`
   - 차이점 2)  
-  pixelSplat에선 epipolar constraint, MVSplat에선 cost volume이라는 geometry prior를 사용하였는데,  
-  image view overlap이 적을 때는 geometry prior가 정확하지 않음  
+  pixelSplat에선 epipolar constraint, MVSplat에선 cost volume이라는 geometry prior를 사용하였는데  
+  image view overlap이 적을 때는 geometry prior가 정확하지 않음.  
   NoPoSplat은 (image overlap이 클 때 유리한) `geometry prior들을 사용하지 않음`
 
 <div class="row mt-3">
@@ -234,11 +237,11 @@ canonical space에 3DGS들이 있다는 전제 하에
 
 - Experiment :  
   - Dataset :  
-    - training and evaluation :  
+    - training :  
     RE10K (RealEstate10k) : indoor real estate  
-    DL3DV : outdoor  
-    ACID : nature scene by drone
+    DL3DV : outdoor (camera motion 더 다양)
     - zero-shot generalization :  
+    ACID : nature scene by drone  
     DTU  
     ScanNet  
     ScanNet++  
@@ -281,39 +284,92 @@ canonical space에 3DGS들이 있다는 전제 하에
         {% include figure.liquid loading="eager" path="assets/img/2025-02-03-NoPoSplat/6.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2025-02-03-NoPoSplat/7.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
 
 - Relative Pose Estimation :  
-TBD
+    
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2025-02-03-NoPoSplat/8.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
 
 - Geometry Reconstruction :  
-TBD
+  - SOTA pose-required (pixelSplat, MVSplat) :  
+    - pixelSplat, MVSplat은 explicitly transform-then-fuse하는 과정에서 두 input images의 경계 영역에서 misalignment (아래 그림에서 파란색 화살표로 표기) 가 있고,  
+    input views' overlap이 적을 때는 geometry prior가 부정확해서 distortion (아래 그림에서 분홍색 화살표로 표기) 있는데,  
+    NoPoSplat은 canonical space에서 directly 예측하므로 해결
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2025-02-03-NoPoSplat/9.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
 
 - Cross-Dataset Generalization :  
-TBD
+NoPoSplat은 geometry prior를 사용하지 않으므로 다양한 scene type에 adapt 가능  
+심지어 ScanNet++로의 zero-shot generalization에 대해 RE10K로 훈련시킨 NoPoSplat과 ScanNet++로 훈련시킨 pose-required Splatt3R을 비교했을 때 NoPoSplat이 더 좋음!
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2025-02-03-NoPoSplat/10.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
 
 - Model Efficiency :  
-TBD
+NoPoSplat은 0.015초만에 (66 FPS) 3DGS 예측 가능  
+(additional geometry prior 안 쓰니까 speed 빠름!)
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2025-02-03-NoPoSplat/11.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+<div class="caption">
+  inference on RTX 4090 GPU
+</div>
 
 - In-the-Wild Unposed Images :  
-TBD
+3D Generation task에 적용 가능!  
+먼저 text/image to multi-image/video model 이용해서 sparse scene-level multi-view images 얻은 뒤  
+Ours (NoPoSplat) 이용해서 3D model 얻음
 
 ### Ablation Study
 
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/2025-02-03-NoPoSplat/12.PNG" class="img-fluid rounded z-depth-1" zoomable=true %}
+    </div>
+</div>
+
 - Ablation Study :  
-  - Output Gaussian Space :  
-  TBD
-  - Camera Intrinsic Embedding :  
-  TBD
-  - RGB Shortcut :  
-  TBD
-  - 3 Input Views instead of 2 :  
-  TBD
+  - `Output Canonical Gaussian Space` :  
+  transform-then-fuse pipeline of pose-required methods has `ghosting artifacts`
+  - `Camera Intrinsic Embedding` :  
+  no intrinsic leads to `blurry` results due to `scale ambiguity`  
+  실험적으로 intrinsic token concat. 방식이 best
+  - `RGB Shortcut` :  
+  no RGB Shortcut leads to `blurry` results in texture-rich areas  
+  (위 그림의 quilt in row 1 and chair in row 3)
+  - `3 Input Views` instead of 2 :  
+  baselines과의 공평한 비교를 위해 NoPoSplat은 two input-views setting을 사용했는데  
+  three input-views를 사용할 경우 성능이 훨씬 좋아졌음!
 
 ## Conclusion
 
-- Limitation :  
-TBD
+- Future Work :  
+NoPoSplat은 static scene에만 적용했는데, dynamic scene에 NoPoSplat의 pipeline을 확장 적용!
 
 ## Question
 
+- Q1 :  
+사실 NoPoSplat은 global coordinate으로의 explicit transform이나 geometry prior (epopiolar constraint, cost volume 등)나 GT depth 없이  
+오로지 implicit network의 학습에 의존하여 scene recon. 능력을 학습하겠다는 건데  
+photometric loss만으로도 잘 학습이 되나? two input images 경계면의 smoothness 등 추가 regularization loss 추가해주는 게 낫지 않음?
+
+- A1 :  
 TBD
