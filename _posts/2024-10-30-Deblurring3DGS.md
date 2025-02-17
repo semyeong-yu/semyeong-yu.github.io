@@ -124,7 +124,6 @@ still real-time rendering at inference
     - Baking neural radiance fields, Merf, Bakedsdf
 
 - Deblurring NeRF :  
-자세한 건 [Link](https://semyeong-yu.github.io/blog/2024/DeblurNeRF/) 참조  
   - DoF-NeRF <d-cite key="DofNeRF">[1]</d-cite> :  
     - 단점 :  
     train하기 위해 all-in-focus image와 blurry image 모두 필요  
