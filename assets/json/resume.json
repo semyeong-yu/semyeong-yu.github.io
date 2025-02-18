@@ -175,13 +175,13 @@
       "icon": ""
     },
     {
-      "language": "Python",
+      "language": "Python/C",
       "fluency": "Proficient",
       "icon": ""
     },
     {
-      "language": "C",
-      "fluency": "Proficient",
+      "language": "C++/CUDA",
+      "fluency": "Intermediate",
       "icon": ""
     }
   ],
