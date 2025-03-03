@@ -1,6 +1,6 @@
 ---
 layout: distill
-title: DreamFusion
+title: DreamFusion (SDS loss)
 date: 2024-08-29 11:00:00
 description: Text-to-3D using 2D Diffusion (ICLR 2023)
 tags: sds diffusion nerf 3d rendering 
@@ -64,7 +64,11 @@ pytorch code :
 - `SDS(Score Distillation) Loss` 처음 제시  
   - scalable, high-quality 2D diffusion model의 능력을 3D domain renderer로 distill
   - 3D 또는 multi-view training data 필요없고, pre-trained 2D diffusion model만 있으면, 3D synthesis 수행 가능!
-- NeRF가 Diffusion(Imagen) model with text에서 내놓을 만한 그럴 듯한 image를 합성하도록 함
+  - DDPM은 denoising `U-Net param.를 업데이트`하여 $$x$$ in `pixel space를 업데이트`하는 것이었는데,  
+  SDS loss는 `U-Net을 freeze`한 뒤 3D renderer (e.g. NeRF, 3DGS)로 만든 $$x = g(\theta)$$ 를 거쳐 `3D renderer param.` $$\theta$$ `를 업데이트`
+
+- NeRF가, Diffusion(Imagen) model with text에서 내놓을 만한 그럴 듯한 image를 합성하도록 함
+
 - `text-to-3D` synthesis 발전 시작
 
 ## Overview
@@ -155,7 +159,6 @@ where $$\circ$$ 는 element-wise multiplication
 - `Color` $$c$$ :  
 $$c = \rho \circ s$$ 또는 $$c = \rho$$  
 
-
 ### Diffusion loss with conditioning
 
 <div class="row mt-3">
@@ -196,12 +199,13 @@ text prompt engineering 수행
 </div>
 
 - $$x=g(\theta)$$ : differentiable image parameterization (DIP)  
-where $$x$$ 는 image이고 $$g$$ 는 renderer이고 $$\theta$$ 는 param.
+where $$x$$ 는 image이고 $$g$$ 는 renderer이고 $$\theta$$ 는 renderer's param.
   - more compact param. space $$\theta$$ 에서 optimize ㄱㄴ  
   (더 강력한 optimization algorithm 사용 ㄱㄴ)
 
 - loss optimization으로 tractable sample 만들기 위해 diffusion model의 힘을 이용해서  
-$$x$$ in pixel space 가 아니라, $$\theta$$ in parameter space 를 optimize  
+$$x$$ in `pixel space 가 아니라`,  
+$$x = g(\theta)$$ 를 만든 $$\theta$$ in `parameter space 를 optimize`  
 s.t. $$x=g(\theta)$$ 가 그럴 듯한 diffusion model sample처럼 보이도록
 
 ### Optimization
@@ -211,13 +215,23 @@ s.t. $$x=g(\theta)$$ 가 그럴 듯한 diffusion model sample처럼 보이도록
   $$z_t, t \sim U[0, 1]$$ 에서 noise level이 너무 크거나($$t=1$$) 너무 작을 경우($$t=0$$) instability 생기므로  
   noise level $$t \sim U[0.02, 0.98]$$ 로 sampling
   - guidance weight $$w$$ :  
-  Imagen이 NeRF에 얼만큼 영향을 미칠지(guide할지)인데,  
+  `Imagen이 NeRF에 얼만큼 영향을 미칠지`(guide할지)인데,  
   high-quality 3D model을 학습하기 위해서는  
-  CFG(classifier-free guidance) weight $$w$$ 를 큰 값(100)으로 설정  
-  (NeRF MLP output color가 sigmoid에 의해 [0, 1]로 bounded되어있으므로 constrained optimization 문제라서 guidance weight 커도 딱히 artifacts 없음)  
-  (SDS loss는 mode-seeking property를 가지고 있어서 작은 guidance weight 값을 사용할 경우 over-smoothing됨 `????`)
+  `CFG(classifier-free guidance) weight` $$w$$ 를 `큰 값`(100)으로 설정  
+    - NeRF MLP output color가 sigmoid에 의해 [0, 1]로 bounded되어있으므로 constrained optimization 문제라서 guidance weight 커도 딱히 artifacts 없음  
+    - 작은 guidance weight 값을 사용할 경우  
+    Diffusion model로부터의 SDS loss의 mode-seeking property가 덜 반영되어  
+    sample들이 여러 mode를 부드럽게 연결하려는 경향을 가지므로  
+    오히려 생성된 image의 디테일이 떨어지는 over-smoothing 현상 발생!  
+    (큰 guidance weight 값을 사용하여 `mode-seeking property`를 많이 반영하여 `sample들이 특정 mode에 강하게 집중`되도록 하여 `분명한 특징을 가진 image`들이 생성되도록 해야 좋음!)
+      - Diffusion model의 `forward` process의 `mean-seeking property` :  
+        - 원래 data distribution $$q(x_{0})$$ 에 점점 더 강한 Gaussian noise를 추가하면서 data 개별적인 특징들이 점점 희미해지고 점점 perfect noise $$N(0, I)$$ 를 향해 감
+      - Diffusion model의 `backward` process의 `mode-seeking property` :  
+        - noise를 제거하면서 점점 원래의 data distribution $$q(x_{0})$$ 로 복원하려 함
+        - noise 제거 과정에서 Langevin Dynamics sampling 방법을 사용하는데, 이는 mode-seeking property 를 가지고 있음  
+        (원래 분포 $$q(x_{0})$$ 의 뚜렷한 특징을 잘 복원하기 위해 sample들이 mode 지점에서 집중되어 sampling됨!)
   - seed :  
-  noise level이 높을 때 smoothed density는 distinct modes를 많이 가지지 않고  
+  특히 noise level이 높을 때 density는 smoothed 되어 distinct modes를 많이 가지지 않고,  
   SDS Loss는 mode-seeking property를 가지고 있으므로  
   random seed 바꿔도 실험 결과는 큰 차이 없음
 
@@ -232,9 +246,12 @@ s.t. $$x=g(\theta)$$ 가 그럴 듯한 diffusion model sample처럼 보이도록
 - Mip-NeRF 360 구조 사용
 - entire scene 대신 single object를 generate할 때  
 `bounded sphere` 내에서 NeRF view-synthesis 하면 빠르게 수렴 및 좋은 성능
-- $$\gamma(d)$$ 를 input으로 받아 배경 색상을 계산하는 별도의 MLP로 `environment map`을 생성한 뒤 그 위에 ray rendering하면 좋은 성능  
-  - 배경이 보이는 부분은 배경에서의 누적 $$\alpha$$ 값이 1이도록  
-  - 물체 때문에 배경이 안 보이는 부분은 배경에서의 누적 $$\alpha$$ 값이 0이도록
+- 보통 view-synthesis에서 배경을 검은색 또는 고정된 색으로 설정하기도 하는데,  
+본 논문은 자연스러운 환경 조명(ambient light)을 반영하기 위해  
+$$\gamma(d)$$ 를 input으로 받아 별도의 MLP로 배경(`environment map`) 색상을 계산한 뒤 그 위에 ray rendering  
+  - 누적 $$\alpha$$ (투명도) 값이 1인 경우 : 배경이 보이는 부분으로, 배경 색상을 그대로 사용  
+  - 누적 $$\alpha$$ (투명도) 값이 0인 경우 : 물체가 배경을 가리는 부분으로, 물체 색상을 그대로 사용
+  - 중간 값인 경우 : 배경(environment map) 색상과 물체(3DGS accumulate) 색상을 적절히 섞음
 
 ### Geometry Regularizer
 
@@ -334,19 +351,31 @@ SDS Loss에서 U-Net Jacobian term은 생략
     `path derivative`  
     gradient of log probability w.r.t sample $$z_t$$  
     ($$q$$ 를 따르는 sample $$z_t$$ 를 통해 $$x$$ 에 대한 $$\text{log}q$$ 의 gradient 계산)
-  - Sticking-the-Landing <d-cite key="vargrad">[3]</d-cite> 에 따르면  
-  path derivative term은 냅두고  
+  - path derivative term은 냅두고  
   parameter score function term을 제거하여  
-  SDS loss gradient에 $$\epsilon$$ 항을 포함할 경우  
-  `control-variates` 기법 [Wikipedia](https://en.wikipedia.org/wiki/Control_variates)에 의해  
-  $$E[\cdot]$$ 으로 gradient 구할 때 `variance를 줄일 수` 있음!  
-  (자세한 설명은 아래의 SDS Loss gradient Summary 부분 참고)  
+  $$\epsilon$$ 항을 남길 경우  
+  SDS loss gradient에 $$\epsilon$$ 항과 $$\hat \epsilon_{\phi}$$ 항이 포함되는데,  
+  $$\epsilon$$ 을 $$\hat \epsilon$$ 의 `control-variate` 로 생각하면 <d-cite key="vargrad">[3]</d-cite> 처럼 `variance를 줄일 수` 있음!  
+  (자세한 건 바로 아래에서 설명!)  
   (variance가 작으면 optimization이 빨라지고 더 나은 결과를 도출할 수 있음)
+    - control-variates [Wikipedia](https://en.wikipedia.org/wiki/Control_variates) :  
+      - Monte Carlo 기법에서 사용되는 variance reduction technique
+      - unknown quantity's estimate의 error(variance)를 줄이기 위해,  
+      known quantity's estimate의 error 정보를 사용
+      - unknown $$\mu$$ 의 estimate $$m$$ 을 구하고 싶은 상황에서 ($$E[m] = \mu$$),  
+      known $$\tau = E[t]$$ ($$t$$ 는 $$m$$ 의 control variate!)를 사용하여 만든  
+      $$m^{\ast} = m + c (t - \tau)$$ 는 여전히 any $$c$$ 에 대해 $$\mu$$ 의 estimate 이고 ($$E[m^{\ast}] = E[m] + c (E[t] - \tau) = E[m] = \mu$$),  
+      새로 만든 $$m^{\ast}$$ 는 기존의 $$m$$ 보다 variance가 작음!  
+      수식 유도해보면 $$Var(m^{\ast}) = Var(m) + c^{2} Var(t) + 2c \text{Cov}(m, t) \ge Var(m^{\ast})|_{c^{\ast} = -\frac{Cov(m, t)}{Var(t)}} = Var(m) - \frac{Cov(m, t)^{2}}{Var(t)} = (1 - Corr(m, t)^{2}) Var(m)$$ 까지 작아질 수 있음!  
+      where $$Corr(m, t) = \frac{Cov(m, t)}{\sqrt{Var(t)} \sqrt{Var(m)}}$$
+      - 이를 SDS loss gradient term에 적용해보면,  
+      unknown estimate $$m = \hat \epsilon$$ 을 구하고 싶은 상황에서,  
+      known estimate (constant) $$t = \epsilon$$ 을 $$\hat \epsilon$$ 의 control-variate로 둔 뒤  
+      $$m^{\ast} = \hat \epsilon + c (\epsilon - E[\epsilon]) = \hat \epsilon + c (\epsilon - 0) = \hat \epsilon - \epsilon$$ term (SDS loss gradient에 들어 있는 항)은 variance가 줄어든 버전임! 맞나? `???`
 
 - $$\theta$$ 에 대한 $$\text{log}p_{\phi}$$ 의 미분 :  
   - gradient of `backward process entropy` (denoising U-Net) w.r.t mean param. $$\theta$$  
-  - 아래 수식을 $$\nabla_{\theta}log p_{\phi}(z_t | y)$$ 계산에 이용  
-  $$\frac{d\text{log}q(z_t | x)}{dz_t}$$ 구했듯이 $$\epsilon$$ 대신 $$\epsilon_{\phi}$$ 넣으면  
+  - $$\frac{d\text{log}q(z_t | x)}{dz_t}$$ 구했듯이 $$\epsilon$$ 대신 $$\epsilon_{\phi}$$ 넣으면  
   $$\nabla_{z_t} \text{log}p_{\phi}(z_t | y) = \frac{d\text{log}p_{\phi}(z_t | y)}{dz_t} = -\frac{1}{\sigma_{t}}\hat \epsilon_{\phi}$$  
   and $$\frac{dz_t}{dx} = \alpha_{t}$$
   - $$\nabla_{\theta}\text{log} p_{\phi}(z_t | y) = \nabla_{z_t} \text{log}p_{\phi}(z_t | y) \frac{dz_t}{dx} \frac{dx}{d\theta} = - \frac{\alpha_{t}}{\sigma_{t}} \hat \epsilon_{\phi}(z_t | y) \frac{dx}{d\theta}$$
@@ -367,13 +396,19 @@ SDS Loss에서 U-Net Jacobian term은 생략
   $$KL(h(x) \| p_{\phi}(x|y))$$ 로부터  
   $$E_{\epsilon, t}[\| \epsilon - \hat \epsilon_{\theta}(z_t | y; t) \|^2] - \text{log} c(x, y)$$ 를 유도해서 loss로 썼지만,  
   SDS와 달리 error 제곱 꼴이라서 costly back-propagation  
-  - DDPM-PnP 또한 auxiliary classifier $$c$$ 를 썼지만,  
-  SDS에서는 CFG(classifier-free-guidance) 사용  
-  (별도의 image label 없이 image caption만 conditioning으로 넣어줘서 model 학습)
-  - 지금까지 implicit model의 entropy의 gradient는 single noise level <d-cite key="ARDAE">[4]</d-cite> 에서의 amortized score model (control-variate 사용 안 함) 로 측정하였는데,  
-  SDS에서는 multiple noise level을 사용함으로써 optimization 더 쉽게 ㄱㄴ  
-  (multiple noise level `?????`)
-  - GAN-like amortized samplers는 Stein discrepancy 최소화 <d-cite key="Stein">[5]</d-cite> , <d-cite key="Stein2">[6]</d-cite> 로 학습하는데,  
+  - DDPM-PnP :  
+  auxiliary classifier $$c$$ 를 썼지만,  
+  SDS에서는 `CFG(classifier-free-guidance)` 사용  
+  (`별도의 classifier 및 image label 없이` image caption만 conditioning으로 넣어줘서 model 학습)
+  - noise level :  
+    - 정확한 PDF를 모르는 implicit model에서는 entropy의 gradient를 직접 계산하기 어려우므로  
+    대신 score function approx.로 계산하는데,  
+    보통 single noise level 에서의 amortized score model <d-cite key="ARDAE">[4]</d-cite> 을 사용하여 한 가지 고정된 noise level에서 score를 학습  
+    (control-variate 사용 안 함)
+    - SDS에서는 `multiple noise level`을 사용함으로써  
+    다양한 scale에서의 score를 학습하여 entropy의 gradient의 variance가 줄어들고 더 안정적으로 optimize 가능  
+  - GAN-like amortized samplers :  
+  GAN-like amortized samplers 는 Stein discrepancy 최소화 <d-cite key="Stein">[5]</d-cite> , <d-cite key="Stein2">[6]</d-cite> 로 학습하는데,  
   이는 SDS loss의 score 차이와 비슷
 
 ## Pseudo Code
@@ -384,7 +419,7 @@ opt_state = optimizer.init(params) # optimizer
 diffusion_model = diffusion.load_model() # Imagen diffusion model
 for iter in iterations:
   t = random.uniform(0., 1.) # noise level (time step)
-  alpha_t, sigma_t = diffusion_model.get_coeffs(t) # determine noisy z_t's mean, std.
+  alpha_t, sigma_t = diffusion_model.get_coeffs(t) # determine constant for noisy z_t's mean, std.
   eps = random.normal(img_shape) # gaussian noise (epsilon)
   x = generator(params, ...) # NeRF rendered image
   z_t = alpha_t * x + sigma_t * eps # noisy NeRF image
@@ -504,25 +539,15 @@ e.g. inverse rendering, dreamfusion
 
 ## Question
 
-- Q1 : diffusion의 mode-seeking property?
-
-- A1 :  
-  - A1-1 : diffusion에서 forward process는 mean-seeking property 가지고 있고, backward process는 mode-seeking property 가지고 있는 걸로 알고 있는데 이거랑 관련 있을까요?  
-  - A1-2 : 그 아까 말씀하신 mode-seeking property에 대해 찾아봤는데 diffusion의 Langevin Dynamics 등의 샘플링 방법이 갖고 있는 특징으로 특정 mode에서 sample을 집중적으로 생성하는 특징을 의미하네요. 제 생각에 "mode-seeking property를 갖고있어 guidance weight가 작으면 over-smoothing 된다"는 말은 diffusion model에서는 특정 모드에 집중되어 sample들이 생성되는데 낮은 guidance weight를 쓰면 여러 모드 사이를 부드럽게(?) 연결하려는 (over-smoothing) 말이지 않을까 싶네요.(즉 너무 매끄럽거나 디테일이 떨어지는 이미지 생성)
-
-- Q2 : reverse KL-divergence를 최소화하는 과정의 경우 mode-seeking property (확률 높은 중요한 부분 찾는 경향)가 있다는데,  
-reverse KL-divergence와 mode-seeking property가 무슨 관계인가요?
-
-- A2 : TBD
-
-- Q3 : SDS loss로 image rendering한 samples의 경우 diversity가 부족하고 그 이유가 mode-seeking property라는 거 같은데,  
+- Q1 : SDS loss로 image rendering한 samples의 경우 diversity가 부족하고 그 이유가 mode-seeking property라는 거 같은데,  
 오히려 diversity가 부족한 게 단점이 아니라,  
 mode-seeking property로 중요한 부분을 잘 캐치해서 consistent하게 그려내는 게 장점이 될 수 있지 않나요?
 
-- A3 : TBD  
-While modes of generative models in high dimensions are often far from typical samples (Nalisnick et al., 2018), the multiscale nature of diffusion model training may help to avoid these pathologies. `?????`
+- A1 : TBD `???`
+  - Diffusion을 포함한 Generative Model에서 다양성 (diversity)는 매우 중요한 성질!
+  - While modes of generative models in high dimensions are often far from typical samples (Nalisnick et al., 2018), the multiscale nature of diffusion model training may help to avoid these pathologies. `?????`
 
-- Q4 : $$\theta$$ 에 대한 $$\text{log}q$$ 의 미분에서 path derivative term은 냅두고 parameter score function term은 제거해서 control-variates에 의해 variance를 줄였다고 하는데,  
+- Q2 : $$\theta$$ 에 대한 $$\text{log}q$$ 의 미분에서 path derivative term은 냅두고 parameter score function term은 제거해서 control-variates 기법에 의해 variance를 줄였다고 하는데,  
 parameter score function term을 걍 제거해버리는 게 좀 야매 아닌가요?
 
-- A4 : TBD
+- A2 : TBD `???`
