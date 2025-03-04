@@ -508,20 +508,19 @@ DreamFusion보다 성능이 더 좋아야 하는데,
 
 - SDS를 적용하여 만든 2D image sample은 `over-saturated` 혹은 `over-smoothed` result  
   - dynamic thresholding <d-cite key="dynathres">[8]</d-cite> 을 사용하면 SDS를 image에 적용할 때의 문제를 완화시킬 수 있다고 알려져 있긴 하지만, NeRF context에 대해서는 해결하지 못함  
-  (dynamic thresholding이 뭔지 아직 몰라서 읽어 봐야 됨 `?????`)
+  (dynamic thresholding이 뭔지 아직 몰라서 읽어 봐야 됨 `???`)
 
 - SDS를 적용하여 만든 2D image sample은 `diversity` 부족  
 (random seed 바꿔도 3D result에 큰 차이 없음)  
-
-This may be fundamental to our use of reverse KL divergence, which has been previously noted to have mode-seeking properties in the context of variational inference and probability density distillation `?????`
+  - reverse KL divergence의 `mode-seeking property` (for variational inference and prob. density distillation) 때문에  
+  특정 mode에 집중해서 sampling되는 경향이 있어서 seed를 바꾸더라도 2D image sample의 다양성 부족
 
 - $$64 \times 64$$ Imagen (`low resol.`)을 사용하여 3D model의 fine-detail이 부족할 수 있음  
   - diffusion model 또는 NeRF를 더 큰 걸 사용하면 문제 해결할 수 있지만, 그만큼 겁나 느려지지...
 
-- `2D image로부터 3D recon.`하는 게 원래 어렵고 애매한 task임  
-e.g. inverse rendering, dreamfusion
-  - 같은 2D images로부터 무수히 많은 3D worlds가 존재할 수 있으니까
-  - optimization landscape가 highly non-convex하므로 local minima에 빠지지 않기 위한 기법들 필요  
+- 2D image로부터 3D recon.하는 게 원래 어렵고 애매한 task임  
+  - `inverse problem` : 같은 2D images로부터 무수히 많은 3D worlds가 존재할 수 있으니까
+  - `local minima` : optimization landscape가 highly non-convex하므로 local minima에 빠지지 않기 위한 기법들 필요  
   (local minima : e.g. 모든 scene content가 하나의 flat surface에 painted된 경우)  
   - more `robust 3D prior`가 도움 될 것임
 
