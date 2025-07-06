@@ -124,6 +124,28 @@ where $$\mu_{\theta}(x_t, t) = \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alp
 and $$\tilde \beta_{t} = \frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} \beta_{t}$$  
 (training param.로 학습하는 부분은 $$\epsilon_{\theta}(x_t, t)$$ 뿐!!)  
 
+- `DDPM Summary` :  
+  - Train phase :  
+    - Step 1) $$t \sim U[0, T]$$  
+    (매번 임의의 random $$t$$ 에 대해 loss 구함)
+    - Step 2) $$x_{0}$$ 으로부터 uniform-sampling한 $$t$$ 에 대한 $$x_{t}$$ 을 수식적으로 계산  
+    $$x_t \sim q(x_t | x_0) = N(x_t; \sqrt{\bar \alpha_{t}} x_{0}, (1-\bar \alpha_{t}) \boldsymbol I) = \sqrt{\bar \alpha_{t}}x_0 + \sqrt{1-\bar \alpha_{t}} \epsilon$$  
+    - Step 3) $$x_{t}$$ 와 $$t$$ 를 U-Net에 넣어서 $$\epsilon_{\theta}(x_{t}, t)$$ 얻음
+    - Step 4) $$\epsilon_{\theta}(x_{t}, t)$$ 과 $$\epsilon$$ 의 차이로 loss 구해서 back-propagate
+  - Inference (Sampler) phase :  
+    - case 1) U-Net predicts $$\epsilon_{\theta}$$ :  
+    $$\epsilon_{\theta}(x_{t}, t)$$ 으로부터  
+    $$\mu_{\theta}(x_t, t) = \frac{1}{\sqrt{\alpha_{t}}} (x_t - \frac{1 - \alpha_{t}}{\sqrt{1 - \bar \alpha_{t}}} \epsilon_{\theta}(x_t, t))$$ 구한 뒤  
+    해당 $$\mu_{\theta}(x_t, t)$$ 의 distribution으로부터 sampling하여 $$x_{t-1}$$ 을 구함  
+    $$x_{t-1} \sim p_{\theta}(x_{t-1} | x_t) = N(x_{t-1}; \mu_{\theta}(x_t, t), \tilde \beta_{t}) = \mu_{\theta}(x_t, t) + \tilde \beta_{t} \epsilon$$  
+    - case 2) U-Net predicts $$x_{0}$$ :  
+    $$x_{0}$$ 으로부터  
+    $$\mu_{\theta}(x_t, t) = \sqrt{\bar \alpha_{t-1}} \frac{\beta_{t}}{1 - \bar \alpha_{t}} x_0 + \sqrt{\alpha_{t}} \frac{1 - \bar \alpha_{t-1}}{1 - \bar \alpha_{t}} x_t$$ 구한 뒤  
+    해당 $$\mu_{\theta}(x_t, t)$$ 의 distribution으로부터 sampling하여 $$x_{t-1}$$ 을 구함  
+    $$x_{t-1} \sim p_{\theta}(x_{t-1} | x_t) = N(x_{t-1}; \mu_{\theta}(x_t, t), \tilde \beta_{t}) = \mu_{\theta}(x_t, t) + \tilde \beta_{t} \epsilon$$  
+    - case 3) U-Net predicts $$x_{t-1}$$ :  
+    그냥 바로 U-Net이 예측한 $$x_{t-1}$$ 값 사용
+
 ### DDPM Diagram
 
 reference : [Link](https://github.com/w86763777/pytorch-ddpm)  
