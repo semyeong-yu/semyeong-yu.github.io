@@ -21,7 +21,7 @@
               ]
             }
           }
-    </script> </d-front-matter> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top" role="navigation"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/"> <span class="font-weight-bold">Semyeong</span> Yu </a> <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse text-right" id="navbarNav"> <ul class="navbar-nav ml-auto flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">about </a> </li> <li class="nav-item "> <a class="nav-link" href="/cv/">cv </a> </li> <li class="nav-item "> <a class="nav-link" href="/blog/">blog </a> </li> <li class="toggle-container"> <button id="light-toggle" title="Change theme"> <i class="ti ti-sun-moon" id="light-toggle-system"></i> <i class="ti ti-moon-filled" id="light-toggle-dark"></i> <i class="ti ti-sun-filled" id="light-toggle-light"></i> </button> </li> </ul> </div> </div> </nav> <progress id="progress" value="0"> <div class="progress-container"> <span class="progress-bar"></span> </div> </progress> </header> <div class="post distill"> <d-title> <h1>Docker</h1> <p>Docker Environment - Image, Container</p> </d-title> <d-article> <h2 id="contents">Contents</h2> <ul> <li>목차 <ul> <li>Install</li> <li>Image <ul> <li>원격 image 다운로드</li> <li>image 목록 확인</li> <li>image 삭제</li> <li>image를 압축파일로 저장</li> <li>image 압축파일 다운로드</li> </ul> </li> <li>Container <ul> <li>image로부터 container 새로 띄우기</li> <li>이미 띄운 container에 -v 폴더 연결</li> <li>container 목록 확인</li> <li>container 이름 변경</li> <li>종료했던 container 띄우기</li> <li>띄운 container에 접속</li> <li>container 종료하지 않고 탈출</li> <li>container 종료</li> <li>container 삭제</li> <li>외부 파일/폴더를 container로 복사</li> <li>container를 image로 변환</li> <li>container를 압축파일로 저장</li> <li>container 압축파일 다운로드하여 image 만들기</li> </ul> </li> </ul> </li> </ul> <h3 id="install">Install</h3> <ul> <li> <p>vscode에 docker 설치: vscode 익스텐션 중 Docker, Dev Containers 설치</p> </li> <li>에러 해결: <ul> <li>docker: Error response from daemon: could not select device driver “” with capabilities: [[gpu]].<br> Sol.: nvidia-cuda-toolkit을 설치 또는 재설치한다.</li> <li>docker: Error response from daemon: failed to create shim task: nvidia-container-cli: requirement error: unsatisfied condition: cuda&gt;=xx.x, please update your driver to a newer version<br> Sol.: 설치된 cuda 버전이 docker image가 요구하는 cuda version보다 낮아서 생기는 에러로, cuda 또는 nvidia-driver를 버전 업그레이드</li> </ul> </li> <li>sudo 매번 안 치게: <div class="language-bash highlighter-rouge"> <div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>usermod <span class="nt">-aG</span> docker <span class="nv">$USER</span>
+    </script> </d-front-matter> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top" role="navigation"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/"> <span class="font-weight-bold">Semyeong</span> Yu </a> <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse text-right" id="navbarNav"> <ul class="navbar-nav ml-auto flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">about </a> </li> <li class="nav-item "> <a class="nav-link" href="/cv/">cv </a> </li> <li class="nav-item "> <a class="nav-link" href="/blog/">blog </a> </li> <li class="toggle-container"> <button id="light-toggle" title="Change theme"> <i class="ti ti-sun-moon" id="light-toggle-system"></i> <i class="ti ti-moon-filled" id="light-toggle-dark"></i> <i class="ti ti-sun-filled" id="light-toggle-light"></i> </button> </li> </ul> </div> </div> </nav> <progress id="progress" value="0"> <div class="progress-container"> <span class="progress-bar"></span> </div> </progress> </header> <div class="post distill"> <d-title> <h1>Docker</h1> <p>Docker Environment - Image, Container</p> </d-title> <d-article> <h2 id="contents">Contents</h2> <ul> <li>목차 <ul> <li>Install</li> <li>Image <ul> <li>원격 image 다운로드</li> <li>image 목록 확인</li> <li>image 삭제</li> <li>Dockerfile로 새로운 image 만들기</li> <li>image를 원격 registry에 업로드</li> <li>image를 압축파일로 저장</li> <li>image 압축파일 다운로드</li> <li>Dockerfile 작성</li> </ul> </li> <li>Container <ul> <li>image로부터 container 새로 띄우기</li> <li>이미 띄운 container에 -v 폴더 연결</li> <li>container 목록 확인</li> <li>container 이름 변경</li> <li>종료했던 container 띄우기</li> <li>띄운 container에 접속</li> <li>container 종료하지 않고 탈출</li> <li>container 종료</li> <li>container 삭제</li> <li>외부 파일/폴더를 container로 복사</li> <li>container를 image로 변환</li> <li>container를 압축파일로 저장</li> <li>container 압축파일 다운로드하여 image 만들기</li> </ul> </li> </ul> </li> </ul> <h3 id="install">Install</h3> <ul> <li> <p>vscode에 docker 설치: vscode 익스텐션 중 Docker, Dev Containers 설치</p> </li> <li>에러 해결: <ul> <li>docker: Error response from daemon: could not select device driver “” with capabilities: [[gpu]].<br> Sol.: nvidia-cuda-toolkit을 설치 또는 재설치한다.</li> <li>docker: Error response from daemon: failed to create shim task: nvidia-container-cli: requirement error: unsatisfied condition: cuda&gt;=xx.x, please update your driver to a newer version<br> Sol.: 설치된 cuda 버전이 docker image가 요구하는 cuda version보다 낮아서 생기는 에러로, cuda 또는 nvidia-driver를 버전 업그레이드</li> </ul> </li> <li>sudo 매번 안 치게: <div class="language-bash highlighter-rouge"> <div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>usermod <span class="nt">-aG</span> docker <span class="nv">$USER</span>
 <span class="nb">sudo </span>usermod <span class="nt">-aG</span> docker semyu
 <span class="nb">sudo </span>reboot
 </code></pre></div> </div> </li> </ul> <h3 id="image">Image</h3> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 원격 image 다운로드</span>
@@ -34,12 +34,163 @@ docker images
 <span class="c"># image 삭제</span>
 docker rmi 0x3f3fsc <span class="c"># &lt;Image ID&gt;</span>
 
+<span class="c"># Dockerfile로 새로운 image 만들기</span>
+docker build <span class="nt">--progress</span><span class="o">=</span>plain <span class="nt">-t</span> myownimg/myownimg:latest <span class="nt">-f</span> ./Dockerfile <span class="nb">.</span>
+
+<span class="c"># image를 원격 registry에 업로드</span>
+docker push myownimg/myownimg:latest
+
 <span class="c"># image를 압축파일로 저장</span>
 docker save <span class="nt">-o</span> ddrf.tar pytorch/pytorch:latest
 
 <span class="c"># image 압축파일 다운로드</span>
 <span class="c"># docker save -&gt; docker load</span>
 docker load <span class="nt">-i</span> ddrf.tar
+</code></pre></div></div> <ul> <li>Dockerfile 작성:<br> <a href="https://hub.docker.com/r/nvidia/cuda/tags?name=12.8" rel="external nofollow noopener" target="_blank">https://hub.docker.com/r/nvidia/cuda/tags?name=12.8</a> 들어가서 원하는 cuda 버전의 tag 확인<br> (base, runtime 는 compile 하기 위한 extension이 없지만 가벼움, devel은 compile까지 가능하지만 무거움)<br> <a href="https://pytorch.org/get-started/previous-versions/" rel="external nofollow noopener" target="_blank">https://pytorch.org/get-started/previous-versions/</a> 들어가서 pip으로 원하는 버전의 pytorch 설치하는 명령어 확인<br> 다 확인하면 아래와 같이 Dockerfile 작성</li> </ul> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 아까 확인한 cuda tag</span>
+FROM nvidia/cuda:&lt;CUDA_VERSION&gt;-&lt;base/runtime/devel&gt;-ubuntu&lt;UBUNTU_VERSION&gt; 
+
+ENV <span class="nv">DEBIAN_FRONTEND</span><span class="o">=</span>noninteractive
+
+<span class="c"># 기본 패키지 설치 (옵션)</span>
+RUN apt-get update <span class="o">&amp;&amp;</span> apt-get <span class="nb">install</span> <span class="nt">-y</span> <span class="se">\</span>
+    build-essential <span class="se">\</span>
+    wget <span class="se">\</span>
+    git <span class="se">\</span>
+    curl <span class="se">\</span>
+    ca-certificates <span class="se">\</span>
+    python3.11 python3.11-dev python3.11-distutils pip<span class="se">\</span>
+    <span class="o">&amp;&amp;</span> <span class="nb">rm</span> <span class="nt">-rf</span> /var/lib/apt/lists/<span class="k">*</span>
+
+<span class="c"># 필요하면 추가로 환경 설정 (옵션)</span>
+ENV <span class="nv">PATH</span><span class="o">=</span>/usr/local/cuda/bin:<span class="k">${</span><span class="nv">PATH</span><span class="k">}</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/usr/local/cuda/lib64:<span class="k">${</span><span class="nv">LD_LIBRARY_PATH</span><span class="k">}</span>
+
+
+<span class="c"># 아까 확인한 pytorch 설치 명령어</span>
+RUN pip3 <span class="nb">install </span>torch torchvision <span class="nt">--index-url</span> https://download.pytorch.org/whl/cu128 
+
+CMD <span class="o">[</span><span class="s2">"/bin/bash"</span><span class="o">]</span>
+</code></pre></div></div> <ul> <li>Dockerfile 예시:<br> Blender with GPU로 synthetic multi-object multi-view videos 만드는 Kubric code에 있는 Dockerfile<br> <a href="https://github.com/ethz-vlg/kubric/blob/multiview-point-tracking/challenges/point_tracking_3d/Dockerfile" rel="external nofollow noopener" target="_blank">https://github.com/ethz-vlg/kubric/blob/multiview-point-tracking/challenges/point_tracking_3d/Dockerfile</a> </li> </ul> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Creating and testing the created image:</span>
+<span class="c">#   docker build --progress=plain -t franorajic/nvidia-pytorch-blender-kubric:0.2 -f challenges/point_tracking_3d/Dockerfile . 2&gt;&amp;1 | tee build_log_7.txt</span>
+<span class="c">#   docker images</span>
+<span class="c">#   docker run --gpus all -it --rm -v /home/frrajic/xode/01-code/kubric:/workspace franorajic/nvidia-pytorch-blender-kubric:0.2 /bin/bash</span>
+<span class="c">#     cd /workspace &amp;&amp; python challenges/point_tracking_3d/worker.py --job-dir output/multiview_v3/debug/72 --seed 72 --n_cameras 10 --save_state --scratch_dir output/tmp</span>
+<span class="c">#   docker push franorajic/nvidia-pytorch-blender-kubric:0.2</span>
+
+FROM nvcr.io/nvidia/pytorch:24.04-py3
+
+LABEL <span class="nv">Title</span><span class="o">=</span><span class="s2">"Kubric with Blender 3.6 and GPU support"</span>
+LABEL <span class="nv">Author</span><span class="o">=</span><span class="s2">"m43 &lt;frano.rajic@inf.ethz.ch&gt;"</span>
+
+ENV <span class="nv">DEBIAN_FRONTEND</span><span class="o">=</span>noninteractive
+ENV <span class="nv">LC_ALL</span><span class="o">=</span>C.UTF-8
+ENV <span class="nv">LANG</span><span class="o">=</span>C.UTF-8
+
+WORKDIR /blenderpy
+
+<span class="c"># Install basic system dependencies</span>
+RUN apt-get update <span class="nt">--yes</span> <span class="nt">--fix-missing</span> <span class="o">&amp;&amp;</span> apt-get <span class="nb">install</span> <span class="nt">--yes</span> <span class="nt">--quiet</span> <span class="nt">--no-install-recommends</span> git git-lfs ffmpeg
+
+<span class="c"># Build Blender from source</span>
+RUN git clone https://github.com/blender/blender.git <span class="nt">--branch</span> v3.6.16 <span class="nt">--depth</span> 1
+RUN <span class="nb">cd </span>blender <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    <span class="nb">sed</span> <span class="nt">-i</span> <span class="s1">'s/"sudo",//g'</span> ./build_files/build_environment/install_linux_packages.py <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    <span class="nb">sed</span> <span class="nt">-i</span> <span class="s1">'s/libshaderc-dev/wget/g'</span> ./build_files/build_environment/install_linux_packages.py <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    ./build_files/build_environment/install_linux_packages.py <span class="nt">--all</span>
+RUN <span class="nb">cd </span>blender <span class="o">&amp;&amp;</span> ./build_files/utils/make_update.py <span class="nt">--use-linux-libraries</span>
+
+<span class="c"># Build Blender with CUDA support</span>
+RUN <span class="nb">mkdir </span>blender/build_blender <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    <span class="nb">cd </span>blender/build_blender <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    cmake <span class="nt">-DWITH_CYCLES_CUDA_BINARIES</span><span class="o">=</span>ON ..
+RUN <span class="nb">cd </span>blender/build_blender <span class="o">&amp;&amp;</span> make <span class="nt">-j24</span>
+RUN <span class="nb">cd </span>blender/build_blender <span class="o">&amp;&amp;</span> make <span class="nb">install</span>
+
+<span class="c"># Build the Python module (bpy)</span>
+RUN <span class="nb">mkdir </span>blender/build_bpy <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    <span class="nb">cd </span>blender/build_bpy <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    cmake <span class="nt">-C</span> ../build_files/cmake/config/bpy_module.cmake <span class="nt">-DWITH_CYCLES_CUDA_BINARIES</span><span class="o">=</span>ON ..
+RUN <span class="nb">cd </span>blender/build_bpy <span class="o">&amp;&amp;</span> make <span class="nt">-j24</span>
+RUN <span class="nb">cd </span>blender/build_bpy <span class="o">&amp;&amp;</span> make <span class="nb">install
+</span>RUN <span class="nb">cd </span>blender <span class="o">&amp;&amp;</span> python ./build_files/utils/make_bpy_wheel.py ./build_bpy/bin
+RUN <span class="nb">cd </span>blender <span class="o">&amp;&amp;</span> pip <span class="nb">install</span> ./build_bpy/bin/bpy<span class="k">*</span>.whl
+
+<span class="c"># Add shared libraries to the path</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/alembic/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/boost/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/brotli/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/dpcpp/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/embree/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/epoxy/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/ffmpeg/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/fftw3/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/freetype/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/fribidi/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/gmp/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/harfbuzz/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/haru/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/imath/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/jemalloc/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/jpeg/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/level-zero/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/llvm/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/materialx/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/mesa/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/openal/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/opencollada/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/opencolorio/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/openexr/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/openimagedenoise/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/openimageio/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/openjpeg/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/openpgl/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/opensubdiv/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/openvdb/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/osl/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/png/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/potrace/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/pugixml/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/python/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/sdl/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/shaderc/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/sndfile/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/spnav/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/tbb/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/tiff/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/usd/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/vulkan/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/webp/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/xml2/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/xr_openxr_sdk/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/zlib/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+ENV <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/blenderpy/blender/lib/linux_x64/zstd/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">"</span>
+RUN ldconfig
+
+<span class="c"># Test bpy</span>
+RUN python <span class="nt">-c</span> <span class="s2">"import bpy, os; bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath('my.blend'))"</span> <span class="o">&amp;&amp;</span> <span class="nb">rm </span>my.blend
+RUN python <span class="nt">-c</span> <span class="s2">"import bpy; bpy.context.preferences.addons['cycles'].preferences.get_devices(); print(bpy.context.preferences.addons['cycles'].preferences.devices.keys())"</span>
+
+<span class="c"># Install Kubric python dependencies</span>
+COPY requirements.txt <span class="nb">.</span>
+COPY requirements_full.txt <span class="nb">.</span>
+RUN pip uninstall <span class="nt">-y</span> opencv <span class="o">&amp;&amp;</span> <span class="nb">rm</span> <span class="nt">-rf</span> /usr/local/lib/python3.10/dist-packages/cv2
+RUN pip <span class="nb">install</span> <span class="nt">--upgrade</span> pip wheel
+RUN pip <span class="nb">install</span> <span class="nt">--upgrade</span> <span class="nt">--force-reinstall</span> <span class="nt">-r</span> requirements.txt <span class="nt">-r</span> requirements_full.txt
+RUN pip <span class="nb">install </span>imageio[ffmpeg]
+RUN python <span class="nt">-c</span> <span class="s2">"import cv2; print(cv2.__path__); print(cv2.imread)"</span>
+RUN <span class="nb">rm</span> <span class="nt">-f</span> requirements.txt
+RUN <span class="nb">rm</span> <span class="nt">-f</span> requirements_full.txt
+
+<span class="c"># Silences tensorflow</span>
+ENV <span class="nv">TF_CPP_MIN_LOG_LEVEL</span><span class="o">=</span><span class="s2">"3"</span>
+
+<span class="c"># Install Kubric from a wheel (created by running `python setup.py bdist_wheel` in the Kubric root directory)</span>
+COPY dist/kubric<span class="k">*</span>.whl <span class="nb">.</span>
+RUN pip3 <span class="nb">install</span> <span class="sb">`</span><span class="nb">ls </span>kubric<span class="k">*</span>.whl<span class="sb">`</span>
+RUN <span class="nb">rm</span> <span class="nt">-f</span> kubric<span class="k">*</span>.whl
+
+<span class="c"># Install additional tools</span>
+RUN apt-get <span class="nb">install</span> <span class="nt">-y</span> tree nvtop ncdu htop tmux
 </code></pre></div></div> <h3 id="container">Container</h3> <ul> <li>image로부터 container 새로 띄우기 <div class="language-bash highlighter-rouge"> <div class="highlight"><pre class="highlight"><code>docker run <span class="nt">-it</span> <span class="nt">--gpus</span> all <span class="nt">-n</span> colmap <span class="nt">-v</span> /home/semyeong/data:/workdir/data pytorch/pytorch:latest /bin/bash
 <span class="c">#############################################################################################</span>
 <span class="c"># -it: 종료 없이 container 탈출 가능(iterative terminal)</span>
